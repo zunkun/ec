@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-require('babel-register');
 require('console-stamp')(console, { pattern: 'yyyy-mm-dd\'T\'HH:MM:ss:l' });
+require('../services/schedule');
 if (process.env.NODE_ENV === 'production') {
 	console.log('正式环境');
 } else {

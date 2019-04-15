@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import mongodb from '../core/db/mongodb';
+const mongodb = require('../core/db/mongodb');
+const mongoose = require('mongoose');
 
 // 部门预算调整流水
 // 部门D1的year1年mongh1月catalog1预算-->(amount)-> 部门D2的year2年mongh2月catalog2预算
@@ -45,4 +45,4 @@ const budgetRecordSchema = new mongoose.Schema(
 
 const BudgetRecord = mongodb.model('budgetRecords', budgetRecordSchema);
 
-export default BudgetRecord;
+module.exports = BudgetRecord;

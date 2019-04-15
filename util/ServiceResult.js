@@ -35,4 +35,4 @@ class ServiceResult {
 	}
 }
 
-export default ServiceResult;
+module.exports = ServiceResult;

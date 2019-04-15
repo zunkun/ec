@@ -6,5 +6,6 @@ module.exports = {
 		hotel: 'dingtalk.oapi.alitrip.btrip.hotel.order.search',
 		approvalNew: 'dingtalk.oapi.alitrip.btrip.approval.new',
 		approvalUpdate: 'dingtalk.oapi.alitrip.btrip.approval.update'
-	}
+	},
+	catalogs: [ '活动费', '礼品费', '差旅费' ]
 };

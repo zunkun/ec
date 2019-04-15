@@ -4,12 +4,7 @@
   "description": "海尔出差费控",
   "main": "bin/www",
   "scripts": {
-    "start": "node bin/www",
-    "dev": "cross-env NODE_ENV=dev ./node_modules/.bin/nodemon bin/www",
-    "gulp": "gulp",
-    "lint": "eslint .",
-    "fix": "eslint --fix .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node bin/www"
   },
   "repository": {
     "type": "git",
@@ -32,13 +27,10 @@
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
-    "gulp": "^4.0.0",
-    "gulp-eslint": "^5.0.0",
     "nodemon": "^1.18.10"
   },
   "dependencies": {
-    "babel-preset-env": "^1.7.0",
-    "babel-register": "^6.26.0",
+    "console-stamp": "^0.2.7",
     "koa": "^2.6.2",
     "koa-bodyparser": "^4.2.1",
     "koa-json": "^2.0.2",
@@ -48,7 +40,9 @@
     "log4js": "^4.1.0",
     "mongoose": "^5.5.0",
     "node-cron": "^2.0.3",
-    "node-windows": "^0.1.14"
+    "node-windows": "^0.1.14",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
   },
   "license": "ISC"
 }

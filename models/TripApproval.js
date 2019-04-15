@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import mongodb from '../core/db/mongodb';
+const mongodb = require('../core/db/mongodb');
+const mongoose = require('mongoose');
 
 // 出行人 schema
 const tralvlerListSchema = new mongoose.Schema({
@@ -50,4 +50,4 @@ const tripApprovalSchema = new mongoose.Schema(
 
 const TripApproval = mongodb.model('tripApprovals', tripApprovalSchema);
 
-export default TripApproval;
+module.exports = TripApproval;

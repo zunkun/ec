@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import mongodb from '../core/db/mongodb';
+const mongodb = require('../core/db/mongodb');
+const mongoose = require('mongoose');
 
 // 部门年度预算 schema
 const annualBudgetSchema = new mongoose.Schema(
@@ -17,4 +17,4 @@ const annualBudgetSchema = new mongoose.Schema(
 
 const AnnualBudget = mongodb.model('annualbudgets', annualBudgetSchema);
 
-export default AnnualBudget;
+module.exports = AnnualBudget;

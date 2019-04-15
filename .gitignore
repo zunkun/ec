@@ -3,3 +3,4 @@ logs/*
 bin/daemon
 *.sqlite
 public/images/*.jpg
+ECAPI/*

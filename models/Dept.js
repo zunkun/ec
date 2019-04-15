@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import mongodb from '../core/db/mongodb';
+const mongodb = require('../core/db/mongodb');
+const mongoose = require('mongoose');
 
 const managerSchema = new mongoose.Schema({
 	userId: String,
@@ -8,8 +8,11 @@ const managerSchema = new mongoose.Schema({
 // 部门schema
 const deptSchema = new mongoose.Schema(
 	{
-		deptId: String,
+		year: Number,
+		deptId: Number,
 		deptName: String,
+		parentId: Number,
+		parentName: Number,
 		managers: [ managerSchema ]
 	}, {
 		collection: 'depts',
@@ -19,4 +22,4 @@ const deptSchema = new mongoose.Schema(
 
 const Dept = mongodb.model('depts', deptSchema);
 
-export default Dept;
+module.exports = Dept;
