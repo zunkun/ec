@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const mongodb = require('../core/db/mongodb');
+import mongoose from 'mongoose';
+import mongodb from '../core/db/mongodb';
 
 const managerSchema = new mongoose.Schema({
 	userId: String,
@@ -19,4 +19,4 @@ const deptSchema = new mongoose.Schema(
 
 const Dept = mongodb.model('depts', deptSchema);
 
-module.exports = Dept;
+export default Dept;

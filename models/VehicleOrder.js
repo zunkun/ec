@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const mongodb = require('../core/db/mongodb');
+import mongoose from 'mongoose';
+import mongodb from '../core/db/mongodb';
 
 // 价目信息schema
 const priceSchema = new mongoose.Schema({
@@ -60,10 +60,6 @@ const VehicleOrderSchema = new mongoose.Schema(
 		from_address: String, // 	出发地
 
 		passenger_name: String, // 	乘客名称
-		from_address: String, // 	出发地
-		from_address: String, // 	出发地
-		from_address: String, // 	出发地
-		from_address: String, // 	出发地
 
 		ticket_count: Number, 	// 	票的数量
 
@@ -82,4 +78,4 @@ const VehicleOrderSchema = new mongoose.Schema(
 
 const VehicleOrder = mongodb.model('vehicleOrders', VehicleOrderSchema);
 
-module.exports = VehicleOrder;
+export default VehicleOrder;

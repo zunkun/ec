@@ -7,6 +7,10 @@ module.exports = {
 		database: 'ec'
 	},
 	mongodb: {
-		uri: 'mongodb://dev:123456@localhost:27017/haier'
-	}
+		uri: 'mongodb://127.0.0.1:27017/haier',
+		user: 'dev',
+		pass: '123456'
+	},
+	appKey: '',
+	appSecret: ''
 };

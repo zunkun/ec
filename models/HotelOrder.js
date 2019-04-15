@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const mongodb = require('../core/db/mongodb');
+import mongoose from 'mongoose';
+import mongodb from '../core/db/mongodb';
 
 // 价目信息schema
 const priceSchema = new mongoose.Schema({
@@ -65,4 +65,4 @@ const hotelOrderSchema = new mongoose.Schema(
 
 const HotelOrder = mongodb.model('hotelOrders', hotelOrderSchema);
 
-module.exports = HotelOrder;
+export default HotelOrder;

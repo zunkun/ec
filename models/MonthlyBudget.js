@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const mongodb = require('../core/db/mongodb');
+import mongoose from 'mongoose';
+import mongodb from '../core/db/mongodb';
 
 const catalogSchema = new mongoose.Schema({
 	id: String, // 分类
@@ -28,4 +28,4 @@ const monthlyBudgetSchema = new mongoose.Schema(
 
 const monthlyBudget = mongodb.model('monthlybudgets', monthlyBudgetSchema);
 
-module.exports = monthlyBudget;
+export default monthlyBudget;

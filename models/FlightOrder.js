@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const mongodb = require('../core/db/mongodb');
+import mongoose from 'mongoose';
+import mongodb from '../core/db/mongodb';
 
 // 保险schema
 const insureSchema = new mongoose.Schema({
@@ -72,4 +72,4 @@ const flightOrderSchema = new mongoose.Schema(
 
 const FlightOrder = mongodb.model('flightOrders', flightOrderSchema);
 
-module.exports = FlightOrder;
+export default FlightOrder;

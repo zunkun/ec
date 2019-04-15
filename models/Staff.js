@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const mongodb = require('../core/db/mongodb');
+import mongoose from 'mongoose';
+import mongodb from '../core/db/mongodb';
 
 // 员工schema
 const staffSchema = new mongoose.Schema(
@@ -16,4 +16,4 @@ const staffSchema = new mongoose.Schema(
 
 const staff = mongodb.model('staffs', staffSchema);
 
-module.exports = staff;
+export default staff;

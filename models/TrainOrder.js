@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const mongodb = require('../core/db/mongodb');
+import mongoose from 'mongoose';
+import mongodb from '../core/db/mongodb';
 
 // 价目信息schema
 const priceSchema = new mongoose.Schema({
@@ -68,4 +68,4 @@ const TrainOrderSchema = new mongoose.Schema(
 
 const TrainOrder = mongodb.model('trainOrders', TrainOrderSchema);
 
-module.exports = TrainOrder;
+export default TrainOrder;
