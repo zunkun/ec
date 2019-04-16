@@ -9,10 +9,11 @@ const managerSchema = new mongoose.Schema({
 const deptSchema = new mongoose.Schema(
 	{
 		year: Number,
+		corpId: String,
 		deptId: Number,
 		deptName: String,
 		parentId: Number,
-		parentName: Number,
+		parentName: String,
 		managers: [ managerSchema ]
 	}, {
 		collection: 'depts',

@@ -1,7 +1,6 @@
 
 const rp = require('request-promise');
 const config = require('../../config');
-
 class Dingding {
 	constructor () {
 		this.token = {};
@@ -24,9 +23,7 @@ class Dingding {
 	}
 
 	async getDeptLists (id = 1, fetch_child = true) {
-		const accessToken = await this.getAccessToken();
 		let uri = `${config.dingBaseUri}/department/list`;
-		console.log(id, fetch_child, uri, accessToken);
 		let data = await rp.get(uri, {
 			qs: {
 				id,
@@ -35,12 +32,31 @@ class Dingding {
 			},
 			json: true
 		});
-		console.log({ data });
 		if (data.errcode === 0) {
 			return data.department;
 		} else {
 			return [];
 		}
+	}
+
+	async btrip (queryPath, rq) {
+		let uri = `${config.dingBaseUri}${queryPath}`;
+		let data = await rp({
+			uri,
+			method: 'POST',
+			qs: { access_token: await this.getAccessToken() },
+			body: { rq }
+		});
+		return data;
+	}
+
+	async postBtrip (queryPath, body) {
+		let uri = `${config.dingBaseUri}${queryPath}`;
+		let data = await rp.post(uri, {
+			formData: JSON.stringify(body),
+			json: true
+		});
+		return data;
 	}
 }
 

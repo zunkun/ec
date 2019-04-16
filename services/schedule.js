@@ -1,22 +1,28 @@
 const dingding = require('../core/dingding');
-const Dept = require('../models/Dept');
+const Depts = require('../models/Depts');
 const Sync = require('../models/Sync');
+const config = require('../config');
+const cron = require('node-cron');
 
 class Schedule {
 	constructor () {
 		this.year = null;
 		this.month = null;
 		this.day = null;
+		this.ap = null;
 		this.deptMap = new Map();
 	}
 
 	async start () {
-		await this.initDates();
-		let sync = await Sync.findOne({ year: this.year, month: this.month, day: this.day, status: 1 });
-		if (!sync) {
-			console.log(`【开始】${this.year}-${this.month}-${this.day}部门同步开始`);
-			await this.syncDepts();
-		}
+		const task = cron.schedule(config.schedule, async () => {
+			await this.initDates();
+			let sync = await Sync.findOne({ corpId: config.corpId, year: this.year, month: this.month, day: this.day, ap: this.ap, status: 1 });
+			if (!sync) {
+				console.log(`【开始】${this.year}-${this.month}-${this.day}部门同步开始`);
+				await this.syncDepts();
+			}
+		});
+		task.start();
 	}
 
 	async initDates () {
@@ -24,6 +30,7 @@ class Schedule {
 		this.year = date.getFullYear();
 		this.month = date.getMonth() + 1;
 		this.day = date.getDate();
+		this.ap = date.getHours() > 12 ? 'P' : 'A';
 	}
 
 	async syncDepts () {
@@ -31,25 +38,29 @@ class Schedule {
 		let departments = await dingding.getDeptLists();
 		console.log('【成功】获取部门列表');
 
-		this.deptMap.set(1, '海尔金融');
+		this.deptMap.set(1, config.baseDeptName);
 		for (let department of departments) {
 			this.deptMap.set(department.id, department.name);
 		}
 		if (!departments.length) {
 			console.log('【失败】没有获取到部门列表');
-			await Sync.update({ year: this.year, month: this.month, day: this.day }, {
+			await Sync.updateOne({ corpId: config.corpId, year: this.year, month: this.month, day: this.day, ap: this.ap }, {
+				corpId: config.corpId,
 				year: this.year,
 				month: this.month,
 				day: this.day,
+				ap: this.ap,
 				status: 0
 			}, { upsert: true });
 			return;
 		}
 		try {
 			for (let department of departments) {
-				await Dept.updateOne({
+				await Depts.updateOne({
+					corpId: config.corpId,
 					deptId: department.id
 				}, {
+					corpId: config.corpId,
 					deptId: department.id,
 					deptName: department.name,
 					parentId: department.parentid,
@@ -57,19 +68,23 @@ class Schedule {
 				}, { upsert: true });
 			}
 			console.log(`【成功】${this.year}-${this.month}-${this.day}部门同步成功`);
-			console.log({ departments });
-			await Sync.updateOne({ year: this.year, month: this.month, day: this.day }, {
+			await Sync.updateOne({ corpId: config.corpId, year: this.year, month: this.month, day: this.day, ap: this.ap }, {
 				year: this.year,
+				corpId: config.corpId,
 				month: this.month,
 				day: this.day,
+				ap: this.ap,
 				status: 1
 			}, { upsert: true });
 		} catch (error) {
 			console.log(`【失败】${this.year}-${this.month}-${this.day}部门同步失败`);
-			await Sync.update({ year: this.year, month: this.month, day: this.day }, {
+			console.log({ error });
+			await Sync.updateOne({ corpId: config.corpId, year: this.year, month: this.month, day: this.day, ap: this.ap }, {
 				year: this.year,
+				corpId: config.corpId,
 				month: this.month,
 				day: this.day,
+				ap: this.ap,
 				status: 0
 			}, { upsert: true });
 		}
