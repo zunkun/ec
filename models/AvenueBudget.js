@@ -7,7 +7,6 @@ const annualBudgetSchema = new mongoose.Schema(
 		deptId: Number, // 部门deptId
 		detpName: String, // 部门名称
 		year: Number,
-		month: Number,
 		budget: Number // 单位（分）
 	}, {
 		collection: 'annualbudgets',
