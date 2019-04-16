@@ -1,8 +1,10 @@
 const dingding = require('../core/dingding');
 const Depts = require('../models/Depts');
+const Staffs = require('../models/Staffs');
 const Sync = require('../models/Sync');
 const config = require('../config');
 const cron = require('node-cron');
+const util = require('../util');
 
 class Schedule {
 	constructor () {
@@ -10,7 +12,15 @@ class Schedule {
 		this.month = null;
 		this.day = null;
 		this.ap = null;
+		this.departments = [];
 		this.deptMap = new Map();
+	}
+
+	async test () {
+		await this.initDates();
+		console.log(`【开始】${this.year}-${this.month}-${this.day}部门同步开始`);
+		await this.syncDepts();
+		await this.syncStaffs();
 	}
 
 	async start () {
@@ -19,10 +29,29 @@ class Schedule {
 			let sync = await Sync.findOne({ corpId: config.corpId, year: this.year, month: this.month, day: this.day, ap: this.ap, status: 1 });
 			if (!sync) {
 				console.log(`【开始】${this.year}-${this.month}-${this.day}部门同步开始`);
-				await this.syncDepts();
+				try {
+					await this.syncDepts();
+					await this.syncStaffs();
+					await this.updateSyncStatus(1);
+				} catch (error) {
+					console.log(`【失败】${this.year}-${this.month}-${this.day}部门同步失败`);
+					console.log({ error });
+					await this.updateSyncStatus(0);
+				}
 			}
 		});
 		task.start();
+	}
+
+	async updateSyncStatus (status) {
+		await Sync.updateOne({ corpId: config.corpId, year: this.year, month: this.month, day: this.day, ap: this.ap }, {
+			year: this.year,
+			corpId: config.corpId,
+			month: this.month,
+			day: this.day,
+			ap: this.ap,
+			status
+		}, { upsert: true });
 	}
 
 	async initDates () {
@@ -35,62 +64,66 @@ class Schedule {
 
 	async syncDepts () {
 		console.log('【开始】获取部门列表');
-		let departments = await dingding.getDeptLists();
+		this.departments = await dingding.getDeptLists();
 		console.log('【成功】获取部门列表');
 
+		if (!this.departments.length) {
+			let error = '【失败】没有获取到部门列表';
+			console.log(error);
+			return Promise.reject(error);
+		}
 		this.deptMap.set(1, config.baseDeptName);
-		for (let department of departments) {
+		for (let department of this.departments) {
 			this.deptMap.set(department.id, department.name);
 		}
-		if (!departments.length) {
-			console.log('【失败】没有获取到部门列表');
-			await Sync.updateOne({ corpId: config.corpId, year: this.year, month: this.month, day: this.day, ap: this.ap }, {
+		for (let department of this.departments) {
+			await Depts.updateOne({
 				corpId: config.corpId,
-				year: this.year,
-				month: this.month,
-				day: this.day,
-				ap: this.ap,
-				status: 0
-			}, { upsert: true });
-			return;
-		}
-		try {
-			for (let department of departments) {
-				await Depts.updateOne({
-					corpId: config.corpId,
-					deptId: department.id
-				}, {
-					corpId: config.corpId,
-					deptId: department.id,
-					deptName: department.name,
-					parentId: department.parentid,
-					parentName: this.deptMap.get(department.parentid) || ''
-				}, { upsert: true });
-			}
-			console.log(`【成功】${this.year}-${this.month}-${this.day}部门同步成功`);
-			await Sync.updateOne({ corpId: config.corpId, year: this.year, month: this.month, day: this.day, ap: this.ap }, {
-				year: this.year,
+				deptId: department.id
+			}, {
 				corpId: config.corpId,
-				month: this.month,
-				day: this.day,
-				ap: this.ap,
-				status: 1
-			}, { upsert: true });
-		} catch (error) {
-			console.log(`【失败】${this.year}-${this.month}-${this.day}部门同步失败`);
-			console.log({ error });
-			await Sync.updateOne({ corpId: config.corpId, year: this.year, month: this.month, day: this.day, ap: this.ap }, {
-				year: this.year,
-				corpId: config.corpId,
-				month: this.month,
-				day: this.day,
-				ap: this.ap,
-				status: 0
+				deptId: department.id,
+				deptName: department.name,
+				parentId: department.parentid,
+				parentName: this.deptMap.get(department.parentid) || ''
 			}, { upsert: true });
 		}
+		return Promise.resolve();
+	}
+
+	async syncStaffs () {
+		let promiseArray = [];
+		for (let department of this.departments) {
+			let promise = this.syncDeptStaffs(department.id);
+			await util.wait(200);
+			promiseArray.push(promise);
+		}
+		return Promise.all(promiseArray);
+	}
+
+	async syncDeptStaffs (deptId) {
+		console.log(`【开始】获取部门 ${deptId} ${this.deptMap.get(deptId)} 人员列表`);
+		if (!deptId) return Promise.resolve();
+
+		let userLists = await dingding.getDeptUsers(deptId);
+		console.log(`【开始】保存部门 ${deptId} ${this.deptMap.get(deptId)} 人员列表`);
+		let promiseArray = [];
+		for (let user of userLists) {
+			let promise = Staffs.updateOne({
+				userId: user.userid
+			}, {
+				userId: user.userid,
+				userName: user.name,
+				deptId: deptId,
+				deptName: this.deptMap.get(deptId) || ''
+			}, { upsert: true });
+			promiseArray.push(promise);
+		}
+		return Promise.all(promiseArray);
 	}
 }
 
 const schedule = new Schedule();
 
-module.exports = schedule.start();
+// module.exports = schedule.start();
+module.exports = schedule.test();

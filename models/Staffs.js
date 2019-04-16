@@ -4,8 +4,8 @@ const mongoose = require('mongoose');
 // 员工schema
 const staffSchema = new mongoose.Schema(
 	{
-		staffId: String,
-		staffName: String,
+		userId: String,
+		userName: String,
 		deptId: String,
 		deptName: String
 	}, {
@@ -14,6 +14,6 @@ const staffSchema = new mongoose.Schema(
 		timestamps: { createdAt: 'createTime', updatedAt: 'updateTime' }
 	});
 
-const staff = mongodb.model('staffs', staffSchema);
+const Staffs = mongodb.model('staffs', staffSchema);
 
-module.exports = staff;
+module.exports = Staffs;
