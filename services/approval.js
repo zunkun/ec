@@ -43,7 +43,7 @@ class ApprovalService {
 			await btrip.deleteApproval(approvalData);
 			await Approvals.updateOne({ approvalId }, { status: 3, cancelTime: new Date(), cancelUser: approvalUser });
 		} catch (error) {
-
+			return Promise.reject(error);
 		}
 	}
 }

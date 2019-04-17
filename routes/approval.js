@@ -94,7 +94,7 @@ router.delete('/:id', async (ctx, next) => {
 
 	let approval = await Approvals.findOne({
 		approvalId,
-		status: 2
+		status: 1 // 只删除写入商旅且没有取消的审批单
 	});
 	if (!approval) {
 		ctx.body = ServiceResult.getFail(`不存在审批单号 ${approvalId}`, 404);
