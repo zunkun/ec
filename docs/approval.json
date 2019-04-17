@@ -1,0 +1,32 @@
+{
+  "userId": "4508346521365159",
+  "userName": "刘遵坤",
+  "deptId": 93995673,
+  "deptName": "悦门户及流程平台研发中心",
+  "approvalId": "H20190417001",
+  "trip": {
+    "day": 2,
+    "title": "杭州出差",
+    "cause": "杭州出差"
+  },
+  "approvalUser": {
+    "userId": "03020644054858",
+    "userName":"李心想"
+  },
+  "travelers": [
+    {
+      "userId": "4508346521365159",
+      "userName": "刘遵坤"
+    }
+  ],
+  "itineraries": [
+    {
+      "tripWay": 1,
+      "trafficType": 1,
+      "depCity": "上海",
+      "arrCity": "杭州",
+      "depDate": "2019-04-18",
+      "arrDate": "2019-04-18"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 const ServiceResult = require('../util/ServiceResult');
-const Dept = require('../models/Dept');
+const Depts = require('../models/Depts');
 
 const Router = require('koa-router');
 const router = new Router();
@@ -17,7 +17,7 @@ router.prefix('/api/depts');
  * @apiSuccess {Boolean} success 是否正确返回，true 正确, false错误
  * @apiSuccess {Object} data 正确返回时的数据
  * @apiSuccess {Number} data.year 年份
- * @apiSuccess {Array{Object}} data.depts 部门列表
+ * @apiSuccess {Object[]} data.depts 部门列表
  * @apiSuccess {Number}  data.depts.deptId 部门deptId
  * @apiSuccess {String}  data.depts.deptName 部门名称
  * @apiSuccess {Number}  data.depts.parentId 父部门deptId
@@ -25,7 +25,7 @@ router.prefix('/api/depts');
  */
 router.get('/', async (ctx, next) => {
 	let year = Number(ctx.query.year) || (new Date()).getFullYear();
-	let depts = await Dept.find({ year });
+	let depts = await Depts.find({ year });
 	let data = { year, depts: [] };
 
 	for (let dept of depts) {

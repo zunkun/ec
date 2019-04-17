@@ -4,7 +4,8 @@
   "description": "海尔出差费控",
   "main": "bin/www",
   "scripts": {
-    "start": "node bin/www"
+    "start": "node bin/www",
+    "dev": "./node_modules/.bin/cross-env NODE_ENV=dev ./node_modules/.bin/nodemon bin/www"
   },
   "repository": {
     "type": "git",
@@ -38,6 +39,7 @@
     "koa-session": "^5.10.1",
     "koa-static": "^5.0.0",
     "log4js": "^4.1.0",
+    "moment": "^2.24.0",
     "mongoose": "^5.5.0",
     "node-cron": "^2.0.3",
     "node-windows": "^0.1.14",

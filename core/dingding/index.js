@@ -31,12 +31,12 @@ class Dingding {
 	 * @param {Number} id 根部门id
 	 * @param {Boolean} fetch_child 是否遍历所有子部门
 	 */
-	async getDeptLists (id = 1, fetch_child = true) {
+	async getDeptLists (options = { id: 1, fetch_child: false }) {
 		let uri = `${config.dingBaseUri}/department/list`;
 		let data = await rp.get(uri, {
 			qs: {
-				id,
-				fetch_child,
+				id: options.id || 1,
+				fetch_child: options.fetch_child,
 				access_token: await this.getAccessToken()
 			},
 			json: true

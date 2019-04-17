@@ -25,13 +25,13 @@ router.prefix('/api/budgets');
  * @apiSuccess {Number} data.deptId 部门deptId
  * @apiSuccess {String} data.deptName 部门名称
  * @apiSuccess {Number} data.budget 年度预算，单位：分
- * @apiSuccess {Array{Object}} data.months 月度预算列表
+ * @apiSuccess {Object[]} data.months 月度预算列表
  * @apiSuccess {Number} data.months.year 年
  * @apiSuccess {Number} data.months.month 月份
  * @apiSuccess {Number} data.months.budget 月度预算，单位：分
  * @apiSuccess {Number} data.months.expense 月份消费，单位：分
  * @apiSuccess {Number} data.months.balance 月份余额，单位：分
- * @apiSuccess {Array{Object}} data.months.catalogs 月度具体类别预算详细
+ * @apiSuccess {Object[]} data.months.catalogs 月度具体类别预算详细
  * @apiSuccess {String} data.months.catalogs.id 月度具体类别Id
  * @apiSuccess {String} data.months.catalogs.name 月度具体类别名称
  * @apiSuccess {Number} data.months.catalogs.budget 月度具体类别预算，单位：分
@@ -98,12 +98,12 @@ router.get('/', async (ctx, next) => {
  * @apiParam {Number} year 年份,比如 2019
  * @apiParam {Number} deptId 钉钉部门deptId
  * @apiParam {Number} budget 部门总预算,单位 分
- * @apiParam {Array{Object}} months 部门月度预算列表
+ * @apiParam {Object[]} months 部门月度预算列表
  * @apiParam {Number} months.month 月份
  * @apiParam {Number} months.budget 月度预算
  * @apiParam {Number} months.expense 月份消费
  * @apiParam {Number} months.balance 月份余额
- * @apiParam {Array{Object}} months.catalogs 月度具体类别预算详细
+ * @apiParam {Object[]} months.catalogs 月度具体类别预算详细
  * @apiParam {String} months.catalogs.id 月度具体类别Id
  * @apiParam {String} months.catalogs.name 月度具体类别名称
  * @apiParam {Number} months.catalogs.budget 月度具体类别预算

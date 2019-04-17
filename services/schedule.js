@@ -14,16 +14,18 @@ class Schedule {
 		this.ap = null;
 		this.departments = [];
 		this.deptMap = new Map();
+		this.ecDeptMap = new Map(); // 每次启动时候维护一次
 	}
 
 	async test () {
-		await this.initDates();
 		console.log(`【开始】${this.year}-${this.month}-${this.day}部门同步开始`);
+		// await this.initEcDept();
 		await this.syncDepts();
 		await this.syncStaffs();
 	}
 
 	async start () {
+		await this.initEcDept();
 		const task = cron.schedule(config.schedule, async () => {
 			await this.initDates();
 			let sync = await Sync.findOne({ corpId: config.corpId, year: this.year, month: this.month, day: this.day, ap: this.ap, status: 1 });
@@ -64,19 +66,25 @@ class Schedule {
 
 	async syncDepts () {
 		console.log('【开始】获取部门列表');
-		this.departments = await dingding.getDeptLists();
+		this.departments = await dingding.getDeptLists({ fetch_child: true });
 		console.log('【成功】获取部门列表');
-
 		if (!this.departments.length) {
 			let error = '【失败】没有获取到部门列表';
 			console.log(error);
 			return Promise.reject(error);
 		}
-		this.deptMap.set(1, config.baseDeptName);
+		this.deptMap.set(1, {
+			deptName: config.baseDeptName,
+			parentId: 1
+		});
 		for (let department of this.departments) {
-			this.deptMap.set(department.id, department.name);
+			this.deptMap.set(department.id, {
+				deptName: department.name,
+				parentId: department.parentid
+			});
 		}
 		for (let department of this.departments) {
+			this.setEcDept(department.id, department.parentid);
 			await Depts.updateOne({
 				corpId: config.corpId,
 				deptId: department.id
@@ -85,10 +93,49 @@ class Schedule {
 				deptId: department.id,
 				deptName: department.name,
 				parentId: department.parentid,
-				parentName: this.deptMap.get(department.parentid) || ''
+				parentName: this.deptMap.get(department.parentid).deptName || '',
+				ecDept: this.ecDeptMap.get(department.id)
 			}, { upsert: true });
 		}
 		return Promise.resolve();
+	}
+
+	async initEcDept () {
+		let depts = await Depts.find({});
+		for (let dept of depts) {
+			this.deptMap.set(dept.deptId, {
+				deptName: dept.deptName,
+				parentId: dept.parentId
+			});
+		}
+
+		this.deptMap.set(1, {
+			deptName: config.baseDeptName,
+			parentId: 1
+		});
+
+		for (let dept of depts) {
+			this.setEcDept(dept.deptId, dept.parentId);
+		}
+	}
+
+	setEcDept (deptId, parentId) {
+		if (parentId === 1) {
+			this.ecDeptMap.set(deptId, {
+				deptId,
+				deptName: this.deptMap.get(deptId).deptName
+			});
+			return;
+		}
+		if (this.deptMap.get(parentId).parentId === 1) {
+			this.ecDeptMap.set(deptId, {
+				deptId: parentId,
+				deptName: this.deptMap.get(parentId).deptName
+			});
+			return;
+		}
+
+		return this.setEcDept(deptId, this.deptMap.get(parentId).parentId);
 	}
 
 	async syncStaffs () {
@@ -102,11 +149,11 @@ class Schedule {
 	}
 
 	async syncDeptStaffs (deptId) {
-		console.log(`【开始】获取部门 ${deptId} ${this.deptMap.get(deptId)} 人员列表`);
+		console.log(`【开始】获取部门 ${deptId} ${this.deptMap.get(deptId).deptName} 人员列表`);
 		if (!deptId) return Promise.resolve();
 
 		let userLists = await dingding.getDeptUsers(deptId);
-		console.log(`【开始】保存部门 ${deptId} ${this.deptMap.get(deptId)} 人员列表`);
+		console.log(`【开始】保存部门 ${deptId} ${this.deptMap.get(deptId).deptName} 人员列表`);
 		let promiseArray = [];
 		for (let user of userLists) {
 			let promise = Staffs.updateOne({
@@ -115,7 +162,7 @@ class Schedule {
 				userId: user.userid,
 				userName: user.name,
 				deptId: deptId,
-				deptName: this.deptMap.get(deptId) || ''
+				deptName: this.deptMap.get(deptId).deptName || ''
 			}, { upsert: true });
 			promiseArray.push(promise);
 		}
@@ -125,5 +172,5 @@ class Schedule {
 
 const schedule = new Schedule();
 
-// module.exports = schedule.start();
-module.exports = schedule.test();
+module.exports = schedule.start();
+// module.exports = schedule.test();

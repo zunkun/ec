@@ -14,7 +14,11 @@ const deptSchema = new mongoose.Schema(
 		deptName: String,
 		parentId: Number,
 		parentName: String,
-		managers: [ managerSchema ]
+		managers: [ managerSchema ],
+		ecDept: { // 费用由那个部门出
+			deptId: Number,
+			deptName: String
+		}
 	}, {
 		collection: 'depts',
 		autoIndex: true,

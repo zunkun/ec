@@ -25,10 +25,26 @@ app.on('error', function (err) {
 
 app.use(require('koa-static')(path.join(__dirname, '/public')));
 
-let files = fs.readdirSync('./routes');
-files.map(item => {
-	const router = require(`./routes/${item.substr(0, item.indexOf('.'))}`);
-	app.use(router.routes());
-});
+/**
+ * 初始化路由
+ */
+function initRouters (pathRoute) {
+	let routersPath = path.join(__dirname, 'routes');
+	let files = fs.readdirSync(routersPath);
+
+	files.forEach(file => {
+		let stat = fs.lstatSync(path.join(routersPath, file));
+		if (stat.isDirectory()) {
+			initRouters(pathRoute ? path.join(pathRoute, file) : file);
+		} else {
+			if (file.endsWith('.js')) {
+				let _router = require(path.join(routersPath, file));
+				app.use(_router.routes());
+				app.use(_router.allowedMethods());
+			}
+		}
+	});
+}
+initRouters();
 
 module.exports = app;
