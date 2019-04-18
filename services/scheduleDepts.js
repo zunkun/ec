@@ -4,7 +4,7 @@ const Staffs = require('../models/Staffs');
 const Sync = require('../models/Sync');
 const config = require('../config');
 const cron = require('node-cron');
-const util = require('../util');
+const util = require('../core/util');
 
 class ScheduleDepts {
 	constructor () {

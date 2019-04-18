@@ -1,7 +1,7 @@
-const ServiceResult = require('../util/ServiceResult');
+const ServiceResult = require('../core/ServiceResult');
 const Approvals = require('../models/Approvals');
 
-const util = require('../util');
+const util = require('../core/util');
 const approvalService = require('../services/approval');
 
 const Router = require('koa-router');

@@ -1,7 +1,7 @@
 
 const rp = require('request-promise');
 const config = require('../../config');
-const util = require('../../util');
+const util = require('../util');
 class Dingding {
 	constructor () {
 		this.token = {};

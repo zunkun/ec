@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const util = require('../util');
+const util = require('../core/util');
 const mongodb = require('../core/db/mongodb');
 const catalogNames = require('../config/constants').catalogs; ;
 // 费用分类

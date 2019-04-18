@@ -6,7 +6,7 @@ const VehicleOrder = require('../models/VehicleOrder');
 const Sync = require('../models/Sync');
 const config = require('../config');
 const cron = require('node-cron');
-const util = require('../util');
+const util = require('../core/util');
 const constants = require('../config/constants');
 const btripPaths = constants.btrip;
 

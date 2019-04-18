@@ -1,8 +1,8 @@
 const AvenueBudget = require('../models/AvenueBudget');
 const MonthlyBudget = require('../models/MonthlyBudget');
 const Depts = require('../models/Depts');
-const ServiceResult = require('../util/ServiceResult');
-const util = require('../util');
+const ServiceResult = require('../core/ServiceResult');
+const util = require('../core/util');
 
 const Router = require('koa-router');
 const router = new Router();
