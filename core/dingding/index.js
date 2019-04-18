@@ -90,7 +90,6 @@ class Dingding {
 	async btrip (queryPath, rq) {
 		let accessToken = await this.getAccessToken();
 		let uri = `${config.topBaseUri}${queryPath}?access_token=${accessToken}`;
-		console.log({ uri });
 		let data = await rp({
 			uri,
 			method: 'POST',

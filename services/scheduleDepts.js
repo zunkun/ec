@@ -6,7 +6,7 @@ const config = require('../config');
 const cron = require('node-cron');
 const util = require('../util');
 
-class Schedule {
+class ScheduleDepts {
 	constructor () {
 		this.year = null;
 		this.month = null;
@@ -26,29 +26,35 @@ class Schedule {
 
 	async start () {
 		await this.initEcDept();
-		const task = cron.schedule(config.schedule, async () => {
-			await this.initDates();
-			let sync = await Sync.findOne({ corpId: config.corpId, year: this.year, month: this.month, day: this.day, ap: this.ap, status: 1 });
-			if (!sync) {
-				console.log(`【开始】${this.year}-${this.month}-${this.day}部门同步开始`);
-				try {
-					await this.syncDepts();
-					await this.syncStaffs();
-					await this.updateSyncStatus(1);
-				} catch (error) {
-					console.log(`【失败】${this.year}-${this.month}-${this.day}部门同步失败`);
-					console.log({ error });
-					await this.updateSyncStatus(0);
-				}
-			}
+		await this.syncService(); // 系统启动时检查是否已经通不过了，如果没有同步，则同步
+		const task = cron.schedule(config.deptCron, async () => {
+			await this.syncService();
 		});
 		task.start();
 	}
 
+	async syncService () {
+		await this.initDates();
+		let sync = await Sync.findOne({ corpId: config.corpId, type: 1, year: this.year, month: this.month, day: this.day, ap: this.ap, status: 1 });
+		if (!sync) {
+			console.log(`【开始】${this.year}-${this.month}-${this.day}部门同步开始`);
+			try {
+				await this.syncDepts();
+				await this.syncStaffs();
+				await this.updateSyncStatus(1);
+			} catch (error) {
+				console.log(`【失败】${this.year}-${this.month}-${this.day}部门同步失败`);
+				console.log({ error });
+				await this.updateSyncStatus(0);
+			}
+		}
+	}
+
 	async updateSyncStatus (status) {
 		await Sync.updateOne({ corpId: config.corpId, year: this.year, month: this.month, day: this.day, ap: this.ap }, {
-			year: this.year,
 			corpId: config.corpId,
+			type: 1,
+			year: this.year,
 			month: this.month,
 			day: this.day,
 			ap: this.ap,
@@ -170,7 +176,7 @@ class Schedule {
 	}
 }
 
-const schedule = new Schedule();
+const scheduleDepts = new ScheduleDepts();
 
-module.exports = schedule.start();
+module.exports = scheduleDepts.start();
 // module.exports = schedule.test();

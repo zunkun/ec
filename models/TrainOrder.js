@@ -7,14 +7,14 @@ const priceSchema = new mongoose.Schema({
 	category: String, // 	交易类目
 	type: Number, // 	资金流向:1:支出，2:收入
 	price: Number, // 价格 100.0
-	gmt_create: Date, // 流水创建时间
-	alipay_trade_no: String // 支付流水号
+	gmt_create: Date // 流水创建时间
 });
 
 const costCenterSchema = new mongoose.Schema({
+	id: String,
 	number: String, // 成本中心编号
 	name: String, // 成本中心名称
-	corp_id: String //	企业id
+	corpid: String //	企业id
 });
 
 // 发票信息对象schema
@@ -26,15 +26,15 @@ const invoiceSchema = new mongoose.Schema({
 // 商旅火车票订单列表 参考alitrip.btrip.train.order.search
 const TrainOrderSchema = new mongoose.Schema(
 	{
-		train_order_id: Number, // 火车票订单id
+		id: Number, // 火车票订单id
 		gmt_create: Date, // 创建时间
 		gmt_modified: Date, // 更新时间
-		corp_id: String, // 企业id
+		corpid: String, // 企业id
 		corp_name: String, // 企业名称
-		user_id: String, // 用户id
+		userid: String, // 用户id
 		user_name: String, 	// 用户名称
-		depart_id: String, // 部门id
-		depart_name: String, // 部门名称
+		deptid: String, // 部门id
+		dept_name: String, // 部门名称
 		apply_id: String, // 申请单id
 		contact_name: String, // 联系人名称
 		contact_phone: String, // 联系人电话
@@ -49,7 +49,7 @@ const TrainOrderSchema = new mongoose.Schema(
 		run_time: String, // 运行时长
 		dep_city: String, // 出发城市
 		arr_city: String, // 到达城市
-		ticket_no12306: String, // 12306票号
+		ticket_no_12306: String, // 12306票号
 		rider_name: String, // 乘客姓名
 		ticket_count: Number, 	// 	票的数量
 

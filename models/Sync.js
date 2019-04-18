@@ -5,11 +5,12 @@ const mongoose = require('mongoose');
 const syncSchema = new mongoose.Schema(
 	{
 		corpId: String,
-		year: Number,
-		month: Number,
-		day: Number,
+		year: String,
+		month: String,
+		day: String,
 		ap: String,
 		deptId: Number,
+		type: Number, // 1-通讯录同步 2-机票 3-火车票 4-用车 5-酒店
 		status: Number // 0-FAIL 1-SUCCESS
 	}, {
 		collection: 'syncs',

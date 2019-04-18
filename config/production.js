@@ -20,5 +20,6 @@ module.exports = {
 	agentid: '246364010',
 	appkey: 'dingzjzljz7xyeqdqrcg',
 	appsecret: 'G7AA-I0BtNrbY7vOGYw64if1UqQnaKCaIyPBMZ2hqHE6MTw-9zBzhrvxhMAqVsEr',
-	schedule: '0 0 8,18 * * *'
+	deptCron: '0 0 6,12 * * *',
+	btripCron: '0 0 7,12,18 * * *'
 };
