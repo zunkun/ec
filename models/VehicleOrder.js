@@ -14,6 +14,9 @@ const priceSchema = new mongoose.Schema({
 const VehicleOrderSchema = new mongoose.Schema(
 	{
 		id: Number, // 火车票订单id
+		year: String,
+		month: String,
+		day: String,
 		gmt_create: Date, // 创建时间
 		gmt_modified: Date, // 更新时间
 		corpid: String, // 企业id
@@ -54,7 +57,7 @@ const VehicleOrderSchema = new mongoose.Schema(
 		pay_time: Date, // 支付时间
 
 		price_info_list: [ priceSchema ], // 价目信息
-
+		total_fee: Number,
 		cost_center_id: String, // 	商旅成本中心id
 		cost_center_number: String, // 成本中心编号
 		cost_center_name: String, // 	成本中心名称

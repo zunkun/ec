@@ -8,7 +8,7 @@ const router = new Router();
 router.prefix('/api/catalogs');
 
 /**
- * @api {get} /ec/api/catalogs/ 获取预算分类
+ * @api {get} /api/catalogs/ 获取预算分类
  * @apiName get-catalogs
  * @apiDescription 获取预算分类列表 【需要登录】
  * @apiGroup 预算分类
@@ -39,7 +39,7 @@ router.get('/', async (ctx, next) => {
 });
 
 /**
- * @api {post} /ec/api/catalogs/ 新增预算分类
+ * @api {post} /api/catalogs/ 新增预算分类
  * @apiName create-catalogs
  * @apiDescription 新增预算分类 【需要登录】
  * @apiGroup 预算分类
@@ -75,7 +75,7 @@ router.post('/', async (ctx, next) => {
 });
 
 /**
- * @api {put} /ec/api/catalogs/:id 修改预算分类
+ * @api {put} /api/catalogs/:id 修改预算分类
  * @apiName put-catalogs
  * @apiDescription 修改预算分类 【需要登录】
  * @apiGroup 预算分类
@@ -119,7 +119,7 @@ router.put('/:id', async (ctx, next) => {
 });
 
 /**
- * @api {delete} /ec/api/catalogs/:id 删除预算分类
+ * @api {delete} /api/catalogs/:id 删除预算分类
  * @apiName delete-catalogs
  * @apiDescription 删除预算分类，注意：如果已经开始使用该分类，请调整预算列表不再使用该分类，才可以删除 【需要登录】
  * @apiGroup 预算分类

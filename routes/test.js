@@ -1,10 +1,10 @@
 const Router = require('koa-router');
 const router = new Router();
 
-router.prefix('/api');
+router.prefix('/api/test');
 
 /**
- * @api {get} /api/test api测试
+ * @api {get} /api/test/connect api测试
  * @apiName apiTest
  * @apiDescription api连接测试，接口返回结果包括 errcode,errmsg,success,data四个字段，以后API只介绍data结果
  * @apiGroup API接口
@@ -13,7 +13,7 @@ router.prefix('/api');
  * @apiSuccess {Boolean} success 是否正确返回，true 正确, false错误
  * @apiSuccess {Object} data 正确返回时的数据
  */
-router.get('/test', async (ctx, next) => {
+router.get('/connect', async (ctx, next) => {
 	ctx.body = {};
 	await next();
 });

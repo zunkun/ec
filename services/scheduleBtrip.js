@@ -2,6 +2,7 @@ const dingding = require('../core/dingding');
 const FlightOrder = require('../models/FlightOrder');
 const TrainOrder = require('../models/TrainOrder');
 const VehicleOrder = require('../models/VehicleOrder');
+const HotelOrder = require('../models/HotelOrder');
 
 const Sync = require('../models/Sync');
 const config = require('../config');
@@ -55,6 +56,18 @@ class ScheduleBtrip {
 		}
 	}
 
+	computeFee (priceList) {
+		let total = 0;
+		for (let priceInfo of priceList) {
+			if (priceInfo.type === 1) {
+				total += priceInfo.price;
+			} else {
+				total -= priceInfo.price;
+			}
+		}
+		return total;
+	}
+
 	/**
 	 *獲取商旅歷史數據
 	 * @param {Object} date 日期對象 {year, month, day}
@@ -88,6 +101,10 @@ class ScheduleBtrip {
 		} else {
 			console.log(`【机票】开始保存${year}-${month}-${day} ${config.corpName}  机票信息`);
 			for (let flight of resData) {
+				flight.year = year;
+				flight.month = month;
+				flight.day = day;
+				flight.total_fee = this.computeFee(flight.price_info_list);
 				await FlightOrder.updateMany({ apply_id: flight.apply_id, corpid: flight.corpid }, flight, { upsert: true });
 			}
 		}
@@ -127,6 +144,10 @@ class ScheduleBtrip {
 		} else {
 			console.log(`【火车】开始保存${year}-${month}-${day} ${config.corpName}  火车票信息`);
 			for (let train of resData) {
+				train.year = year;
+				train.month = month;
+				train.day = day;
+				train.total_fee = this.computeFee(train.price_info_list);
 				await TrainOrder.updateMany({ apply_id: train.apply_id, corpid: train.corpid }, train, { upsert: true });
 			}
 		}
@@ -166,10 +187,14 @@ class ScheduleBtrip {
 		} else {
 			console.log(`【用车】开始保存${year}-${month}-${day} ${config.corpName}  用车信息`);
 			for (let vehicle of resData) {
+				vehicle.year = year;
+				vehicle.month = month;
+				vehicle.day = day;
+				vehicle.total_fee = this.computeFee(vehicle.price_info_list);
 				await VehicleOrder.updateMany({ apply_id: vehicle.apply_id, corpid: vehicle.corpid }, vehicle, { upsert: true });
 			}
 		}
-		await Sync.updateOne({ year, month, day, type: 3 }, { year, month, day, type: 3, status: 1 }, { upsert: true });
+		await Sync.updateOne({ year, month, day, type: 3 }, { year, month, day, type: 4, status: 1 }, { upsert: true });
 	}
 
 	/**
@@ -204,11 +229,15 @@ class ScheduleBtrip {
 			console.log(`【酒店】${year}-${month}-${day} ${config.corpName}  没有酒店信息`);
 		} else {
 			console.log(`【酒店】开始保存${year}-${month}-${day} ${config.corpName}  用车信息`);
-			for (let vehicle of resData) {
-				await VehicleOrder.updateMany({ apply_id: vehicle.apply_id, corpid: vehicle.corpid }, vehicle, { upsert: true });
+			for (let hotel of resData) {
+				hotel.year = year;
+				hotel.month = month;
+				hotel.day = day;
+				hotel.total_fee = this.computeFee(hotel.price_info_list);
+				await HotelOrder.updateMany({ apply_id: hotel.apply_id, corpid: hotel.corpid }, hotel, { upsert: true });
 			}
 		}
-		await Sync.updateOne({ year, month, day, type: 3 }, { year, month, day, type: 3, status: 1 }, { upsert: true });
+		await Sync.updateOne({ year, month, day, type: 3 }, { year, month, day, type: 5, status: 1 }, { upsert: true });
 	}
 
 	/**

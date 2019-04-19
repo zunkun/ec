@@ -27,6 +27,9 @@ const invoiceSchema = new mongoose.Schema({
 const hotelOrderSchema = new mongoose.Schema(
 	{
 		id: Number, // 酒店订单id
+		year: String,
+		month: String,
+		day: String,
 		gmt_create: Date, // 创建时间
 		gmt_modified: Date, // 更新时间
 		corpid: String, // 企业id

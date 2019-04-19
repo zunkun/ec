@@ -10,13 +10,12 @@ const router = new Router();
 router.prefix('/api/budgets');
 
 /**
- * @api {get} /ec/api/budgets/ 获取年度预算
+ * @api {get} /api/budgets/?year=:year&deptId=:deptId 获取年度预算
  * @apiName get-yearly-budget
  * @apiDescription 获取年度预算 【需要登录】
- * @apiGroup 预算接口
+ * @apiGroup 预算管理
  * @apiParam {Number} year 年份,比如 2019
  * @apiParam {Number} [deptId] 需要查询的部门deptId,该deptId为钉钉部门deptId
- * @apiSampleRequest /ec/api/budgets/?year=2019&deptId=20182232
  * @apiSuccess {Number} errcoce 正确时为0，错误时为错误代码
  * @apiSuccess {String} errmsg 错误提示，正确返回为空字符
  * @apiSuccess {Boolean} success 是否正确返回，true 正确, false错误
@@ -91,10 +90,10 @@ router.get('/', async (ctx, next) => {
 });
 
 /**
- * @api {post} /ec/api/budgets/dept/:deptId/year/:year 保存年度预算
+ * @api {post} /api/budgets/ 保存年度预算
  * @apiName create-yearly-budget
  * @apiDescription 保存年度预算 【需要登录】
- * @apiGroup 预算接口
+ * @apiGroup 预算管理
  * @apiParam {Number} year 年份,比如 2019
  * @apiParam {Number} deptId 钉钉部门deptId
  * @apiParam {Number} budget 部门总预算,单位 分
@@ -114,16 +113,20 @@ router.get('/', async (ctx, next) => {
  * @apiSuccess {Boolean} success 是否正确返回，true 正确, false错误
  * @apiSuccess {Object} data 正确返回时的数据
  */
-router.post('/dept/:deptId/year/:year', async (ctx, next) => {
-	const body = ctx.request.body;
+router.post('/', async (ctx, next) => {
+	let { year, deptId, months, budget } = ctx.request.body;
 	const catalogMap = await util.getCatalogMap();
-	let year = Number(ctx.params.year);
-	let deptId = Number(ctx.params.deptId);
+	year = Number(year);
+	deptId = Number(deptId);
+
+	if (!year || !deptId) {
+		ctx.body = ServiceResult.getFail('参数不正确,请参考预算预算参数表', 404);
+		return;
+	}
 
 	let dept = await Depts.findOne({ deptId }) || {};
 
-	let months = body.months;
-	if (!body.budget || !months || !(months instanceof Array)) {
+	if (!budget || !months || !(months instanceof Array)) {
 		ctx.body = ServiceResult.getFail('参数不正确,请参考预算预算参数表', 404);
 		return;
 	}
@@ -150,7 +153,7 @@ router.post('/dept/:deptId/year/:year', async (ctx, next) => {
 			});
 		}
 		let _budget = {
-			deptId: Number(body.deptId),
+			deptId,
 			deptName: dept.deptName || '',
 			year,
 			month: month.month,
@@ -168,7 +171,7 @@ router.post('/dept/:deptId/year/:year', async (ctx, next) => {
 	}
 
 	try {
-		console.log(`【开始】更新 ${body.deptId} ${dept.deptName}年度预算`);
+		console.log(`【开始】更新 $.deptId} ${dept.deptName}年度预算`);
 		await AvenueBudget.updateOne({
 			deptId,
 			year
@@ -176,10 +179,10 @@ router.post('/dept/:deptId/year/:year', async (ctx, next) => {
 			deptId,
 			year,
 			deptName: dept.deptName || '',
-			budget: body.budget
+			budget
 		});
 
-		console.log(`【开始】更新 ${body.deptId} ${dept.deptName}月份预算`);
+		console.log(`【开始】更新 ${deptId} ${dept.deptName}月份预算`);
 
 		for (let budget of monthlyBudgets) {
 			await MonthlyBudget.updateOne({
@@ -190,17 +193,17 @@ router.post('/dept/:deptId/year/:year', async (ctx, next) => {
 		}
 		ctx.body = ServiceResult.getSuccess({});
 	} catch (error) {
-		console.log(`【失败】更新 ${body.deptId} ${dept.deptName}月份预算`, error);
-		ctx.body = ServiceResult.getFail(`更新 ${body.deptId} ${dept.deptName}预算失败`, 500);
+		console.log(`【失败】更新 ${deptId} ${dept.deptName}月份预算`, error);
+		ctx.body = ServiceResult.getFail(`更新 ${deptId} ${dept.deptName}预算失败`, 500);
 	}
 	await next();
 });
 
 /**
- * @api {delete} /ec/api/budgets/dept/:deptId/year/:year 删除部门年度预算
+ * @api {delete} /api/budgets/ 删除部门年度预算
  * @apiName delete-yearly-budget
  * @apiDescription 删除部门年度预算 【需要登录】
- * @apiGroup 预算接口
+ * @apiGroup 预算管理
  * @apiParam {Number} year 年份,比如 2019
  * @apiParam {Number} deptId 钉钉部门deptId
  * @apiSuccess {Number} errcoce 正确时为0，错误时为错误代码
@@ -209,8 +212,9 @@ router.post('/dept/:deptId/year/:year', async (ctx, next) => {
  * @apiSuccess {Object} data 正确返回时的数据
  */
 router.delete('/dept/:deptId/year/:year', async (ctx, next) => {
-	let year = Number(ctx.params.year);
-	let deptId = Number(ctx.params.deptId);
+	let { year, deptId } = ctx.request.body;
+	year = Number(year);
+	deptId = Number(deptId);
 	try {
 		console.log(`【开始】删除 ${deptId} ${year}年年度预算`);
 		await AvenueBudget.deleteMany({ year, deptId });

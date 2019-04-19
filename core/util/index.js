@@ -1,5 +1,5 @@
-const Catalogs = require('../models/Catalogs');
-const Staffs = require('../models/Staffs');
+const Catalogs = require('../../models/Catalogs');
+const Staffs = require('../../models/Staffs');
 
 class Util {
 	genCatalogId () {

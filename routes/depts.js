@@ -7,7 +7,7 @@ const router = new Router();
 router.prefix('/api/depts');
 
 /**
- * @api {get} /api/depts/ 获取部门列表
+ * @api {get} /api/depts/?year=:year 获取部门列表
  * @apiName get-dept-lists
  * @apiDescription 获取部门列表,即需要做费控的部门列表，此列表只是钉钉部门的一级部门 【需要登录】
  * @apiGroup 部门接口
