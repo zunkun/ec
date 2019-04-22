@@ -1,8 +1,6 @@
 const XLSX = require('xlsx');
 const fs = require('fs');
 const path = require('path');
-const _ = require('lodash');
-const moment = require('moment');
 const config = require('../config');
 const Files = require('../models/Files');
 const DeptGroups = require('../models/DeptGroups');
@@ -60,18 +58,18 @@ class BudgetFileService {
 		}
 	}
 
-	async getGroupCode (group) {
-		if (this.groupCodeMap.has(group)) {
-			return this.groupCodeMap.get(group);
+	async getGroupCode (name) {
+		if (this.groupCodeMap.has(name)) {
+			return this.groupCodeMap.get(name);
 		}
-		let deptGroup = await DeptGroups.findOne({ group, corpId: config.corpId });
+		let deptGroup = await DeptGroups.findOne({ name, corpId: config.corpId });
 		if (deptGroup) {
-			this.groupCodeMap.set(group, deptGroup.code);
+			this.groupCodeMap.set(name, deptGroup.code);
 			return deptGroup.code;
 		}
 		let code = `Y${util.genCode()}`;
-		deptGroup = await DeptGroups.create({ corpId: config.corpId, year: this.year, code, group });
-		this.groupCodeMap.set(group, code);
+		deptGroup = await DeptGroups.create({ corpId: config.corpId, year: this.year, code, name });
+		this.groupCodeMap.set(name, code);
 		return code;
 	}
 
