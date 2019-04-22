@@ -14,6 +14,11 @@ const deptSchema = new mongoose.Schema(
 		deptName: String,
 		parentId: Number,
 		parentName: String,
+		deptPath: [],
+		deptGroup: { // 预算体对应关系
+			code: String,
+			name: String
+		},
 		managers: [ managerSchema ]
 	}, {
 		collection: 'depts',

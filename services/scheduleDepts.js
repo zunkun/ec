@@ -19,6 +19,7 @@ class ScheduleDepts {
 	async test () {
 		console.log(`【开始】${this.year}-${this.month}-${this.day}部门同步开始`);
 		await this.syncDepts();
+		await this.setDeptPaths(1, [ 1 ]);
 		await this.syncStaffs();
 	}
 
@@ -37,6 +38,7 @@ class ScheduleDepts {
 			console.log(`【开始】${this.year}-${this.month}-${this.day}部门同步开始`);
 			try {
 				await this.syncDepts();
+				await this.setDeptPaths(1, [ 1 ]);
 				await this.syncStaffs();
 				await this.updateSyncStatus(1);
 			} catch (error) {
@@ -101,6 +103,18 @@ class ScheduleDepts {
 		return Promise.resolve();
 	}
 
+	async setDeptPaths (parentId, parentDeptPath = []) {
+		let depts = await Depts.find({ parentId });
+		if (!depts || !depts.length) {
+			return Promise.resolve();
+		}
+		for (let dept of depts) {
+			let deptPath = parentDeptPath.concat([ dept.deptId ]);
+			await Depts.updateOne({ deptId: dept.deptId }, { deptPath });
+			await this.setDeptPaths(dept.deptId, deptPath);
+		}
+	}
+
 	async syncStaffs () {
 		let promiseArray = [];
 		for (let department of this.departments) {
@@ -136,4 +150,4 @@ class ScheduleDepts {
 const scheduleDepts = new ScheduleDepts();
 
 module.exports = scheduleDepts.start();
-// module.exports = schedule.test();
+// module.exports = scheduleDepts.test();
