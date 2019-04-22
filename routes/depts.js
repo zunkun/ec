@@ -1,4 +1,4 @@
-const ServiceResult = require('../ServiceResult');
+const ServiceResult = require('../core/ServiceResult');
 const Depts = require('../models/Depts');
 
 const Router = require('koa-router');

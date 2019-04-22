@@ -14,18 +14,15 @@ class ScheduleDepts {
 		this.ap = null;
 		this.departments = [];
 		this.deptMap = new Map();
-		this.ecDeptMap = new Map(); // 每次启动时候维护一次
 	}
 
 	async test () {
 		console.log(`【开始】${this.year}-${this.month}-${this.day}部门同步开始`);
-		// await this.initEcDept();
 		await this.syncDepts();
 		await this.syncStaffs();
 	}
 
 	async start () {
-		await this.initEcDept();
 		await this.syncService(); // 系统启动时检查是否已经通不过了，如果没有同步，则同步
 		const task = cron.schedule(config.deptCron, async () => {
 			await this.syncService();
@@ -90,7 +87,6 @@ class ScheduleDepts {
 			});
 		}
 		for (let department of this.departments) {
-			this.setEcDept(department.id, department.parentid);
 			await Depts.updateOne({
 				corpId: config.corpId,
 				deptId: department.id
@@ -99,49 +95,10 @@ class ScheduleDepts {
 				deptId: department.id,
 				deptName: department.name,
 				parentId: department.parentid,
-				parentName: this.deptMap.get(department.parentid).deptName || '',
-				ecDept: this.ecDeptMap.get(department.id)
+				parentName: this.deptMap.get(department.parentid).deptName || ''
 			}, { upsert: true });
 		}
 		return Promise.resolve();
-	}
-
-	async initEcDept () {
-		let depts = await Depts.find({});
-		for (let dept of depts) {
-			this.deptMap.set(dept.deptId, {
-				deptName: dept.deptName,
-				parentId: dept.parentId
-			});
-		}
-
-		this.deptMap.set(1, {
-			deptName: config.baseDeptName,
-			parentId: 1
-		});
-
-		for (let dept of depts) {
-			this.setEcDept(dept.deptId, dept.parentId);
-		}
-	}
-
-	setEcDept (deptId, parentId) {
-		if (parentId === 1) {
-			this.ecDeptMap.set(deptId, {
-				deptId,
-				deptName: this.deptMap.get(deptId).deptName
-			});
-			return;
-		}
-		if (this.deptMap.get(parentId).parentId === 1) {
-			this.ecDeptMap.set(deptId, {
-				deptId: parentId,
-				deptName: this.deptMap.get(parentId).deptName
-			});
-			return;
-		}
-
-		return this.setEcDept(deptId, this.deptMap.get(parentId).parentId);
 	}
 
 	async syncStaffs () {

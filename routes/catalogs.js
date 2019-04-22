@@ -1,4 +1,4 @@
-const ServiceResult = require('../ServiceResult');
+const ServiceResult = require('../core/ServiceResult');
 const Catalogs = require('../models/Catalogs');
 const util = require('../core/util');
 

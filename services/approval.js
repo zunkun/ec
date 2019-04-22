@@ -17,7 +17,6 @@ class ApprovalService {
 			deptId,
 			deptName: dept.deptName,
 			approvalUser,
-			ecDept: dept.ecDept || {},
 			trip,
 			travelers,
 			itineraries,

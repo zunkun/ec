@@ -26,10 +26,6 @@ const approvalSchema = new mongoose.Schema(
 			userId: String,
 			userName: String
 		},
-		ecDept: { // 费用所出部门
-			deptId: Number,
-			deptName: String
-		},
 		trip: {
 			title: String,
 			cause: String

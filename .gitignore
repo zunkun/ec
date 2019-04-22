@@ -4,3 +4,4 @@ bin/daemon
 *.sqlite
 public/images/*.jpg
 ECAPI/*
+uploads/*
