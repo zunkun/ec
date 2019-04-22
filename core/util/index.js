@@ -2,6 +2,10 @@ const Catalogs = require('../../models/Catalogs');
 const Staffs = require('../../models/Staffs');
 
 class Util {
+	genCode () {
+		return `${Math.random().toFixed(6).slice(-6)}`;
+	}
+
 	genCatalogId () {
 		return `H${Math.random().toFixed(6).slice(-6)}`;
 	}

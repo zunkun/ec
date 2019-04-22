@@ -8,6 +8,5 @@ module.exports = {
 		approvalUpdate: '/alitrip/btrip/approval/update',
 		costCenter: '/alitrip/btrip/cost/center/query',
 		invoice: '/alitrip/btrip/invoice/search'
-	},
-	catalogs: [ '活动费', '礼品费', '差旅费' ]
+	}
 };
