@@ -115,9 +115,9 @@ router.get('/', async (ctx, next) => {
  */
 router.post('/', async (ctx, next) => {
 	let { year, deptId, months, budget } = ctx.request.body;
-	const catalogMap = await util.getCatalogMap();
 	year = Number(year);
 	deptId = Number(deptId);
+	const catalogMap = await util.getCatalogMap();
 
 	if (!year || !deptId) {
 		ctx.body = ServiceResult.getFail('参数不正确,请参考预算预算参数表', 404);
@@ -211,7 +211,7 @@ router.post('/', async (ctx, next) => {
  * @apiSuccess {Boolean} success 是否正确返回，true 正确, false错误
  * @apiSuccess {Object} data 正确返回时的数据
  */
-router.delete('/dept/:deptId/year/:year', async (ctx, next) => {
+router.delete('/', async (ctx, next) => {
 	let { year, deptId } = ctx.request.body;
 	year = Number(year);
 	deptId = Number(deptId);
@@ -225,6 +225,34 @@ router.delete('/dept/:deptId/year/:year', async (ctx, next) => {
 		ctx.body = ServiceResult.getFail('删除年度预算失败', 500);
 	}
 	await next();
+});
+
+/**
+ * @api {get} /api/budgets/balance?deptId=:deptId&year=:year&month=:month&type=:type 查询部门费用预算
+ * @apiName delete-yearly-budget
+ * @apiDescription 查询部门月度费用预算 【需要登录】
+ * @apiGroup 预算管理
+ * @apiParam {Number} [year] 年份,默认为当年,比如 2019
+ * @apiParam {Number} [month] 月份，默认当月，比如1
+ * @apiParam {Number} deptId 钉钉部门deptId
+ * @apiParam {Number} [type] 查询费用类型，默认为1 , 1-差旅费 2-礼品费 3-其他费用
+ * @apiSuccess {Number} errcoce 正确时为0，错误时为错误代码
+ * @apiSuccess {String} errmsg 错误提示，正确返回为空字符
+ * @apiSuccess {Boolean} success 是否正确返回，true 正确, false错误
+ * @apiSuccess {Object} data 正确返回时的数据
+ * @apiSuccess {Number} data.year 年份
+ * @apiSuccess {Number} data.month 月份
+ * @apiSuccess {Number} data.type 类型
+ * @apiSuccess {Number} data.type 类型
+ * @apiSuccess {Number} data.deptId 部门deptId
+ * @apiSuccess {String} data.deptName 部门名称
+ * @apiSuccess {Number} data.budget 月度预算
+ * @apiSuccess {Number} data.expense 月度花费
+ * @apiSuccess {Number} data.balance 月度余额
+ *
+ */
+router.get('/balance', async (ctx, next) => {
+	// const { year, type, deptId } = ctx.request.body;
 });
 
 module.exports = router;

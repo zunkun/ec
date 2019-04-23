@@ -87,6 +87,21 @@ class Dingding {
 		}
 	}
 
+	async getUser (userId) {
+		// https://oapi.dingtalk.com/user/get?access_token=ACCESS_TOKEN&userid=zhangsan
+		let accessToken = await this.getAccessToken();
+		let url = `${config.dingBaseUri}/user/get?access_token=${accessToken}&userid=${userId}`;
+		let data = await rp.get(url, { json: true });
+		return data;
+	}
+
+	async getuserinfo (code) {
+		let accessToken = await this.getAccessToken();
+		let url = `${config.dingBaseUri}/user/getuserinfo?access_token=${accessToken}&code=${code}`;
+		let data = await rp.get(url, { json: true });
+		return data;
+	}
+
 	async btrip (queryPath, rq) {
 		let accessToken = await this.getAccessToken();
 		let uri = `${config.topBaseUri}${queryPath}?access_token=${accessToken}`;

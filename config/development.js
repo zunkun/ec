@@ -1,11 +1,6 @@
 module.exports = {
-	PORT: 5600,
-	mysql: {
-		dbHost: '127.0.0.1',
-		dbUser: 'root',
-		dbPassword: '123456',
-		database: 'ec'
-	},
+	PORT: 5400,
+	secret: 'haier-ec',
 	mongodb: {
 		uri: 'mongodb://127.0.0.1:27017/haier',
 		user: 'dev',

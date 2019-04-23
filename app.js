@@ -4,23 +4,23 @@ const Koa = require('koa');
 const app = new Koa();
 const json = require('koa-json');
 const bodyparser = require('koa-bodyparser');
-const session = require('koa-session');
+const jwt = require('koa-jwt');
 const fs = require('fs');
 const path = require('path');
+const config = require('./config');
 
-// middlewares
 app.use(bodyparser({
 	enableTypes: [ 'json', 'form', 'text' ]
 }));
 app.use(json());
 
-// Sessions
-app.keys = [ 'haier', 'ec' ];
-app.use(session({}, app));
+app.use(jwt({ secret: config.secret }).unless({
+	path: [ /^\/api\/auth/, /^\/api\/test/ ]
+}));
 
 // 请求出错日志
-app.on('error', function (err) {
-	console.error(err);
+app.on('error', (error) => {
+	console.error('请求出错: ', error);
 });
 
 app.use(require('koa-static')(path.join(__dirname, '/public')));

@@ -15,7 +15,7 @@ const deptSchema = new mongoose.Schema(
 		parentId: Number,
 		parentName: String,
 		deptPath: [],
-		deptGroup: { // 预算体对应关系
+		group: { // 预算体对应关系
 			code: String,
 			name: String
 		},
