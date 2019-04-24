@@ -101,6 +101,9 @@ class ScheduleBtrip {
 		} else {
 			console.log(`【机票】开始保存${year}-${month}-${day} ${config.corpName}  机票信息`);
 			for (let flight of resData) {
+				if(!flight.price_info_list) {
+					continue;
+				}
 				flight.year = year;
 				flight.month = month;
 				flight.day = day;
@@ -145,6 +148,9 @@ class ScheduleBtrip {
 		} else {
 			console.log(`【火车】开始保存${year}-${month}-${day} ${config.corpName}  火车票信息`);
 			for (let train of resData) {
+				if(!train.price_info_list) {
+					continue;
+				}
 				train.year = year;
 				train.month = month;
 				train.day = day;
@@ -188,6 +194,9 @@ class ScheduleBtrip {
 		} else {
 			console.log(`【用车】开始保存${year}-${month}-${day} ${config.corpName}  用车信息`);
 			for (let vehicle of resData) {
+				if(!vehicle.price_info_list) {
+					continue;
+				}
 				vehicle.year = year;
 				vehicle.month = month;
 				vehicle.day = day;
@@ -231,6 +240,9 @@ class ScheduleBtrip {
 		} else {
 			console.log(`【酒店】开始保存${year}-${month}-${day} ${config.corpName}  用车信息`);
 			for (let hotel of resData) {
+				if(!hotel.price_info_list) {
+					continue;
+				}
 				hotel.year = year;
 				hotel.month = month;
 				hotel.day = day;
