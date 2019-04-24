@@ -3,7 +3,7 @@ module.exports = {
 	secret: 'haier-ec',
 	mongodb: {
 		uri: 'mongodb://127.0.0.1:27017/haier',
-		user: 'haier',
+		user: 'haieradmin',
 		pass: 'abcd1234'
 	},
 	baseDeptId: 1,
