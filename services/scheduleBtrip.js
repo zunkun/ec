@@ -109,7 +109,7 @@ class ScheduleBtrip {
 				flight.day = day;
 				flight.total_fee = this.computeFee(flight.price_info_list);
 				
-				await FlightOrder.updateMany({ apply_id: flight.apply_id, corpid: flight.corpid }, flight, { upsert: true });
+				await FlightOrder.updateOne({id: flight.id, apply_id: flight.apply_id, corpid: flight.corpid }, flight, { upsert: true });
 			}
 		}
 		await Sync.updateOne({ year, month, day, type: 2 }, { year, month, day, type: 2, status: 1 }, { upsert: true });
@@ -155,7 +155,7 @@ class ScheduleBtrip {
 				train.month = month;
 				train.day = day;
 				train.total_fee = this.computeFee(train.price_info_list);
-				await TrainOrder.updateMany({ apply_id: train.apply_id, corpid: train.corpid }, train, { upsert: true });
+				await TrainOrder.updateOne({ id: train.id, apply_id: train.apply_id, corpid: train.corpid }, train, { upsert: true });
 			}
 		}
 		await Sync.updateOne({ year, month, day, type: 3 }, { year, month, day, type: 3, status: 1 }, { upsert: true });
@@ -201,7 +201,7 @@ class ScheduleBtrip {
 				vehicle.month = month;
 				vehicle.day = day;
 				vehicle.total_fee = this.computeFee(vehicle.price_info_list);
-				await VehicleOrder.updateMany({ apply_id: vehicle.apply_id, corpid: vehicle.corpid }, vehicle, { upsert: true });
+				await VehicleOrder.updateOne({ id: vehicle.id, apply_id: vehicle.apply_id, corpid: vehicle.corpid }, vehicle, { upsert: true });
 			}
 		}
 		await Sync.updateOne({ year, month, day, type: 3 }, { year, month, day, type: 4, status: 1 }, { upsert: true });
@@ -238,7 +238,7 @@ class ScheduleBtrip {
 		if (!resData.length) {
 			console.log(`【酒店】${year}-${month}-${day} ${config.corpName}  没有酒店信息`);
 		} else {
-			console.log(`【酒店】开始保存${year}-${month}-${day} ${config.corpName}  用车信息`);
+			console.log(`【酒店】开始保存${year}-${month}-${day} ${config.corpName}  酒店信息`);
 			for (let hotel of resData) {
 				if(!hotel.price_info_list) {
 					continue;
@@ -247,7 +247,7 @@ class ScheduleBtrip {
 				hotel.month = month;
 				hotel.day = day;
 				hotel.total_fee = this.computeFee(hotel.price_info_list);
-				await HotelOrder.updateMany({ apply_id: hotel.apply_id, corpid: hotel.corpid }, hotel, { upsert: true });
+				await HotelOrder.updateOne({ id: hotel.id, apply_id: hotel.apply_id, corpid: hotel.corpid }, hotel, { upsert: true });
 			}
 		}
 		await Sync.updateOne({ year, month, day, type: 3 }, { year, month, day, type: 5, status: 1 }, { upsert: true });
