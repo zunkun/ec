@@ -60,9 +60,9 @@ class ScheduleBtrip {
 		let total = 0;
 		for (let priceInfo of priceList) {
 			if (priceInfo.type === 1) {
-				total += priceInfo.price;
+				total += Number(priceInfo.price);
 			} else {
-				total -= priceInfo.price;
+				total -= Number(priceInfo.price);
 			}
 		}
 		return total;
@@ -105,6 +105,7 @@ class ScheduleBtrip {
 				flight.month = month;
 				flight.day = day;
 				flight.total_fee = this.computeFee(flight.price_info_list);
+				
 				await FlightOrder.updateMany({ apply_id: flight.apply_id, corpid: flight.corpid }, flight, { upsert: true });
 			}
 		}
