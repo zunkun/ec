@@ -47,13 +47,7 @@ class ScheduleBtrip {
 		let currentMonth = date.getMonth() + 1;
 		let currentDay = date.getDate();
 
-		for (let month = 1; month <= currentMonth - 1; month++) {
-			let monthDays = new Date(year, month, 0).getDate();
-			for (let day = 1; day <= monthDays; day++) {
-				this.dateLists.push({ year: `${year}`, month: month >= 10 ? `${month}` : `0${month}`, day: day >= 10 ? `${day}` : `0${day}` });
-			}
-		}
-
+		this.dateLists.length = 0;
 		for (let day = 1; day <= currentDay; day++) {
 			this.dateLists.push({ year: `${year}`, month: currentMonth >= 10 ? `${currentMonth}` : `0${currentMonth}`, day: day >= 10 ? `${day}` : `0${day}` });
 		}
