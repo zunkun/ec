@@ -2,7 +2,9 @@ const FlightOrder = require('../models/FlightOrder');
 const TrainOrder = require('../models/TrainOrder');
 const VehicleOrder = require('../models/VehicleOrder');
 const HotelOrder = require('../models/HotelOrder');
+const Depts = require('../models/Depts');
 const BTripFee = require('../models/BTripFee');
+const config = require('../config');
 
 class ComputeService {
 	constructor () {
@@ -10,12 +12,29 @@ class ComputeService {
 		this.year = date.getFullYear();
 		this.month = date.getMonth() + 1;
 		this.day = date.getDate();
+		this.deptMap = new Map();
 	}
-	async compute () {
-		await this.computeFlight();
+	async init () {
+		let date = new Date();
+		this.year = date.getFullYear();
+		this.month = date.getMonth() + 1;
+
+		let depts = await Depts.find({ corpId: config.corpId, year: this.year });
+		for (let dept of depts) {
+			this.deptMap.set(dept.deptId, {
+				deptId: dept.deptId,
+				deptName: dept.deptName,
+				group: dept.group
+			});
+		}
 	}
 
-	async computeFlight () {
+	async compute () {
+		await this.init();
+		await this.computeFees();
+	}
+
+	async computeFees () {
 		let feeTypes = [
 			{ type: 'flight', model: FlightOrder },
 			{ type: 'train', model: TrainOrder },
@@ -25,29 +44,38 @@ class ComputeService {
 		for (let feeType of feeTypes) {
 			let fees = await feeType.model.aggregate([
 				{
+					$match: { year: `${this.year}` }
+				},
+				{
 					$group: {
 						_id: { year: '$year', month: '$month', deptId: '$deptid' },
 						total: { $sum: '$total_fee' }
 					}
 				}
 			]);
+
 			for (let fee of fees) {
+				let deptId = Number(fee._id.deptId);
+				if (!this.deptMap.has(deptId) || !this.deptMap.get(deptId).group || !this.deptMap.get(deptId).group.code) {
+					throw new Error(`deptId: ${deptId} 部门没有对应的预算体`);
+				}
+				console.log(`【开始】计算 ${this.deptMap.get(deptId).group.name} 的 ${feeType.type} 费用`);
 				await BTripFee.updateOne({
 					year: fee._id.year,
 					month: fee._id.month,
-					deptId: fee._id.deptId
+					'group.code': this.deptMap.get(deptId).group.code
 				}, {
 					$set: {
 						year: fee._id.year,
 						month: fee._id.month,
-						deptId: fee._id.deptId,
+						group: this.deptMap.get(deptId).group,
 						[feeType.type]: fee.total
 					}
 				}, { upsert: true });
 			}
 		}
-
-		let fees = await BTripFee.find({ corpId: this.corpId });
+		console.log('【开始】计算总费用');
+		let fees = await BTripFee.find({ corpId: this.corpId, year: this.year });
 		for (let fee of fees) {
 			await BTripFee.updateOne({ _id: fee._id }, {
 				$set: {
@@ -55,11 +83,10 @@ class ComputeService {
 				}
 			});
 		}
+		console.log('【成功】计算总费用');
 	}
 }
 
 const computeService = new ComputeService();
-
-computeService.compute();
 
 module.exports = computeService;

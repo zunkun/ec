@@ -6,8 +6,10 @@ const btripfeeSchema = new mongoose.Schema(
 	{
 		corpId: String, // 公司
 		corpName: String,
-		deptId: String, // 部门
-		deptName: String,
+		group: { // 预算体
+			code: String,
+			name: String
+		},
 		year: String,
 		month: String,
 		total: { type: Number, default: 0 }, // 部门月商旅总费用

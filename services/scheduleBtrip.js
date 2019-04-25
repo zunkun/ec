@@ -3,6 +3,7 @@ const FlightOrder = require('../models/FlightOrder');
 const TrainOrder = require('../models/TrainOrder');
 const VehicleOrder = require('../models/VehicleOrder');
 const HotelOrder = require('../models/HotelOrder');
+const computeService = require('./computeService');
 
 const Sync = require('../models/Sync');
 const config = require('../config');
@@ -33,6 +34,7 @@ class ScheduleBtrip {
 			await this.syncBtripHistory(date);
 			await util.wait(200);
 		}
+		await computeService.compute();
 		console.log(`【完成】${config.corpName} 截止目前所有票务同步完成, 用时 ${(Date.now() - startTime) / 1000} s`);
 	}
 
