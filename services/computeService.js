@@ -9,15 +9,18 @@ const config = require('../config');
 class ComputeService {
 	constructor () {
 		let date = new Date();
+		let currentMonth = date.getMonth() + 1;
 		this.year = date.getFullYear();
-		this.month = date.getMonth() + 1;
+		this.month = currentMonth >= 10 ? `${currentMonth}` : `0${currentMonth}`;
 		this.day = date.getDate();
 		this.deptMap = new Map();
 	}
 	async init () {
 		let date = new Date();
+		let currentMonth = date.getMonth() + 1;
 		this.year = date.getFullYear();
-		this.month = date.getMonth() + 1;
+		this.month = currentMonth >= 10 ? `${currentMonth}` : `0${currentMonth}`;
+		this.day = date.getDate();
 
 		let depts = await Depts.find({ corpId: config.corpId, year: this.year });
 		for (let dept of depts) {
@@ -44,7 +47,7 @@ class ComputeService {
 		for (let feeType of feeTypes) {
 			let fees = await feeType.model.aggregate([
 				{
-					$match: { year: `${this.year}` }
+					$match: { year: `${this.year}`, month: `${this.month}` }
 				},
 				{
 					$group: {

@@ -2,7 +2,7 @@
 require('console-stamp')(console, { pattern: 'yyyy-mm-dd\'T\'HH:MM:ss:l' });
 require('../services/init');
 require('../services/scheduleDepts');
-// require('../services/scheduleBtrip');
+require('../services/scheduleBtrip');
 if (process.env.NODE_ENV === 'production') {
 	console.log('正式环境');
 } else {
