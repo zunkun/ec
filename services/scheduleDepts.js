@@ -1,5 +1,6 @@
 const dingding = require('../core/dingding');
 const Depts = require('../models/Depts');
+const DeptGroups = require('../models/DeptGroups');
 const Staffs = require('../models/Staffs');
 const Sync = require('../models/Sync');
 const config = require('../config');
@@ -14,26 +15,46 @@ class ScheduleDepts {
 		this.ap = null;
 		this.departments = [];
 		this.deptMap = new Map();
+		this.groupDeptMap = new Map();
+		this.ecDeptMap = new Map();
 	}
 
 	async test () {
-		console.log(`【开始】${this.year}-${this.month}-${this.day}部门同步开始`);
-		await this.syncDepts();
-		await this.setDeptPaths(1, [ 1 ]);
-		await this.syncStaffs();
+		setTimeout(async () => {
+			await this.init();
+			console.log(`【开始】${this.year}-${this.month}-${this.day}部门同步开始`);
+			await this.syncService();
+			await this.setDeptPaths(1, [ 1 ]);
+			await this.syncStaffs();
+		}, 5000);
 	}
 
 	async start () {
-		await this.syncService(); // 系统启动时检查是否已经通不过了，如果没有同步，则同步
+		setTimeout(async () => {
+			await this.init();
+			await this.syncService(); // 系统启动时检查是否已经通不过了，如果没有同步，则同步
+		}, 3000);
 		const task = cron.schedule(config.deptCron, async () => {
+			await this.init();
 			await this.syncService();
 		});
 		task.start();
 	}
 
-	async syncService () {
+	async init () {
 		await this.initDates();
-		let sync = await Sync.findOne({ corpId: config.corpId, type: 1, year: this.year, month: this.month, day: this.day, ap: this.ap, status: 1 });
+		await this.initGroupDepts();
+	}
+
+	async initGroupDepts () {
+		let deptGroups = await DeptGroups.find({ corpId: config.corpId });
+		for (let deptGroup of deptGroups) {
+			this.groupDeptMap.set(deptGroup.name, { code: deptGroup.code, name: deptGroup.name });
+		}
+	}
+
+	async syncService () {
+		let sync = await Sync.findOne({ corpId: config.corpId, type: 1, year: this.year, month: this.month, day: this.day, ap: this.ap, status: 3 });
 		if (!sync) {
 			console.log(`【开始】${this.year}-${this.month}-${this.day}部门同步开始`);
 			try {
@@ -88,18 +109,42 @@ class ScheduleDepts {
 				parentId: department.parentid
 			});
 		}
+
+		for (let department of this.departments) {
+			this.setEcDept(department.id, department.parentid);
+		}
+		console.log('【开始】保存部门列表');
+
 		for (let department of this.departments) {
 			await Depts.updateOne({
 				corpId: config.corpId,
-				deptId: department.id
+				deptId: department.id,
+				year: this.year
 			}, {
 				corpId: config.corpId,
 				deptId: department.id,
+				year: this.year,
 				deptName: department.name,
 				parentId: department.parentid,
 				parentName: this.deptMap.get(department.parentid).deptName || ''
 			}, { upsert: true });
 		}
+		console.log('【成功】保存部门列表');
+
+		console.log('【开始】保存部门与预算体对应关系');
+		for (let department of this.departments) {
+			let dept = await Depts.findOne({ deptId: department.id, corpId: config.corpId, year: this.year });
+			if (dept.group.code) {
+				continue;
+			}
+			let topDept = this.ecDeptMap.get(department.id);
+			if (this.groupDeptMap.has(topDept.deptName)) {
+				let group = this.groupDeptMap.get(topDept.deptName);
+				await Depts.updateOne({ deptId: department.id, corpId: config.corpId, year: this.year }, { group });
+			}
+		}
+		console.log('【成功】保存部门与预算体对应关系');
+
 		return Promise.resolve();
 	}
 
@@ -110,7 +155,7 @@ class ScheduleDepts {
 		}
 		for (let dept of depts) {
 			let deptPath = parentDeptPath.concat([ dept.deptId ]);
-			await Depts.updateOne({ deptId: dept.deptId }, { deptPath });
+			await Depts.updateOne({ deptId: dept.deptId, year: this.year }, { deptPath });
 			await this.setDeptPaths(dept.deptId, deptPath);
 		}
 	}
@@ -144,6 +189,25 @@ class ScheduleDepts {
 			promiseArray.push(promise);
 		}
 		return Promise.all(promiseArray);
+	}
+
+	setEcDept (deptId, parentId) {
+		if (parentId === 1) {
+			this.ecDeptMap.set(deptId, {
+				deptId,
+				deptName: this.deptMap.get(deptId).deptName
+			});
+			return;
+		}
+		if (this.deptMap.get(parentId).parentId === 1) {
+			this.ecDeptMap.set(deptId, {
+				deptId: parentId,
+				deptName: this.deptMap.get(parentId).deptName
+			});
+			return;
+		}
+
+		return this.setEcDept(deptId, this.deptMap.get(parentId).parentId);
 	}
 }
 
