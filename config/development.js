@@ -6,6 +6,11 @@ module.exports = {
 		user: 'dev',
 		pass: '123456'
 	},
+	oracle: {
+		user: 'nc_query',
+		password: 'nc_query',
+		connectString: '10.164.12.99:1521/orcl'
+	},
 	baseDeptId: 1,
 	baseDeptName: '上海铭悦软件有限公司',
 	dingBaseUri: 'https://oapi.dingtalk.com',

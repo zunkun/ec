@@ -69,6 +69,10 @@ class Util {
 		let staff = await Staffs.findOne({ userId });
 		return staff.userName || '';
 	}
+
+	parseNumber (str) {
+		return Number(str.trim().replace(/\,|-/g, ''));
+	}
 }
 
 const util = new Util();

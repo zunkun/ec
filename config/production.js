@@ -6,8 +6,12 @@ module.exports = {
 		user: 'haieradmin',
 		pass: 'abcd1234'
 	},
+	oracle: {
+		user: 'nc_query',
+		password: 'nc_query',
+		connectString: '10.164.12.99:1521/orcl'
+	},
 	baseDeptId: 1,
-	baseDeptName: '上海铭悦软件有限公司',
 	dingBaseUri: 'https://oapi.dingtalk.com',
 	topBaseUri: 'https://oapi.dingtalk.com/topapi',
 	corpId: 'ding9f71dd70c3adb557',

@@ -4,6 +4,7 @@ const Koa = require('koa');
 const app = new Koa();
 const json = require('koa-json');
 const bodyparser = require('koa-bodyparser');
+const logger = require('koa-logger');
 const jwt = require('koa-jwt');
 const fs = require('fs');
 const path = require('path');
@@ -13,9 +14,10 @@ app.use(bodyparser({
 	enableTypes: [ 'json', 'form', 'text' ]
 }));
 app.use(json());
+app.use(logger());
 
 app.use(jwt({ secret: config.secret }).unless({
-	path: [ /^\/api\/auth/, /^\/api\/test/ ]
+	path: [ /^\/api\/auth/, /^\/api\/test/, /^\/api\/depts/ ]
 }));
 
 // 请求出错日志
