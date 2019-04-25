@@ -79,7 +79,7 @@ class ScheduleDepts {
 			return Promise.reject(error);
 		}
 		this.deptMap.set(1, {
-			deptName: config.baseDeptName,
+			deptName: config.corpName,
 			parentId: 1
 		});
 		for (let department of this.departments) {
