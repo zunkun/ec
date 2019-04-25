@@ -36,6 +36,7 @@
     "koa-bodyparser": "^4.2.1",
     "koa-json": "^2.0.2",
     "koa-jwt": "^3.5.1",
+    "koa-logger": "^3.2.0",
     "koa-multer": "^1.0.2",
     "koa-router": "^7.4.0",
     "koa-session": "^5.10.1",
@@ -44,6 +45,7 @@
     "moment": "^2.24.0",
     "mongoose": "^5.5.0",
     "node-cron": "^2.0.3",
+    "oracledb": "^3.1.2",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "xlsx": "^0.14.2"
