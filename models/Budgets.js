@@ -6,8 +6,8 @@ const BudgetSchema = new mongoose.Schema(
 	{
 		corpId: String,
 		year: Number,
-		groupCode: String,
-		groupName: String,
+		code: String,
+		name: String,
 		benefits: Number, // 福利
 		trip: Number, // 差旅
 		others: Number // 其他

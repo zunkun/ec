@@ -21,7 +21,7 @@ class InitService {
 			for (let groupBudget of constants.groupBudgets) {
 				let deptGroup = await DeptGroups.findOne({ corpId: config.corpId, year, code: groupBudget.code.trim() });
 				if (!deptGroup) {
-					await DeptGroups.create({
+					deptGroup = await DeptGroups.create({
 						corpId: config.corpId,
 						year,
 						code: groupBudget.code.trim(),
@@ -32,14 +32,14 @@ class InitService {
 				let budget = await Budgets.findOne({
 					corpId: config.corpId,
 					year: new Date().getFullYear(),
-					'groupCode': groupBudget.code.trim()
+					code: groupBudget.code.trim()
 				});
 				if (!budget) {
 					await Budgets.create({
 						corpId: config.corpId,
 						year: new Date().getFullYear(),
-						groupCode: groupBudget.code.trim(),
-						groupName: deptGroup.name,
+						code: groupBudget.code.trim(),
+						name: deptGroup.name,
 						benefits: util.parseNumber(groupBudget.benefits),
 						trip: util.parseNumber(groupBudget.trip),
 						others: util.parseNumber(groupBudget.others)
