@@ -17,7 +17,7 @@ app.use(json());
 app.use(logger());
 
 app.use(jwt({ secret: config.secret }).unless({
-	path: [ /^\/api\/auth/, /^\/api\/test/, /^\/api\/depts/ ]
+	path: [ /^\/api\/auth/, /^\/api\/test/, /^\/api\/depts/, /^\/api\/fees/ ]
 }));
 
 // 请求出错日志
