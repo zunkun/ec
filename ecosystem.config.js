@@ -2,11 +2,10 @@ module.exports = {
 	apps: [ {
 		name: 'EC',
 		script: 'bin/www.js',
-		instances: 4,
+		instances: 1,
 		autorestart: true,
 		watch: false,
 		max_memory_restart: '2G',
-		exec_mode: 'cluster',
 		env_production: {
 			PORT: 5600,
 			name: 'EC_PRODUCTION',
