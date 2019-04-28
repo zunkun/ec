@@ -6,30 +6,26 @@ const mongoose = require('mongoose');
 const budgetRecordSchema = new mongoose.Schema(
 	{
 		from: {
-			deptId: Number, // 预算的来源部门deptId
-			detpName: String, // 部门名称
+			code: String, // 预算体code
+			name: String, // 部门名称
 			year: Number,
-			month: Number,
-			catalogId: String, // 预算分类Id
-			catalogName: String, // 预算分类名称
+			catalog: String,
 			stock: Number, // 操作前存量
 			amount: Number, // 操作数量
 			balance: Number // 操作后可用量 balance = stock-amount
 		},
 		to: {
 			type: {
-				deptId: Number, // 预算加到部门deptId
-				detpName: String, // 部门名称
+				code: String, // 预算体code
+				name: String, // 部门名称
 				year: Number,
-				month: Number,
-				catalogId: String, // 预算分类Id
-				catalogName: String, // 预算分类名称，默认操作的都是交通费
+				catalog: String,
 				stock: Number, // 操作前存量
 				amount: Number, // 操作数量
-				balance: Number // 操作后可用量 balance-stock + amount
+				balance: Number // 操作后可用量 balance = stock+amount
 			}
 		},
-		timestamp: Date,
+		timestamp: Number,
 		staff: { // 操作人
 			deptId: Number,
 			deptName: String,
