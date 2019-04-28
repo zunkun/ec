@@ -29,8 +29,8 @@ class Util {
 		return catalogMap;
 	}
 
-	validateApproval (apprval) {
-		const { userId, deptId, approvalId, travelers, trip, itineraries, approvalUser } = apprval;
+	validateApproval (approval) {
+		const { userId, deptId, approvalId, travelers, trip, itineraries, approvalUser } = approval;
 		let flag = true; // 参数是否正确
 		if (!userId || !deptId || !approvalId) {
 			flag = false;
