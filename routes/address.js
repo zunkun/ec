@@ -22,7 +22,7 @@ router.get('/lists/train', async (ctx, next) => {
 			return item.value === city.city;
 		});
 		if (index === -1) {
-			citysObj[city.province].children.push({ label: city.city, value: city.value });
+			citysObj[city.province].children.push({ label: city.city, value: city.city });
 		}
 	}
 
