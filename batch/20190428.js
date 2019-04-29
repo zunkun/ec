@@ -86,6 +86,7 @@ async function changeBudgets () {
 					code: from.code,
 					name: from.name,
 					year,
+					catalog: from.catalog,
 					stock: budgetFrom[from.catalog],
 					amount: Math.abs(amount),
 					balance: budgetFrom[from.catalog] - Math.abs(amount)
@@ -94,6 +95,7 @@ async function changeBudgets () {
 					code: to.code,
 					name: to.name,
 					year,
+					catalog: to.catalog,
 					stock: budgetTo[to.catalog],
 					amount: Math.abs(amount),
 					balance: budgetTo[to.catalog] - Math.abs(amount)
