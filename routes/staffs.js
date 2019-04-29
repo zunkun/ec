@@ -21,3 +21,5 @@ router.get('/', async (ctx, next) => {
 	ctx.body = ServiceResult.getSuccess(data);
 	await next();
 });
+
+module.exports = router;
