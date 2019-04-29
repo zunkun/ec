@@ -4,7 +4,7 @@ const path = require('path');
 const config = require('../config');
 const Files = require('../models/Files');
 const DeptGroups = require('../models/DeptGroups');
-const AvenueBudget = require('../models/AvenueBudget');
+// const Budget = require('../models/Budget');
 const Catalogs = require('../models/Catalogs');
 const util = require('../core/util');
 
@@ -50,7 +50,7 @@ class BudgetFileService {
 					month12: Number(data['12月']) || 0
 				};
 				console.log(`【开始】保存 ${budgetData.group.name} ${this.year}年 ${budgetData.catalog.name} 预算`);
-				await AvenueBudget.updateOne({ year: this.year, corpId: config.corpId, 'group.code': groupCode, 'catalog.code': data['费用项目编码'] }, budgetData, { upsert: true });
+				// await AnnualBudget.updateOne({ year: this.year, corpId: config.corpId, 'group.code': groupCode, 'catalog.code': data['费用项目编码'] }, budgetData, { upsert: true });
 			}
 		} catch (error) {
 			console.log('【失败】解析预算文件失败');

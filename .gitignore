@@ -5,3 +5,4 @@ bin/daemon
 public/images/*.jpg
 ECAPI/*
 uploads/*.xlsx
+package-lock.json
