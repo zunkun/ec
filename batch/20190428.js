@@ -1,7 +1,7 @@
 process.env.NODE_ENV = 'production';
 
 const Budgets = require('../models/Budgets');
-const BudgetRecords = require('../models/BudgetRecords');
+const BudgetRecord = require('../models/BudgetRecord');
 const config = require('../config');
 
 const changeDatas = [
@@ -81,7 +81,7 @@ async function changeBudgets () {
 		let budgetTo = await Budgets.findOne({ code: from.code, year, corpId: config.corpId });
 		let budgetRecord;
 		try {
-			budgetRecord = await BudgetRecords.create({
+			budgetRecord = await BudgetRecord.create({
 				from: {
 					code: from.code,
 					name: from.name,
@@ -113,14 +113,14 @@ async function changeBudgets () {
 				[to.catalog]: budgetTo[to.catalog] - Math.abs(amount)
 			});
 
-			await BudgetRecords.update({ _id: budgetRecord._id }, { timestamp: Date.now(), status: 20 });
+			await BudgetRecord.update({ _id: budgetRecord._id }, { timestamp: Date.now(), status: 20 });
 
 			console.log(`【成功】 费用预算从 ${from.name}(${from.catalog}) ---${amount}--> ${to.name}(${to.catalog})成功`);
 		} catch (error) {
 			console.log(`【失败】 费用预算从 ${from.name}(${from.catalog}) ---${amount}--> ${to.name}(${to.catalog})失败`, error);
 			console.log();
 			if (budgetRecord) {
-				await BudgetRecords.update({ _id: budgetRecord._id }, { timestamp: Date.now(), status: 10 });
+				await BudgetRecord.update({ _id: budgetRecord._id }, { timestamp: Date.now(), status: 10 });
 			}
 			console.log('【回滚】 数据开始回滚');
 			await Budgets.update({ _id: budgetFrom._id }, {
