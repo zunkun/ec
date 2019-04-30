@@ -1,5 +1,5 @@
 const ServiceResult = require('../core/ServiceResult');
-const TrainCity = require('../models/TrainCity');
+const Stations = require('../models/Stations');
 
 const Router = require('koa-router');
 const router = new Router();
@@ -8,7 +8,7 @@ router.prefix('/api/address');
 
 router.get('/lists', async (ctx, next) => {
 	let type = Number(ctx.query.type) || 1;
-	let cities = await TrainCity.find({ type });
+	let cities = await Stations.find({ type });
 	let trainCities = [];
 	let citysObj = {};
 	for (let city of cities) {
