@@ -6,8 +6,9 @@ const router = new Router();
 
 router.prefix('/api/address');
 
-router.get('/lists/train', async (ctx, next) => {
-	let cities = await TrainCity.find({});
+router.get('/lists', async (ctx, next) => {
+	let type = Number(ctx.query.type) || 1;
+	let cities = await TrainCity.find({ type });
 	let trainCities = [];
 	let citysObj = {};
 	for (let city of cities) {
