@@ -178,13 +178,29 @@ class ScheduleDepts {
 		console.log(`【开始】保存部门 ${deptId} ${this.deptMap.get(deptId).deptName} 人员列表`);
 		let promiseArray = [];
 		for (let user of userLists) {
+			let departmentIds = user.department || [];
+			let departments = [];
+			for (let deptId of departmentIds) {
+				departments.push({
+					deptId,
+					deptName: this.deptMap.get(deptId).deptName || ''
+				});
+			}
+
 			let promise = Staffs.updateOne({
 				userId: user.userid
 			}, {
 				userId: user.userid,
 				userName: user.name,
-				deptId: deptId,
-				deptName: this.deptMap.get(deptId).deptName || ''
+				departments,
+				mobile: user.mobile,
+				isAdmin: user.isAdmin,
+				isBoss: user.isBoss,
+				isLeader: user.isLeader,
+				position: user.position,
+				email: user.email,
+				avatar: user.avatar,
+				jobnumber: user.jobnumber
 			}, { upsert: true });
 			promiseArray.push(promise);
 		}

@@ -55,7 +55,7 @@ class Dingding {
 	async getDeptUsers (deptId) {
 		// https://oapi.dingtalk.com/user/simplelist?access_token=ACCESS_TOKEN&department_id=1
 		let accessToken = await this.getAccessToken();
-		let uri = `${config.dingBaseUri}/user/simplelist`;
+		let uri = `${config.dingBaseUri}/user/listbypage`;
 		let options = {
 			uri,
 			method: 'GET',

@@ -1,7 +1,7 @@
 const mongodb = require('../core/db/mongodb');
 const mongoose = require('mongoose');
 
-const stationSchema = new mongoose.Schema(
+const areaSchema = new mongoose.Schema(
 	{
 		province: {
 			code: String,
@@ -11,15 +11,16 @@ const stationSchema = new mongoose.Schema(
 			code: String,
 			name: String
 		}, // 城市
-		code: String, // 城市代码
-		type: Number, // 1-火车站 2-飞机场
-		stations: [] // 火车站/飞机场
+		country: [ { // 市县
+			code: String,
+			name: String
+		} ]
 	}, {
-		collection: 'stations',
+		collection: 'areas',
 		autoIndex: true,
 		timestamps: { createdAt: 'createTime', updatedAt: 'updateTime' }
 	});
 
-const Stations = mongodb.model('stations', stationSchema);
+const Area = mongodb.model('areas', areaSchema);
 
-module.exports = Stations;
+module.exports = Area;

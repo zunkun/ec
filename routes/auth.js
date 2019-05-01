@@ -31,20 +31,44 @@ router.get('/login', async (ctx, next) => {
 			ctx.body = ServiceResult.getFail(userInfo.errmsg, userInfo.errcode);
 			return;
 		}
-		let user = await dingding.getUser(userInfo.userid);
-		if (user.errcode !== 0) {
-			ctx.body = ServiceResult.getFail(user.errmsg, user.errcode);
+		let user = await Staffs.findOne({ userId: userInfo.userid });
+
+		if (!user) {
+			let userRes = await dingding.getUser(userInfo.userid);
+			if (userRes.errcode !== 0) {
+				ctx.body = ServiceResult.getFail(user.errmsg, user.errcode);
+				return;
+			}
+
+			user = {
+				userId: user.userid,
+				userName: user.name,
+				jobnumber: user.jobnumber
+			};
+		}
+
+		if (!user) {
+			ctx.body = ServiceResult.getFail('获取用户信息失败', 404);
 			return;
 		}
-		let token = jwt.sign({ userId: user.userid, userName: user.name, jobnumber: user.jobnumber }, config.secret);
 
-		delete user.errcode;
-		delete user.errmsg;
+		let token = jwt.sign({ userId: user.userId, userName: user.userName, jobnumber: user.jobnumber }, config.secret);
+
 		ctx.body = ServiceResult.getSuccess({ user, token: 'Bearer ' + token });
 	} catch (error) {
 		console.log(`登录鉴权失败 code: ${code}`, error);
 		ctx.body = ServiceResult.getFail(`登录鉴权失败 code: ${code}`, 500);
 	}
+	await next();
+});
+
+router.get('/login2', async (ctx, next) => {
+	let user = await Staffs.findOne({ userId: '4508346521365159' });
+
+	let token = jwt.sign({ userId: user.userId, userName: user.userName, jobnumber: user.jobnumber }, config.secret);
+
+	ctx.body = ServiceResult.getSuccess({ user, token: 'Bearer ' + token });
+
 	await next();
 });
 

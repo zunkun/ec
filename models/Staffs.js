@@ -6,8 +6,21 @@ const staffSchema = new mongoose.Schema(
 	{
 		userId: String, // 员工userId
 		userName: String, // 员工userName
-		deptId: Number, // 员工所在部门deptId
-		deptName: String
+		// deptId: Number, // 员工所在部门deptId
+		// deptName: String,
+		mobile: String,
+		email: String,
+		isAdmin: String,
+		isBoss: String,
+		isLeader: String,
+		position: String,
+		avatar: String,
+		jobnumber: String,
+		departmentIds: [],
+		departments: [ {
+			deptId: Number,
+			deptName: String
+		} ]
 	}, {
 		collection: 'staffs',
 		autoIndex: true,
