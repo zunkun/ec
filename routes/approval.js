@@ -110,4 +110,33 @@ router.delete('/:id', async (ctx, next) => {
 	}
 });
 
+router.get('/basic', async (ctx, next) => {
+	let { limit, page } = ctx.query;
+	page = Number(page) || 1;
+	limit = Number(limit) || 10;
+	let offset = (page - 1) * limit;
+
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+
+	let approvals = await Approvals.find({ userId: user.userId }).sort({ 'createTime': -1 }).skip(offset).limit(limit);
+	let count = await Approvals.find({ userId: user.userId }).count();
+
+	let data = [];
+	for (let approval of approvals) {
+		data.push({
+			approvalId: approval.approvalId,
+			createTime: approval.createTime,
+			status: approval.status,
+			trip: approval.trip,
+			approvalUser: approval.approvalUser
+		});
+	}
+	ctx.body = ServiceResult.getSuccess({
+		count,
+		approvals: data
+	});
+
+	await next();
+});
+
 module.exports = router;
