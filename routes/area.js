@@ -5,13 +5,19 @@ const Router = require('koa-router');
 const router = new Router();
 
 router.prefix('/api/area');
+let area;
 
 router.get('/', async (ctx, next) => {
 	let type = Number(ctx.query.type) || 0;
-	if (type === 3 || type === 4) {
-		type = 3;
+	if (type === 2 || type === 3) {
+		if (!area) {
+			area = require('../config/commonCity');
+		}
+		ctx.body = ServiceResult.getSuccess(area);
+		await next();
+		return;
 	}
-	console.log({ type });
+
 	let cities = await Stations.find({ type });
 	let provinceMap = {};
 	let cityMap = {};

@@ -3,35 +3,33 @@ const Depts = require('../models/Depts');
 const Approvals = require('../models/Approvals');
 const config = require('../config');
 const btrip = require('./btrip');
+const util = require('../core/util');
 
 class ApprovalService {
-	async createApproval (data) {
-		const { userId, deptId, approvalId, approvalUser, travelers, trip, itineraries } = data;
-		let user = await Staffs.findOne({ userId });
+	async createApproval (staff, data) {
+		const { deptId, cotravelers, trip, itineraries } = data;
 		let dept = await Depts.findOne({ deptId });
 
 		let approvalData = {
-			approvalId,
-			userId,
-			userName: user.userName,
+			approvalId: `${Date.now()}${parseInt(Math.random() * 10000, 10)}`,
+			userId: staff.userId,
+			userName: staff.userName,
 			deptId,
 			deptName: dept.deptName,
-			approvalUser,
 			trip,
-			travelers,
+			cotravelers,
 			itineraries,
 			corpId: config.corpId,
 			corpName: config.corpName,
-			status: 1,
+			status: 10,
 			createTime: new Date()
 		};
+
 		try {
-			await btrip.createApproval(approvalData);
 			let approval = await Approvals.create(approvalData);
 			return Promise.resolve(approval);
 		} catch (error) {
 			console.log('生成审批单错误', error);
-			await Approvals.updateOne({ approvalId }, { status: 2, cancelTime: new Date() });
 			return Promise.reject(error);
 		}
 	}

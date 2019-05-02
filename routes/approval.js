@@ -1,5 +1,8 @@
 const ServiceResult = require('../core/ServiceResult');
 const Approvals = require('../models/Approvals');
+const Staffs = require('../models/Staffs');
+const jwt = require('jsonwebtoken');
+const config = require('../config');
 
 const util = require('../core/util');
 const approvalService = require('../services/approval');
@@ -42,7 +45,13 @@ router.prefix('/api/approvals');
  * @apiSuccess {String} data.userId 发起审批的用户userId
  */
 router.post('/', async (ctx, next) => {
-	let { userId, approvalId } = ctx.request.body;
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+	let staff = await Staffs.findOne({ userId: user.userId });
+	if (!user || !staff) {
+		ctx.body = ServiceResult.getFail('当前用户不存在', 400);
+		return;
+	}
+
 	let flag = util.validateApproval(ctx.request.body);
 	if (!flag) {
 		console.log('审批单参数不正确');
@@ -50,19 +59,9 @@ router.post('/', async (ctx, next) => {
 		return;
 	}
 
-	let approval = await Approvals.findOne({
-		approvalId,
-		status: {
-			$nin: [ 2, 3 ]
-		} });
-	if (approval) {
-		ctx.body = ServiceResult.getFail('已经存在该审批单号', 400);
-		return;
-	}
-
 	try {
-		approval = await approvalService.createApproval(ctx.request.body);
-		ctx.body = ServiceResult.getSuccess({ userId, approvalId });
+		await approvalService.createApproval(staff, ctx.request.body);
+		ctx.body = ServiceResult.getSuccess({ });
 	} catch (error) {
 		ctx.body = ServiceResult.getFail('生成审批单失败', 500);
 	}

@@ -30,35 +30,21 @@ class Util {
 	}
 
 	validateApproval (approval) {
-		const { userId, deptId, approvalId, travelers, trip, itineraries, approvalUser } = approval;
+		const { deptId, trip, itineraries } = approval;
 		let flag = true; // 参数是否正确
-		if (!userId || !deptId || !approvalId) {
+		if (!deptId || !trip || !trip.title || !trip.cause || !trip.day) {
 			flag = false;
-		}
-		if (!trip || !trip.title || !trip.cause) {
-			flag = false;
-		}
-		if (!approvalUser || !approvalUser.userId || !approvalUser.userName) {
-			flag = false;
-		}
-		if (travelers) {
-			if (!(travelers instanceof Array)) {
-				flag = false;
-			} else {
-				for (let traveler of travelers) {
-					if (!traveler.userId || !traveler.userName) {
-						flag = false;
-					}
-				}
-			}
 		}
 
 		if (!itineraries || !itineraries.length || !(itineraries instanceof Array)) {
 			flag = false;
 		} else {
 			for (let it of itineraries) {
-				if (!([ 0, 1 ].indexOf(Number(it.tripWay)) > -1) || !([ 0, 1, 2, 3 ].indexOf(Number(it.trafficType)) > -1) || !it.depCity || !it.arrCity || !it.depDate || !it.arrDate) {
+				if (!it.tripWay || !it.depCity || !it.arrCity || !it.depDate || !it.arrDate) {
 					flag = false;
+				}
+				if (!flag) {
+					break;
 				}
 			}
 		}
