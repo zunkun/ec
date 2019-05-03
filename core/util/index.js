@@ -2,6 +2,22 @@ const Catalogs = require('../../models/Catalogs');
 const Staffs = require('../../models/Staffs');
 
 class Util {
+	timeFmt (num) {
+		return num >= 10 ? num : `0${num}`;
+	}
+
+	timeCode () {
+		const date = new Date();
+		let year = date.getFullYear();
+		let month = date.getMonth() + 1;
+		let day = date.getDate();
+		let hours = date.getHours();
+		let minutes = date.getMinutes();
+		let seconds = date.getSeconds();
+		let millSeconds = date.getMilliseconds();
+		return `${year}${this.timeFmt(month)}${this.timeFmt(day)}${this.timeFmt(hours)}${this.timeFmt(minutes)}${this.timeFmt(seconds)}${this.timeFmt(millSeconds)}${this.timeFmt(month)}${parseInt(Math.random() * 10000, 10)}`;
+	}
+
 	genCode () {
 		return `${Math.random().toFixed(6).slice(-6)}`;
 	}

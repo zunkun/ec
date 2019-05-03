@@ -11,7 +11,7 @@ class ApprovalService {
 		let dept = await Depts.findOne({ deptId });
 
 		let approvalData = {
-			approvalId: `${Date.now()}${parseInt(Math.random() * 10000, 10)}`,
+			approvalId: util.timeCode(),
 			userId: staff.userId,
 			userName: staff.userName,
 			deptId,

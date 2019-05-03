@@ -110,7 +110,32 @@ router.delete('/:id', async (ctx, next) => {
 	}
 });
 
-router.get('/basic', async (ctx, next) => {
+router.get('/:id', async (ctx, next) => {
+	let { id } = ctx.params;
+
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+
+	let approval = await Approvals.findOne({ userId: user.userId, approvalId: id });
+	if (!approval) {
+		ctx.body = ServiceResult.getFail('申请单不存在', 404);
+		return;
+	}
+	delete approval._id;
+	ctx.body = ServiceResult.getSuccess(approval);
+	await next();
+});
+
+router.post('/:id/cancel', async (ctx, next) => {
+	let { id } = ctx.params;
+
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+
+	await Approvals.updateOne({ userId: user.userId, approvalId: id }, { status: 20 });
+	ctx.body = ServiceResult.getSuccess({});
+	await next();
+});
+
+router.get('/lists/basic', async (ctx, next) => {
 	let { limit, page } = ctx.query;
 	page = Number(page) || 1;
 	limit = Number(limit) || 10;
