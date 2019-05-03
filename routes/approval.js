@@ -211,22 +211,34 @@ router.post('/:id/pass', async (ctx, next) => {
 			}
 		});
 
-		await approvalService.sendApprovalMsg(approval);
-
 		let _approval = await Approvals.findOne({ approvalId: id });
 
 		let approvalDepts = _approval.approvalDepts || [];
-		let userIds = [];
+		let notNotifiedUsers = [];
 		for (let item of approvalDepts) {
 			if (!item.notified && !item.approvalTime) {
 				for (let user of item.users) {
-					userIds.push(user.userId);
+					notNotifiedUsers.push(user.userId);
 				}
 				break;
 			}
 		}
 
-		if (!userIds.length) {
+		if (notNotifiedUsers.length) {
+			await approvalService.sendApprovalMsg(_approval);
+			ctx.body = ServiceResult.getSuccess({});
+			return;
+		}
+
+		let allApprovaled = true;
+		for (let item of approvalDepts) {
+			if (!item.approvalTime) {
+				allApprovaled = false;
+				break;
+			}
+		}
+
+		if (allApprovaled) {
 			// 领导全部审批通过， 写入商旅
 			await Approvals.updateOne({ approvalId: id }, { status: 30 });
 			// 写入商旅
@@ -258,7 +270,7 @@ router.get('/lists/basic', async (ctx, next) => {
 			createTime: approval.createTime,
 			status: approval.status,
 			trip: approval.trip,
-			approvalUser: approval.approvalUser
+			approvalDepts: approval.approvalDepts
 		});
 	}
 	ctx.body = ServiceResult.getSuccess({
@@ -267,6 +279,59 @@ router.get('/lists/basic', async (ctx, next) => {
 	});
 
 	await next();
+});
+
+router.get('/lists/manager', async (ctx, next) => {
+	let { limit, page, type } = ctx.query;
+	page = Number(page) || 1;
+	limit = Number(limit) || 10;
+	let offset = (page - 1) * limit;
+	type = Number(type) || 0; // 1 表示已处理 0 表示未处理
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+	let options = {};
+
+	if (!type) {
+		// 已经收到通知，申请单在审批状态，并且该审批单在该用户按环节，没有被审批过
+		options = {
+			status: 20,
+			approvalDepts: {
+				$elemMatch: {
+					'users.userId': user.userId,
+					notifyTime: { $ne: null	},
+					approvalTime: { $eq: null }
+				}
+			}
+		};
+	} else {
+		options = {
+			status: {	$in: [ 20, 30, 40, 50, 70 ] },
+			approvalDepts: {
+				$elemMatch: {
+					'users.userId': user.userId,
+					notifyTime: { $ne: null	},
+					approvalTime: { $ne: null }
+				}
+			}
+		};
+	}
+
+	let approvals = await Approvals.find(options).sort({ 'createTime': -1 }).skip(offset).limit(limit);
+	let count = approvals.find(options).count();
+
+	let data = [];
+	for (let approval of approvals) {
+		data.push({
+			approvalId: approval.approvalId,
+			createTime: approval.createTime,
+			status: approval.status,
+			trip: approval.trip,
+			approvalDepts: approval.approvalDepts
+		});
+	}
+	ctx.body = ServiceResult.getSuccess({
+		count,
+		approvals: data
+	});
 });
 
 module.exports = router;

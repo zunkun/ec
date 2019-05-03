@@ -190,22 +190,27 @@ class ScheduleDepts {
 					deptName: this.deptMap.get(deptId).deptName || ''
 				});
 			}
-
-			let promise = Staffs.updateOne({
-				userId: user.userid
-			}, {
+			let userData = {
 				userId: user.userid,
 				userName: user.name,
 				departments,
 				mobile: user.mobile,
 				isAdmin: user.isAdmin,
 				isBoss: user.isBoss,
-				isLeader: user.isLeader,
 				position: user.position,
 				email: user.email,
 				avatar: user.avatar,
 				jobnumber: user.jobnumber
-			}, { upsert: true });
+			};
+
+			// TODO: 部门领导获取规则，需要改进，建议直接从部门信息中获取，如果从员工信息中获取，某天员工不再是领导，则部门中该员工的领导属性不能删除
+			if (user.isLeader) {
+				userData.isLeader = true;
+			}
+
+			let promise = Staffs.updateOne({
+				userId: user.userid
+			}, userData, { upsert: true });
 			if (user.isLeader) {
 				await Depts.updateMany({
 					deptId,
