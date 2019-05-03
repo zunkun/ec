@@ -122,6 +122,20 @@ class Dingding {
 		});
 		return data;
 	}
+
+	async sendMsg (OA) {
+		// https://oapi.dingtalk.com/message/send?access_token=ACCESS_TOKEN
+		let accessToken = await this.getAccessToken();
+		let json = await rp.post(`https://oapi.dingtalk.com/message/send?access_token=${accessToken}`, {
+			body: OA, json: true
+		});
+		if (json.errcode === 0) {
+			return json;
+		} else {
+			console.error('发送失败', json.errmsg);
+			throw json.errmsg;
+		}
+	}
 }
 
 const dingding = new Dingding();

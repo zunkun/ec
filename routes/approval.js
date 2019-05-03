@@ -2,10 +2,10 @@ const ServiceResult = require('../core/ServiceResult');
 const Approvals = require('../models/Approvals');
 const Staffs = require('../models/Staffs');
 const jwt = require('jsonwebtoken');
-const config = require('../config');
 
 const util = require('../core/util');
 const approvalService = require('../services/approval');
+const btrip = require('../services/btrip');
 
 const Router = require('koa-router');
 const router = new Router();
@@ -60,7 +60,8 @@ router.post('/', async (ctx, next) => {
 	}
 
 	try {
-		await approvalService.createApproval(staff, ctx.request.body);
+		let approval = await approvalService.createApproval(staff, ctx.request.body);
+		await approvalService.sendApprovalMsg(approval);
 		ctx.body = ServiceResult.getSuccess({ });
 	} catch (error) {
 		ctx.body = ServiceResult.getFail('生成审批单失败', 500);
@@ -130,8 +131,112 @@ router.post('/:id/cancel', async (ctx, next) => {
 
 	let user = jwt.decode(ctx.header.authorization.substr(7));
 
-	await Approvals.updateOne({ userId: user.userId, approvalId: id }, { status: 20 });
+	await Approvals.updateOne({ userId: user.userId, approvalId: id }, { status: 60 });
 	ctx.body = ServiceResult.getSuccess({});
+	await next();
+});
+
+router.post('/:id/reject', async (ctx, next) => {
+	let { id } = ctx.params;
+
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+
+	let approval = await Approvals.findOne({
+		approvalId: id,
+		approvalDepts: {
+			$elemMatch: {
+				'users.userId': user.userId,
+				approval: false
+			}
+		}
+	});
+	if (!approval) {
+		ctx.body = ServiceResult.getFail('系统找不到该审批单');
+		return;
+	}
+
+	await Approvals.updateOne({
+		approvalId: id,
+		approvalDepts: {
+			$elemMatch: {
+				'users.userId': user.userId,
+				approval: false
+			}
+		}
+	}, {
+		$set: {
+			status: 50,
+			'approvalDepts.$.approval': false,
+			'approvalDepts.$.approvalUser': { userId: user.userId, userName: user.userName },
+			'approvalDepts.$.approvalTime': new Date()
+		}
+	});
+	ctx.body = ServiceResult.getSuccess({});
+	await next();
+});
+
+// 考勤审批通过
+router.post('/:id/pass', async (ctx, next) => {
+	let { id } = ctx.params;
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+
+	try {
+		let approval = await Approvals.findOne({
+			approvalId: id,
+			approvalDepts: {
+				$elemMatch: {
+					'users.userId': user.userId,
+					approval: false
+				}
+			}
+		});
+		if (!approval) {
+			ctx.body = ServiceResult.getFail('系统找不到该审批单');
+			return;
+		}
+
+		await Approvals.updateOne({
+			approvalId: id,
+			approvalDepts: {
+				$elemMatch: {
+					'users.userId': user.userId,
+					approval: false
+				}
+			}
+		}, {
+			$set: {
+				'approvalDepts.$.approval': true,
+				'approvalDepts.$.approvalUser': { userId: user.userId, userName: user.userName },
+				'approvalDepts.$.approvalTime': new Date()
+			}
+		});
+
+		await approvalService.sendApprovalMsg(approval);
+
+		let _approval = await Approvals.findOne({ approvalId: id });
+
+		let approvalDepts = _approval.approvalDepts || [];
+		let userIds = [];
+		for (let item of approvalDepts) {
+			if (!item.notified && !item.approvalTime) {
+				for (let user of item.users) {
+					userIds.push(user.userId);
+				}
+				break;
+			}
+		}
+
+		if (!userIds.length) {
+			// 领导全部审批通过， 写入商旅
+			await Approvals.updateOne({ approvalId: id }, { status: 30 });
+			// 写入商旅
+			await btrip.createApproval(approval);
+		}
+
+		ctx.body = ServiceResult.getSuccess({});
+	} catch (error) {
+		ctx.body = ServiceResult.getFail(error);
+	}
 	await next();
 });
 

@@ -26,17 +26,23 @@ const approvalSchema = new mongoose.Schema(
 		userName: String,
 		deptId: Number,
 		deptName: String,
-		approvalUser: [
-			{ // 审批人
+		approvalDepts: [ { // 部门审批
+			deptId: Number, // 审批部门
+			deptName: String,
+			users: [ { // 部门审批人，发消息时给每一个部门主管都发消息
 				userId: String,
-				userName: String,
-				approval: Boolean,
-				approvalTime: Date,
-				rejectTime: Date
-			}
-		],
+				userName: String
+			} ],
+			notified: Boolean, // 是否已通知
+			notifyTime: Date, // 通知时间
+			approval: Boolean,
+			approvalUser: { // 操作该审批单的部门主管，只记录第一个操作的人
+				userId: String,
+				userName: String
+			},
+			approvalTime: Date // 部门主管操作时间
+		} ],
 		trip: {
-			day: Number,
 			title: String,
 			cause: String
 		},
@@ -46,7 +52,7 @@ const approvalSchema = new mongoose.Schema(
 		corpName: String,
 		createTime: Date, // 审批单生成时间
 		cancelTime: Date, // 审批单取消时间
-		status: Number // 10-创建 20-取消 21-系统取消 30-申请费用 40-领导审核中 50-领导拒绝 60-领导申请批通过 70-写入商旅
+		status: Number // 10-创建 20-领导审核中 30-领导申请批通过 40-写入商旅 50-领导拒绝 60-员工取消 70-写入商旅失败
 	}, {
 		collection: 'approvals',
 		autoIndex: true,

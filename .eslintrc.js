@@ -31,6 +31,7 @@ module.exports = {
         "array-bracket-spacing": [
             "error",
             "always"
-        ]
+        ],
+        "prefer-promise-reject-errors": ["off"]
     }
 };

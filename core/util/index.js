@@ -48,7 +48,7 @@ class Util {
 	validateApproval (approval) {
 		const { deptId, trip, itineraries } = approval;
 		let flag = true; // 参数是否正确
-		if (!deptId || !trip || !trip.title || !trip.cause || !trip.day) {
+		if (!deptId || !trip || !trip.title || !trip.cause) {
 			flag = false;
 		}
 

@@ -149,12 +149,16 @@ class ScheduleDepts {
 	}
 
 	async setDeptPaths (parentId, parentDeptPath = []) {
-		let depts = await Depts.find({ parentId });
+		if (!(parentDeptPath instanceof Array)) {
+			console.log(1111, arguments);
+			process.exit(1);
+		}
+		let depts = await Depts.find({ parentId, corpId: config.corpId });
 		if (!depts || !depts.length) {
 			return Promise.resolve();
 		}
 		for (let dept of depts) {
-			let deptPath = parentDeptPath.concat([ dept.deptId ]);
+			let deptPath = [ dept.deptId ].concat(parentDeptPath);
 			await Depts.updateOne({ deptId: dept.deptId, year: this.year }, { deptPath });
 			await this.setDeptPaths(dept.deptId, deptPath);
 		}
@@ -202,6 +206,22 @@ class ScheduleDepts {
 				avatar: user.avatar,
 				jobnumber: user.jobnumber
 			}, { upsert: true });
+			if (user.isLeader) {
+				await Depts.updateMany({
+					deptId,
+					corpId: config.corpId,
+					'managers.userId': {
+						$exists: false
+					}
+				}, {
+					$addToSet: {
+						managers: {
+							userId: user.userid,
+							userName: user.name
+						}
+					}
+				});
+			}
 			promiseArray.push(promise);
 		}
 		return Promise.all(promiseArray);
