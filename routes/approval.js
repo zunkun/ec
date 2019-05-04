@@ -281,7 +281,7 @@ router.get('/lists/basic', async (ctx, next) => {
 	let user = jwt.decode(ctx.header.authorization.substr(7));
 
 	let approvals = await Approvals.find({ userId: user.userId }).sort({ 'createTime': -1 }).skip(offset).limit(limit);
-	let count = await Approvals.find({ userId: user.userId }).count();
+	let count = await Approvals.find({ userId: user.userId }).countDocuments();
 
 	let data = [];
 	for (let approval of approvals) {
@@ -336,7 +336,7 @@ router.get('/lists/manage', async (ctx, next) => {
 	}
 
 	let approvals = await Approvals.find(options).sort({ 'createTime': -1 }).skip(offset).limit(limit);
-	let count = await Approvals.find(options).count();
+	let count = await Approvals.find(options).countDocuments();
 
 	let data = [];
 	for (let approval of approvals) {
