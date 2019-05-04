@@ -126,6 +126,26 @@ router.get('/:id', async (ctx, next) => {
 	await next();
 });
 
+router.get('/:id/detail', async (ctx, next) => {
+	let { id } = ctx.params;
+
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+
+	let approval = await Approvals.findOne({
+		approvalId: id,
+		approvalDepts: {
+			$elemMatch: { 'users.userId': user.userId }
+		}
+	});
+	if (!approval) {
+		ctx.body = ServiceResult.getFail('申请单不存在', 404);
+		return;
+	}
+	delete approval._id;
+	ctx.body = ServiceResult.getSuccess(approval);
+	await next();
+});
+
 router.post('/:id/cancel', async (ctx, next) => {
 	let { id } = ctx.params;
 
@@ -281,7 +301,7 @@ router.get('/lists/basic', async (ctx, next) => {
 	await next();
 });
 
-router.get('/lists/manager', async (ctx, next) => {
+router.get('/lists/manage', async (ctx, next) => {
 	let { limit, page, type } = ctx.query;
 	page = Number(page) || 1;
 	limit = Number(limit) || 10;
@@ -316,12 +336,16 @@ router.get('/lists/manager', async (ctx, next) => {
 	}
 
 	let approvals = await Approvals.find(options).sort({ 'createTime': -1 }).skip(offset).limit(limit);
-	let count = approvals.find(options).count();
+	let count = await Approvals.find(options).count();
 
 	let data = [];
 	for (let approval of approvals) {
 		data.push({
 			approvalId: approval.approvalId,
+			userId: approval.userId,
+			userName: approval.userName,
+			dpetId: approval.deptId,
+			deptName: approval.deptName,
 			createTime: approval.createTime,
 			status: approval.status,
 			trip: approval.trip,

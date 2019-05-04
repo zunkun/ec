@@ -11,7 +11,7 @@ class ApprovalService {
 		const { deptId, cotravelers, trip, itineraries } = data;
 		let approvalDepts = [];
 		let dept = await Depts.findOne({ deptId, corpId: config.corpId });
-		console.log(dept.deptPath);
+
 		for (let i = 0, length = dept.deptPath.length; i < length; i++) {
 			let _deptId = dept.deptPath[i];
 			if (_deptId === 1) {
