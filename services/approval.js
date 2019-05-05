@@ -8,7 +8,7 @@ const message = require('./message');
 
 class ApprovalService {
 	async createApproval (staff, data) {
-		const { deptId, cotravelers, trip, itineraries } = data;
+		const { deptId, cotravelers, trip, itineraries, costcenter, invoice } = data;
 		let approvalDepts = [];
 		let dept = await Depts.findOne({ deptId, corpId: config.corpId });
 
@@ -50,7 +50,9 @@ class ApprovalService {
 			corpId: config.corpId,
 			corpName: config.corpName,
 			status: 10,
-			approvalDepts
+			approvalDepts,
+			costcenter,
+			invoice
 		};
 
 		try {

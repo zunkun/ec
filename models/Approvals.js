@@ -9,7 +9,8 @@ const itinerarySchema = new mongoose.Schema({
 	arrCity: String,
 	arrCityCode: String,
 	depDate: Date,
-	arrDate: Date
+	arrDate: Date,
+	day: Number
 });
 
 const travelerSchema = new mongoose.Schema({
@@ -43,13 +44,19 @@ const approvalSchema = new mongoose.Schema(
 			approvalTime: Date // 部门主管操作时间
 		} ],
 		trip: {
-			title: String,
-			cause: String
+			day: Number,
+			cause: String,
+			remark: String
 		},
 		itineraries: [ itinerarySchema ], // 行程列表
 		cotravelers: [ travelerSchema ], // 	同行行人列表
 		corpId: String,
 		corpName: String,
+		title: {
+			type: String,
+			default: '出差申请'
+		},
+		rejectCause: String, // 领导拒绝原因
 		createTime: Date, // 审批单生成时间
 		cancelTime: Date, // 审批单取消时间
 		status: Number // 10-创建 20-领导审核中 30-领导申请批通过 40-写入商旅 50-领导拒绝 60-员工取消 70-写入商旅失败

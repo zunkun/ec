@@ -48,7 +48,7 @@ class Util {
 	validateApproval (approval) {
 		const { deptId, trip, itineraries } = approval;
 		let flag = true; // 参数是否正确
-		if (!deptId || !trip || !trip.title || !trip.cause) {
+		if (!deptId || !trip || !trip.day || !trip.cause) {
 			flag = false;
 		}
 
@@ -56,7 +56,7 @@ class Util {
 			flag = false;
 		} else {
 			for (let it of itineraries) {
-				if (!it.tripWay || !it.depCity || !it.arrCity || !it.depDate || !it.arrDate) {
+				if (!it.depCity || !it.arrCity || !it.depDate || !it.arrDate) {
 					flag = false;
 				}
 				if (!flag) {

@@ -6,6 +6,8 @@ const Sync = require('../models/Sync');
 const config = require('../config');
 const cron = require('node-cron');
 const util = require('../core/util');
+const constants = require('../config/constants');
+const btripPaths = constants.btrip;
 
 class ScheduleDepts {
 	constructor () {
@@ -61,6 +63,8 @@ class ScheduleDepts {
 				await this.syncDepts();
 				await this.setDeptPaths(1, [ 1 ]);
 				await this.syncStaffs();
+
+				await this.syncCostCenter();
 				await this.updateSyncStatus(1);
 			} catch (error) {
 				console.log(`【失败】${this.year}-${this.month}-${this.day}部门同步失败`);
@@ -191,6 +195,8 @@ class ScheduleDepts {
 				});
 			}
 			let userData = {
+				corpId: config.corpId,
+				corpName: config.corpName,
 				userId: user.userid,
 				userName: user.name,
 				departments,
@@ -208,7 +214,8 @@ class ScheduleDepts {
 				userData.isLeader = true;
 			}
 
-			let promise = Staffs.updateOne({
+			let promise = Staffs.updateMany({
+				corpId: config.corpId,
 				userId: user.userid
 			}, userData, { upsert: true });
 			if (user.isLeader) {
@@ -249,6 +256,58 @@ class ScheduleDepts {
 		}
 
 		return this.setEcDept(deptId, this.deptMap.get(parentId).parentId);
+	}
+
+	async syncCostCenter () {
+		let staffs = await Staffs.find({ corpId: config.corpId });
+
+		for (let staff of staffs) {
+			let costcenters = [];
+			let invoices = [];
+			let costRes = await dingding.btrip(btripPaths.costCenter, {
+				userid: staff.userId,
+				corpid: config.corpId
+			});
+
+			if (costRes.errcode !== 0) {
+				console.error('【失败】获取用户成本中心列表', costRes);
+			}
+			let constCenterLists = costRes.cost_center_list || [];
+
+			for (let item of constCenterLists) {
+				costcenters.push({
+					id: item.id,
+					number: item.number,
+					title: item.title
+				});
+			}
+
+			let invoiceRes = await dingding.btrip(btripPaths.invoice, {
+				userid: staff.userId,
+				corpid: config.corpId
+			});
+
+			if (invoiceRes.errcode !== 0) {
+				console.error('【失败】获取用户发票列表', invoiceRes);
+			}
+			let invoiceLists = invoiceRes.invoice || [];
+
+			for (let item of invoiceLists) {
+				invoices.push({
+					id: item.id,
+					title: item.title
+				});
+			}
+			console.log(`【开始】保存${staff.userName} ${staff.userId}的成本中心和发票信息`);
+			await Staffs.updateOne({
+				_id: staff._id
+			}, {
+				costcenters,
+				invoices
+			});
+
+			await util.wait(100);
+		}
 	}
 }
 
