@@ -131,4 +131,45 @@ router.post('/groupmap', async (ctx, next) => {
 	await next();
 });
 
+router.get('/approval/:deptId', async (ctx, next) => {
+	let { deptId } = ctx.params;
+	deptId = Number(deptId);
+
+	let dept = await Depts.findOne({ deptId, corpId: config.corpId });
+	let approvalDepts = [];
+	if (!dept) {
+		ctx.body = ServiceResult.getSuccess(approvalDepts);
+		return;
+	}
+
+	for (let i = 0, length = dept.deptPath.length; i < length; i++) {
+		let _deptId = dept.deptPath[i];
+		if (_deptId === 1) {
+			break;
+		}
+		let _dept = i === 0 ? dept : await Depts.findOne({ deptId: _deptId, corpId: config.corpId });
+
+		let _managers = [];
+		if (!_dept.managers.length) {
+			continue;
+		}
+		for (let manager of _dept.managers) {
+			_managers.push({
+				userId: manager.userId,
+				userName: manager.userName
+			});
+		}
+		approvalDepts.push({
+			deptId: _dept.deptId,
+			deptName: _dept.deptName,
+			users: _managers,
+			notified: false,
+			approval: false
+		});
+	}
+
+	ctx.body = ServiceResult.getSuccess(approvalDepts);
+	await next();
+});
+
 module.exports = router;

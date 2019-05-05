@@ -8,34 +8,36 @@ const message = require('./message');
 
 class ApprovalService {
 	async createApproval (staff, data) {
-		const { deptId, cotravelers, trip, itineraries, costcenter, invoice } = data;
-		let approvalDepts = [];
+		let { deptId, cotravelers, trip, itineraries, costcenter, invoice, approvalDepts } = data;
+
 		let dept = await Depts.findOne({ deptId, corpId: config.corpId });
+		if (!approvalDepts || !approvalDepts.length) {
+			approvalDepts = [];
+			for (let i = 0, length = dept.deptPath.length; i < length; i++) {
+				let _deptId = dept.deptPath[i];
+				if (_deptId === 1) {
+					break;
+				}
+				let _dept = i === 0 ? dept : await Depts.findOne({ deptId: _deptId, corpId: config.corpId });
 
-		for (let i = 0, length = dept.deptPath.length; i < length; i++) {
-			let _deptId = dept.deptPath[i];
-			if (_deptId === 1) {
-				break;
-			}
-			let _dept = i === 0 ? dept : await Depts.findOne({ deptId: _deptId, corpId: config.corpId });
-
-			let _managers = [];
-			if (!_dept.managers.length) {
-				continue;
-			}
-			for (let manager of _dept.managers) {
-				_managers.push({
-					userId: manager.userId,
-					userName: manager.userName
+				let _managers = [];
+				if (!_dept.managers.length) {
+					continue;
+				}
+				for (let manager of _dept.managers) {
+					_managers.push({
+						userId: manager.userId,
+						userName: manager.userName
+					});
+				}
+				approvalDepts.push({
+					deptId: _dept.deptId,
+					deptName: _dept.deptName,
+					users: _managers,
+					notified: false,
+					approval: false
 				});
 			}
-			approvalDepts.push({
-				deptId: _dept.deptId,
-				deptName: _dept.deptName,
-				users: _managers,
-				notified: false,
-				approval: false
-			});
 		}
 
 		let approvalData = {

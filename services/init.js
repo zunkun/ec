@@ -10,8 +10,8 @@ class InitService {
 		this.year = new Date().getFullYear();
 	}
 	async init () {
-		await this.initDeptGroup();
-		await this.initBudget();
+		// await this.initDeptGroup();
+		// await this.initBudget();
 	}
 
 	async initBudget () {
