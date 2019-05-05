@@ -25,19 +25,15 @@ router.get('/balance', async (ctx, next) => {
 		ctx.body = ServiceResult.getFail('参数不正确');
 		return;
 	}
-	ctx.body = ServiceResult.getSuccess({
-		deptId,
-		approval: true
-	});
-	// try {
-	// 	let balance = await feeService.tripBalanceByDeptId(deptId);
-	// 	ctx.body = ServiceResult.getSuccess({
-	// 		deptId,
-	// 		approval: balance > 0
-	// 	});
-	// } catch (error) {
-	// 	ctx.body = ServiceResult.getFail(error);
-	// }
+	try {
+		let balance = await feeService.tripBalanceByDeptId(deptId);
+		ctx.body = ServiceResult.getSuccess({
+			deptId,
+			approval: balance > 0
+		});
+	} catch (error) {
+		ctx.body = ServiceResult.getFail(error);
+	}
 
 	await next();
 });
