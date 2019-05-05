@@ -90,10 +90,6 @@ class ApprovalService {
 			}
 		}
 		if (userIds.length) {
-			// 給領導推送審批消息
-			if (process.env.NODE_ENV !== 'production') {
-				userIds = [ '4508346521365159' ];
-			}
 			try {
 				await message.sendApprovalMsg(approval, userIds);
 				await Approvals.updateOne({
