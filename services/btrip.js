@@ -56,7 +56,7 @@ class Btrip {
 				corp_name: config.corpName,
 				deptid: approval.deptId,
 				dept_name: approval.deptName,
-				trip_title: approval.trip.title,
+				trip_title: approval.trip.title || '商旅出差',
 				trip_cause: approval.trip.cause,
 				traveler_list: [ {
 					userid: approval.userId,
