@@ -5,39 +5,52 @@ const Router = require('koa-router');
 const router = new Router();
 
 router.prefix('/api/area');
-let area;
+let area = require('../config/area');
 
 router.get('/', async (ctx, next) => {
 	let type = Number(ctx.query.type) || 0;
-	if (type === 2 || type === 3) {
-		if (!area) {
-			area = require('../config/commonCity');
-		}
-		ctx.body = ServiceResult.getSuccess(area);
-		await next();
+	let typeMap = {
+		0: 'flight',
+		1: 'train',
+		2: 'vehicle',
+		3: 'vehicle'
+	};
+	if (!typeMap[type]) {
+		ctx.body = ServiceResult.getFail('参数不正确');
 		return;
 	}
 
-	let cities = await Stations.find({ type });
-	let provinceMap = {};
-	let cityMap = {};
-
-	for (let city of cities) {
-		if (!provinceMap[city.province.code]) {
-			provinceMap[city.province.code] = city.province.name;
-		}
-
-		if (!cityMap[city.city.code]) {
-			cityMap[city.city.code] = city.city.name;
-		}
-	}
-
-	ctx.body = ServiceResult.getSuccess({
-		province_list: provinceMap,
-		city_list: cityMap,
-		county_list: {}
-	});
+	ctx.body = ServiceResult.getSuccess(area[typeMap[type]]);
 	await next();
+
+	// let stations = await Stations.find({ type });
+	// let areaMap = {};
+
+	// for (let index in stations) {
+	// 	let station = stations[index];
+	// 	if (!areaMap[station.province.code]) {
+	// 		areaMap[station.province.code] = {
+	// 			index: Number(index),
+	// 			id: station.province.code,
+	// 			text: station.province.name,
+	// 			children: []
+	// 		};
+	// 	}
+
+	// 	areaMap[station.province.code].children.push({
+	// 		id: station.city.code,
+	// 		parent: station.province.code,
+	// 		parentIndex: areaMap[station.province.code].index,
+	// 		text: station.city.name
+	// 	});
+	// }
+
+	// for (let code of Object.keys(areaMap)) {
+	// 	areaLists.push(areaMap[code]);
+	// }
+
+	// ctx.body = ServiceResult.getSuccess(areaLists);
+	// await next();
 });
 
 module.exports = router;

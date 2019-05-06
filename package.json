@@ -4,7 +4,7 @@
   "description": "海尔出差费控",
   "main": "bin/www",
   "scripts": {
-    "start": "NODE_ENV=production node bin/www",
+    "start": "./node_modules/.bin/cross-env NODE_ENV=production node bin/www",
     "dev": "./node_modules/.bin/cross-env NODE_ENV=devlopment node bin/www"
   },
   "repository": {

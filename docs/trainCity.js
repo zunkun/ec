@@ -1396,7 +1396,7 @@
 	},
 	{
 		station: '广宁寺南',
-		province: '大连',
+		province: '辽宁',
 		city: '大连'
 	},
 	{

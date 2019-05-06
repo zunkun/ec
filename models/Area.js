@@ -3,18 +3,13 @@ const mongoose = require('mongoose');
 
 const areaSchema = new mongoose.Schema(
 	{
-		province: {
-			code: String,
-			name: String
-		}, // 省份
-		city: {
-			code: String,
-			name: String
-		}, // 城市
-		country: [ { // 市县
-			code: String,
-			name: String
-		} ]
+		type: Number, // 类型
+		id: String,
+		text: String,
+		children: {
+			id: String,
+			text: String
+		}
 	}, {
 		collection: 'areas',
 		autoIndex: true,
