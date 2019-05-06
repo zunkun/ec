@@ -64,6 +64,9 @@ class Util {
 				}
 			}
 		}
+		if (!approval.balance || approval.balance <= 0 || !approval.costcenter || !approval.costcenter.id || !approval.invoice || !approval.invoice.id) {
+			flag = false;
+		}
 		return flag;
 	}
 

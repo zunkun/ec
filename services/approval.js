@@ -8,7 +8,7 @@ const message = require('./message');
 
 class ApprovalService {
 	async createApproval (staff, data) {
-		let { deptId, cotravelers, trip, itineraries, costcenter, invoice, approvalDepts } = data;
+		let { deptId, balance, cotravelers, trip, itineraries, costcenter, invoice, approvalDepts } = data;
 
 		let dept = await Depts.findOne({ deptId, corpId: config.corpId });
 		if (!approvalDepts || !approvalDepts.length) {
@@ -46,6 +46,7 @@ class ApprovalService {
 			userName: staff.userName,
 			deptId,
 			deptName: dept.deptName,
+			balance,
 			trip,
 			cotravelers,
 			itineraries,

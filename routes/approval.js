@@ -62,7 +62,35 @@ router.post('/', async (ctx, next) => {
 	try {
 		let approval = await approvalService.createApproval(staff, ctx.request.body);
 		await approvalService.sendApprovalMsg(approval);
-		ctx.body = ServiceResult.getSuccess({ });
+		ctx.body = ServiceResult.getSuccess(approval);
+	} catch (error) {
+		ctx.body = ServiceResult.getFail('生成审批单失败', 500);
+	}
+
+	await next();
+});
+
+router.put('/:approvalId', async (ctx, next) => {
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+	let staff = await Staffs.findOne({ userId: user.userId });
+	let approval = ctx.request.body;
+	if (!user || !staff || user.userId !== approval.userId) {
+		ctx.body = ServiceResult.getFail('当前用户不存在', 400);
+		return;
+	}
+
+	let flag = util.validateApproval(ctx.request.body);
+	if (!flag) {
+		console.log('审批单参数不正确');
+		ctx.body = ServiceResult.getFail('审批单参数不正确', 400);
+		return;
+	}
+
+	try {
+		await Approvals.updateOne({
+			approvalId: approval.approvalId
+		}, approval);
+		ctx.body = ServiceResult.getSuccess(approval);
 	} catch (error) {
 		ctx.body = ServiceResult.getFail('生成审批单失败', 500);
 	}

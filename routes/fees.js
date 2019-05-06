@@ -38,4 +38,24 @@ router.get('/balance', async (ctx, next) => {
 	await next();
 });
 
+router.get('/count', async (ctx, next) => {
+	let { deptId } = ctx.query;
+	deptId = Number(deptId);
+	if (!deptId) {
+		ctx.body = ServiceResult.getFail('参数不正确');
+		return;
+	}
+	try {
+		let balance = await feeService.tripBalanceByDeptId(deptId);
+		ctx.body = ServiceResult.getSuccess({
+			deptId,
+			balance: balance
+		});
+	} catch (error) {
+		ctx.body = ServiceResult.getFail(error);
+	}
+
+	await next();
+});
+
 module.exports = router;

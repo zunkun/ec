@@ -27,6 +27,7 @@ const approvalSchema = new mongoose.Schema(
 		userName: String,
 		deptId: Number,
 		deptName: String,
+		balance: Number, // 费用快照
 		approvalDepts: [ { // 部门审批
 			deptId: Number, // 审批部门
 			deptName: String,
@@ -54,7 +55,15 @@ const approvalSchema = new mongoose.Schema(
 		corpName: String,
 		title: {
 			type: String,
-			default: '出差申请'
+			default: '商旅出差'
+		},
+		costcenter: {
+			id: String,
+			title: String
+		},
+		invoice: {
+			id: String,
+			title: String
 		},
 		rejectCause: String, // 领导拒绝原因
 		createTime: Date, // 审批单生成时间
