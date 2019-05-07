@@ -8,6 +8,8 @@ const applicationSchema = new mongoose.Schema(
 		userName: String,
 		deptId: Number,
 		deptName: String,
+		corpId: String,
+		corpName: String,
 		group: { // 预算部门
 			code: String,
 			name: String

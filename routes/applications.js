@@ -5,6 +5,7 @@ const ServiceResult = require('../core/ServiceResult');
 const jwt = require('jsonwebtoken');
 
 const util = require('../core/util');
+const config = require('../config');
 
 const Router = require('koa-router');
 const router = new Router();
@@ -25,6 +26,9 @@ router.post('/', async (ctx, next) => {
 	}
 
 	application.id = util.timeCode();
+	application.corpId = config.corpId;
+	application.corpName = config.corpName;
+
 	try {
 		let res = await Applications.create(application);
 		ctx.body = ServiceResult.getSuccess(res);
@@ -57,6 +61,36 @@ router.put('/:id', async (ctx, next) => {
 		console.error('修改预算申请单失败', error);
 		ctx.body = ServiceResult.getFail('修改预算申请单失败');
 	}
+	await next();
+});
+
+router.get('/lists/basic', async (ctx, next) => {
+	let { limit, page } = ctx.query;
+	page = Number(page) || 1;
+	limit = Number(limit) || 10;
+	let offset = (page - 1) * limit;
+
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+
+	let applications = await Applications.find({ userId: user.userId, corpId: config.corpId }).sort({ 'createTime': -1 }).skip(offset).limit(limit);
+	let count = await Applications.find({ userId: user.userId }).countDocuments();
+
+	let data = [];
+	for (let application of applications) {
+		data.push({
+			id: application.id,
+			createTime: application.createTime,
+			status: application.status,
+			cause: application.cause,
+			balance: application.balance,
+			approvalDepts: application.approvalDepts
+		});
+	}
+	ctx.body = ServiceResult.getSuccess({
+		count,
+		applications: data
+	});
+
 	await next();
 });
 

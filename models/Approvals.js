@@ -27,6 +27,8 @@ const approvalSchema = new mongoose.Schema(
 		userName: String,
 		deptId: Number,
 		deptName: String,
+		corpId: String,
+		corpName: String,
 		balance: Number, // 费用快照
 		approvalDepts: [ { // 部门审批
 			deptId: Number, // 审批部门

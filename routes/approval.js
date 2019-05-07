@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const util = require('../core/util');
 const approvalService = require('../services/approval');
 const btrip = require('../services/btrip');
+const config = require('../config');
 
 const Router = require('koa-router');
 const router = new Router();
@@ -308,7 +309,7 @@ router.get('/lists/basic', async (ctx, next) => {
 
 	let user = jwt.decode(ctx.header.authorization.substr(7));
 
-	let approvals = await Approvals.find({ userId: user.userId }).sort({ 'createTime': -1 }).skip(offset).limit(limit);
+	let approvals = await Approvals.find({ userId: user.userId, corpId: config.corpId }).sort({ 'createTime': -1 }).skip(offset).limit(limit);
 	let count = await Approvals.find({ userId: user.userId }).countDocuments();
 
 	let data = [];
