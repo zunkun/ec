@@ -49,7 +49,7 @@ class Btrip {
 
 			// 组织数据
 			const rq = {
-				thirdpart_apply_id: approval.approvalId,
+				thirdpart_apply_id: approval.id,
 				userid: approval.userId,
 				user_name: approval.userName,
 				corpid: config.corpId,
@@ -78,7 +78,7 @@ class Btrip {
 			for (let [ index, it ] of approval.itineraries.entries()) {
 				rq.itinerary_list.push({
 					trip_way: Number(it.tripWay),
-					itinerary_id: `${approval.approvalId}-${index + 1}`,
+					itinerary_id: `${approval.id}-${index + 1}`,
 					traffic_type: Number(it.trafficType),
 					dep_city: it.depCity,
 					arr_city: it.arrCity,
@@ -91,23 +91,23 @@ class Btrip {
 			// 写入商旅
 			let btripRes = await dingding.btrip(btripPaths.approvalNew, rq);
 			if (btripRes.errcode !== 0) {
-				let error = `【失败】${approval.approvalId} 写入商旅审批单失败`;
+				let error = `【失败】${approval.id} 写入商旅审批单失败`;
 				console.error(error);
 				return Promise.reject(error);
 			}
-			console.log(`【成功】${approval.approvalId} 写入商旅审批单成功`);
-			await Approvals.updateOne({ approvalId: approval.approvalId }, { status: 40 });
+			console.log(`【成功】${approval.id} 写入商旅审批单成功`);
+			await Approvals.updateOne({ id: approval.id }, { status: 40 });
 			return Promise.resolve();
 		} catch (error) {
-			await Approvals.updateOne({ approvalId: approval.approvalId }, { status: 70 });
+			await Approvals.updateOne({ id: approval.id }, { status: 70 });
 			return Promise.reject(error);
 		}
 	}
 
 	async deleteApproval (approvalData) {
-		let { corpId, approvalId, approvalUser } = approvalData;
+		let { corpId, id, approvalUser } = approvalData;
 		const rq = {
-			thirdpart_apply_id: approvalId,
+			thirdpart_apply_id: id,
 			operate_time: moment().format('YYYY-MM-DD HH:mm:ss'),
 			status: 4,
 			userid: approvalUser.userId,
@@ -119,11 +119,11 @@ class Btrip {
 		// 删除商旅审批单
 		let btripRes = await dingding.btrip(btripPaths.approvalUpdate, rq);
 		if (btripRes.errcode !== 0) {
-			let error = `【失败】${approvalId} 删除商旅审批单失败`;
+			let error = `【失败】${id} 删除商旅审批单失败`;
 			console.error(error);
 			return Promise.reject(error);
 		}
-		console.log(`【成功】${approvalId} 删除商旅审批单成功`);
+		console.log(`【成功】${id} 删除商旅审批单成功`);
 		return Promise.resolve();
 	}
 }

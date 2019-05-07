@@ -41,7 +41,7 @@ class ApprovalService {
 		}
 
 		let approvalData = {
-			approvalId: util.timeCode(),
+			id: util.timeCode(),
 			userId: staff.userId,
 			userName: staff.userName,
 			deptId,
@@ -68,10 +68,10 @@ class ApprovalService {
 	}
 
 	async deleteApproval (approvalData) {
-		let { approvalId, approvalUser } = approvalData;
+		let { id, approvalUser } = approvalData;
 		try {
 			await btrip.deleteApproval(approvalData);
-			await Approvals.updateOne({ approvalId }, { status: 3, cancelTime: new Date(), cancelUser: approvalUser });
+			await Approvals.updateOne({ id }, { status: 3, cancelTime: new Date(), cancelUser: approvalUser });
 		} catch (error) {
 			return Promise.reject(error);
 		}
@@ -94,7 +94,7 @@ class ApprovalService {
 			try {
 				await message.sendApprovalMsg(approval, userIds);
 				await Approvals.updateOne({
-					approvalId: approval.approvalId,
+					id: approval.id,
 					approvalDepts: {
 						$elemMatch: { _id }
 					}

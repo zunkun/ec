@@ -22,7 +22,7 @@ const travelerSchema = new mongoose.Schema({
 // 商旅审批schema
 const approvalSchema = new mongoose.Schema(
 	{
-		approvalId: String, // 费控发起审批单id
+		id: String, // 费控发起审批单id
 		userId: String, // 发起人
 		userName: String,
 		deptId: Number,

@@ -23,7 +23,7 @@ router.prefix('/api/approvals');
  * @apiParam {Object} approvalUser 审批人
  * @apiParam {String} approvalUser.userId 审批人userId
  * @apiParam {String} approvalUser.userName 审批人userName
- * @apiParam {String} approvalId	审批单发起标识
+ * @apiParam {String} id	审批单发起标识
  * @apiParam {Object} trip 出差信息
  * @apiParam {String} trip.title 申请单标题,比如 	北京出差
  * @apiParam {String} trip.cause 出差事由，比如 北京出差
@@ -41,7 +41,7 @@ router.prefix('/api/approvals');
  * @apiSuccess {String} errmsg 错误提示，正确返回为空字符
  * @apiSuccess {Boolean} success 是否正确返回，true 正确, false错误
  * @apiSuccess {Object} data 正确返回时的数据
- * @apiSuccess {String} data.approvalId 审批单标识
+ * @apiSuccess {String} data.id 审批单标识
  * @apiSuccess {String} data.userId 发起审批的用户userId
  */
 router.post('/', async (ctx, next) => {
@@ -70,7 +70,7 @@ router.post('/', async (ctx, next) => {
 	await next();
 });
 
-router.put('/:approvalId', async (ctx, next) => {
+router.put('/:id', async (ctx, next) => {
 	let user = jwt.decode(ctx.header.authorization.substr(7));
 	let staff = await Staffs.findOne({ userId: user.userId });
 	let approval = ctx.request.body;
@@ -88,7 +88,7 @@ router.put('/:approvalId', async (ctx, next) => {
 
 	try {
 		await Approvals.updateOne({
-			approvalId: approval.approvalId
+			id: approval.id
 		}, approval);
 		ctx.body = ServiceResult.getSuccess(approval);
 	} catch (error) {
@@ -99,11 +99,11 @@ router.put('/:approvalId', async (ctx, next) => {
 });
 
 /**
- * @api {delete} /api/approvals/:approvalId 删除审批单记录
+ * @api {delete} /api/approvals/:id 删除审批单记录
  * @apiName delete-approvals
  * @apiDescription 删除商旅审批单【需要登录】
  * @apiGroup 审批单
- * @apiParam {String} approvalId 审批单标识
+ * @apiParam {String} id 审批单标识
  * @apiParam {Object} approvalUser 审批人
  * @apiParam {String} approvalUser.userId 审批人userId
  * @apiParam {String} approvalUser.userName 审批人userName
@@ -113,29 +113,29 @@ router.put('/:approvalId', async (ctx, next) => {
  * @apiSuccess {Object} data 正确返回时的数据
  */
 router.delete('/:id', async (ctx, next) => {
-	const approvalId = ctx.params.id;
+	const id = ctx.params.id;
 	const { approvalUser } = ctx.request.body;
 	if (!approvalUser.userId) {
-		ctx.body = ServiceResult.getFail(`参数不正确，删除审批单${approvalId}失败`, 404);
+		ctx.body = ServiceResult.getFail(`参数不正确，删除审批单${id}失败`, 404);
 		return;
 	}
 
 	let approval = await Approvals.findOne({
-		approvalId,
+		id,
 		status: 1 // 只删除写入商旅且没有取消的审批单
 	});
 	if (!approval) {
-		ctx.body = ServiceResult.getFail(`不存在审批单号 ${approvalId}`, 404);
+		ctx.body = ServiceResult.getFail(`不存在审批单号 ${id}`, 404);
 		return;
 	}
 	try {
-		console.log(`【开始】删除审批单 ${approvalId}`);
-		approval = await approvalService.deleteApproval({ corpId: approval.corpId, approvalId, approvalUser });
-		console.log(`【成功】删除审批单 ${approvalId}`);
-		ctx.body = ServiceResult.getSuccess({ approvalId, approvalUser });
+		console.log(`【开始】删除审批单 ${id}`);
+		approval = await approvalService.deleteApproval({ corpId: approval.corpId, id, approvalUser });
+		console.log(`【成功】删除审批单 ${id}`);
+		ctx.body = ServiceResult.getSuccess({ id, approvalUser });
 	} catch (error) {
-		console.error(`【失败】删除审批单 ${approvalId}`, error);
-		ctx.body = ServiceResult.getFail(`删除审批单${approvalId}失败`, 500);
+		console.error(`【失败】删除审批单 ${id}`, error);
+		ctx.body = ServiceResult.getFail(`删除审批单${id}失败`, 500);
 	}
 });
 
@@ -144,7 +144,7 @@ router.get('/:id', async (ctx, next) => {
 
 	let user = jwt.decode(ctx.header.authorization.substr(7));
 
-	let approval = await Approvals.findOne({ userId: user.userId, approvalId: id });
+	let approval = await Approvals.findOne({ userId: user.userId, id });
 	if (!approval) {
 		ctx.body = ServiceResult.getFail('申请单不存在', 404);
 		return;
@@ -160,7 +160,7 @@ router.get('/:id/detail', async (ctx, next) => {
 	let user = jwt.decode(ctx.header.authorization.substr(7));
 
 	let approval = await Approvals.findOne({
-		approvalId: id,
+		id,
 		approvalDepts: {
 			$elemMatch: { 'users.userId': user.userId }
 		}
@@ -179,7 +179,7 @@ router.post('/:id/cancel', async (ctx, next) => {
 
 	let user = jwt.decode(ctx.header.authorization.substr(7));
 
-	await Approvals.updateOne({ userId: user.userId, approvalId: id }, { status: 60 });
+	await Approvals.updateOne({ userId: user.userId, id }, { status: 60 });
 	ctx.body = ServiceResult.getSuccess({});
 	await next();
 });
@@ -190,7 +190,7 @@ router.post('/:id/reject', async (ctx, next) => {
 	let user = jwt.decode(ctx.header.authorization.substr(7));
 
 	let approval = await Approvals.findOne({
-		approvalId: id,
+		id,
 		approvalDepts: {
 			$elemMatch: {
 				'users.userId': user.userId,
@@ -204,7 +204,7 @@ router.post('/:id/reject', async (ctx, next) => {
 	}
 
 	await Approvals.updateOne({
-		approvalId: id,
+		id,
 		approvalDepts: {
 			$elemMatch: {
 				'users.userId': user.userId,
@@ -230,7 +230,7 @@ router.post('/:id/pass', async (ctx, next) => {
 
 	try {
 		let approval = await Approvals.findOne({
-			approvalId: id,
+			id,
 			approvalDepts: {
 				$elemMatch: {
 					'users.userId': user.userId,
@@ -244,7 +244,7 @@ router.post('/:id/pass', async (ctx, next) => {
 		}
 
 		await Approvals.updateOne({
-			approvalId: id,
+			id,
 			approvalDepts: {
 				$elemMatch: {
 					'users.userId': user.userId,
@@ -259,7 +259,7 @@ router.post('/:id/pass', async (ctx, next) => {
 			}
 		});
 
-		let _approval = await Approvals.findOne({ approvalId: id });
+		let _approval = await Approvals.findOne({ id });
 
 		let approvalDepts = _approval.approvalDepts || [];
 		let notNotifiedUsers = [];
@@ -288,7 +288,7 @@ router.post('/:id/pass', async (ctx, next) => {
 
 		if (allApprovaled) {
 			// 领导全部审批通过， 写入商旅
-			await Approvals.updateOne({ approvalId: id }, { status: 30 });
+			await Approvals.updateOne({ id }, { status: 30 });
 			// 写入商旅
 			await btrip.createApproval(approval);
 		}
@@ -314,7 +314,7 @@ router.get('/lists/basic', async (ctx, next) => {
 	let data = [];
 	for (let approval of approvals) {
 		data.push({
-			approvalId: approval.approvalId,
+			id: approval.id,
 			createTime: approval.createTime,
 			status: approval.status,
 			trip: approval.trip,
@@ -369,7 +369,7 @@ router.get('/lists/manage', async (ctx, next) => {
 	let data = [];
 	for (let approval of approvals) {
 		data.push({
-			approvalId: approval.approvalId,
+			id: approval.id,
 			userId: approval.userId,
 			userName: approval.userName,
 			dpetId: approval.deptId,
