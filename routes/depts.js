@@ -62,7 +62,6 @@ router.get('/', async (ctx, next) => {
 router.get('/group', async (ctx, next) => {
 	let year = Number(ctx.query.year) || new Date().getFullYear();
 	let deptGroups = await DeptGroups.find({ year, corpId: config.corpId });
-
 	let groups = [];
 	for (let deptGroup of deptGroups) {
 		let group = {
@@ -80,7 +79,6 @@ router.get('/group', async (ctx, next) => {
 		groups.push(group);
 	}
 	ctx.body = ServiceResult.getSuccess(groups);
-	await next();
 });
 
 /**
@@ -173,3 +171,13 @@ router.get('/approval/:deptId', async (ctx, next) => {
 });
 
 module.exports = router;
+
+router.get('/:deptId', async (ctx, next) => {
+	let deptId = Number(ctx.params.deptId);
+	let dept = await Depts.findOne({ deptId });
+	if (!dept) {
+		ctx.body = ServiceResult.getFail('没有当前部门', 404);
+		return;
+	}
+	ctx.body = ServiceResult.getSuccess(dept);
+});

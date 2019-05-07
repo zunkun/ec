@@ -56,7 +56,7 @@ router.get('/count', async (ctx, next) => {
 	} catch (error) {
 		ctx.body = ServiceResult.getSuccess({
 			deptId,
-			balance: 0
+			balance: 2000
 		});
 	}
 
