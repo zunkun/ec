@@ -28,6 +28,7 @@ class ScheduleDepts {
 			await this.syncService();
 			await this.setDeptPaths(1, [ 1 ]);
 			await this.syncStaffs();
+			await this.syncManagers();
 		}, 5000);
 	}
 
@@ -63,6 +64,7 @@ class ScheduleDepts {
 				await this.syncDepts();
 				await this.setDeptPaths(1, [ 1 ]);
 				await this.syncStaffs();
+				await this.syncManagers();
 
 				await this.syncCostCenter();
 				await this.updateSyncStatus(1);
@@ -120,6 +122,7 @@ class ScheduleDepts {
 		console.log('【开始】保存部门列表');
 
 		for (let department of this.departments) {
+			let deptInfo = await dingding.getDeptInfo(department.id);
 			await Depts.updateOne({
 				corpId: config.corpId,
 				deptId: department.id,
@@ -130,7 +133,8 @@ class ScheduleDepts {
 				year: this.year,
 				deptName: department.name,
 				parentId: department.parentid,
-				parentName: this.deptMap.get(department.parentid).deptName || ''
+				parentName: this.deptMap.get(department.parentid).deptName || '',
+				deptManagerUseridList: deptInfo.deptManagerUseridList
 			}, { upsert: true });
 		}
 		console.log('【成功】保存部门列表');
@@ -218,22 +222,6 @@ class ScheduleDepts {
 				corpId: config.corpId,
 				userId: user.userid
 			}, userData, { upsert: true });
-			if (user.isLeader) {
-				await Depts.updateMany({
-					deptId,
-					corpId: config.corpId,
-					'managers.userId': {
-						$exists: false
-					}
-				}, {
-					$addToSet: {
-						managers: {
-							userId: user.userid,
-							userName: user.name
-						}
-					}
-				});
-			}
 			promiseArray.push(promise);
 		}
 		return Promise.all(promiseArray);
@@ -256,6 +244,25 @@ class ScheduleDepts {
 		}
 
 		return this.setEcDept(deptId, this.deptMap.get(parentId).parentId);
+	}
+
+	async syncManagers () {
+		console.log('【开始】保存主管信息');
+		let depts = await Depts.find({ corpId: config.corpid, year: this.year });
+
+		for (let dept of depts) {
+			if (!dept.deptManagerUseridList) {
+				continue;
+			}
+			let userIds = dept.deptManagerUseridList.split('|');
+			let managers = [];
+			console.log(`保存 ${dept.deptName} 管理员信息`);
+			for (let userId of userIds) {
+				let staff = await Staffs.findOne({ userId });
+				managers.push({ userId, userName: staff.userName });
+			}
+			await Depts.updateOne({ _id: dept._id }, { $set: { managers } });
+		}
 	}
 
 	async syncCostCenter () {

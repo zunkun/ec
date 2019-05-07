@@ -21,5 +21,5 @@ module.exports = {
 	appsecret: 'NsAxZZmo_7pEEKlHg4uT2FA77y7Br3_EozCoUq65mLY6BU3QH91Dz9d6caWNFLlH',
 	deptCron: '0 0 6,12 * * *',
 	btripCron: '0 */20 * * * *',
-	mobileBase: 'https://portal.haierfinancial.com:18612/ec/eclient/#/'
+	mobileBase: 'https://portal.haierfinancial.com:18612/ec/ecmobile/#/'
 };

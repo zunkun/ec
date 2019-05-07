@@ -48,6 +48,18 @@ class Dingding {
 		}
 	}
 
+	async getDeptInfo (deptId) {
+		let uri = `${config.dingBaseUri}/department/get`;
+		let data = await rp.get(uri, {
+			qs: {
+				id: deptId || 1,
+				access_token: await this.getAccessToken()
+			},
+			json: true
+		});
+		return data;
+	}
+
 	/**
 	 *获取部门人员列表
 	 * @param {Number} deptId 部门id

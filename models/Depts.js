@@ -19,6 +19,7 @@ const deptSchema = new mongoose.Schema(
 			code: String,
 			name: String
 		},
+		deptManagerUseridList: String,
 		managers: [ managerSchema ]
 	}, {
 		collection: 'depts',
