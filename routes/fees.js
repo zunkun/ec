@@ -29,10 +29,12 @@ router.get('/balance', async (ctx, next) => {
 		let balance = await feeService.tripBalanceByDeptId(deptId);
 		ctx.body = ServiceResult.getSuccess({
 			deptId,
-			approval: balance > 0
+			approval: balance > 0,
+			balance
 		});
 	} catch (error) {
-		ctx.body = ServiceResult.getFail(error);
+		console.error(error);
+		ctx.body = ServiceResult.getFail('获取费用错误');
 	}
 
 	await next();
@@ -52,7 +54,10 @@ router.get('/count', async (ctx, next) => {
 			balance: balance
 		});
 	} catch (error) {
-		ctx.body = ServiceResult.getFail(error);
+		ctx.body = ServiceResult.getSuccess({
+			deptId,
+			balance: 0
+		});
 	}
 
 	await next();
