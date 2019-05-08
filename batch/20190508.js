@@ -75,7 +75,7 @@ async function setProcess () {
 async function setFinance () {
 	let role = await Roles.findOne({ name: '预算管理岗' });
 	console.log(`【设置】finance process ${role.users[0].userName}等`);
-	await Process.update({
+	await Process.updateMany({
 		corpId: config.corpId
 	}, {
 		finances: role.users
