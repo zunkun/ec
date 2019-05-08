@@ -20,7 +20,16 @@ const deptSchema = new mongoose.Schema(
 			name: String
 		},
 		deptManagerUseridList: String,
-		managers: [ managerSchema ]
+		managers: [ managerSchema ],
+		ecDepts: [ {
+			sequence: Number,
+			deptId: Number,
+			deptName: String,
+			users: [ {
+				userId: String,
+				userName: String
+			} ]
+		} ]
 	}, {
 		collection: 'depts',
 		autoIndex: true,

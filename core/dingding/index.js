@@ -148,6 +148,79 @@ class Dingding {
 			throw json.errmsg;
 		}
 	}
+
+	async getCorpRoles () {
+		let accessToken = await this.getAccessToken();
+		let uri = `${config.dingBaseUri}/topapi/role/list`;
+		let options = {
+			uri,
+			method: 'POST',
+			qs: {
+				access_token: accessToken
+			},
+			body: {
+				size: 200
+			},
+			json: true
+		};
+		let roleLists = await this.getRoleLists([], options);
+		return roleLists;
+	}
+
+	async getRoleLists (roleLists = [], options, offset = 0) {
+		options.body.offset = offset;
+		offset += 200;
+		let data = await rp(options);
+
+		if (data.errcode === 0) {
+			let result = data.result || {};
+			roleLists = roleLists.concat(result.list || []);
+			if (!result.hasMore) {
+				return roleLists;
+			}
+			await util.wait(200);
+			return this.getRoleLists(roleLists, options, offset);
+		} else {
+			return roleLists;
+		}
+	}
+
+	async getCorpRoleUsers (roleId) {
+		let accessToken = await this.getAccessToken();
+		let uri = `${config.dingBaseUri}/topapi/role/simplelist`;
+		let options = {
+			uri,
+			method: 'POST',
+			qs: {
+				access_token: accessToken
+			},
+			body: {
+				role_id: roleId,
+				size: 200
+			},
+			json: true
+		};
+		let userLists = await this.getRoleUserLists([], options);
+		return userLists;
+	}
+
+	async getRoleUserLists (userLists = [], options, offset = 0) {
+		options.body.offset = offset;
+		offset += 200;
+		let data = await rp(options);
+
+		if (data.errcode === 0) {
+			let result = data.result || {};
+			userLists = userLists.concat(result.list || []);
+			if (!result.hasMore) {
+				return userLists;
+			}
+			await util.wait(200);
+			return this.getRoleLists(userLists, options, offset);
+		} else {
+			return userLists;
+		}
+	}
 }
 
 const dingding = new Dingding();

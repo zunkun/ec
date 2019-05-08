@@ -8,6 +8,7 @@ const cron = require('node-cron');
 const util = require('../core/util');
 const constants = require('../config/constants');
 const btripPaths = constants.btrip;
+const roleService = require('./roleService');
 
 class ScheduleDepts {
 	constructor () {
@@ -68,6 +69,7 @@ class ScheduleDepts {
 
 				await this.syncCostCenter();
 				await this.updateSyncStatus(1);
+				await roleService.start();
 			} catch (error) {
 				console.log(`【失败】${this.year}-${this.month}-${this.day}部门同步失败`);
 				console.log({ error });
