@@ -2,7 +2,7 @@ process.env.NODE_ENV = 'production';
 
 const Staffs = require('../models/Staffs');
 const Depts = require('../models/Depts');
-const Process = require('../models/Process');
+const StaffProcess = require('../models/StaffProcess');
 const Roles = require('../models/Roles');
 const config = require('../config');
 
@@ -45,7 +45,7 @@ async function setEcDepts () {
 	}
 }
 
-async function setProcess () {
+async function setStaffProcess () {
 	let staffs = await Staffs.find({ corpId: config.corpId });
 	for (let staff of staffs) {
 		let departments = staff.departments || [];
@@ -64,7 +64,7 @@ async function setProcess () {
 				applications: dept.ecDepts
 			};
 			console.log(`【保存】${dept.deptName} ${staff.userName} process`);
-			await Process.updateOne({
+			await StaffProcess.updateOne({
 				userId: staff.userId,
 				corpId: config.corpId
 			}, process, { upsert: true });
@@ -75,7 +75,7 @@ async function setProcess () {
 async function setFinance () {
 	let role = await Roles.findOne({ name: '预算管理岗' });
 	console.log(`【设置】finance process ${role.users[0].userName}等`);
-	await Process.updateMany({
+	await StaffProcess.updateMany({
 		corpId: config.corpId
 	}, {
 		finances: role.users
@@ -84,7 +84,7 @@ async function setFinance () {
 
 async function start () {
 	await setEcDepts();
-	await setProcess();
+	await setStaffProcess();
 	await setFinance();
 }
 

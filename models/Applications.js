@@ -10,6 +10,7 @@ const applicationSchema = new mongoose.Schema(
 		deptName: String,
 		corpId: String,
 		corpName: String,
+		type: String, // 申请费用类型 trip, benefits, others
 		group: { // 预算部门
 			code: String,
 			name: String

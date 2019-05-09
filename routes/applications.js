@@ -1,10 +1,10 @@
 const Applications = require('../models/Applications');
 // const Depts = require('../models/Applications');
 const ServiceResult = require('../core/ServiceResult');
+const applicationService = require('../services/applicationService');
 
 const jwt = require('jsonwebtoken');
 
-const util = require('../core/util');
 const config = require('../config');
 
 const Router = require('koa-router');
@@ -20,17 +20,16 @@ router.post('/', async (ctx, next) => {
 		ctx.body = ServiceResult.getFail('鉴权失败');
 		return;
 	}
-	if (!application.deptId || !application.amount || !application.cause) {
+	application.type = application.type || 'trip';
+	if (!application.deptId || !application.cause) {
 		ctx.body = ServiceResult.getFail('参数不正确');
 		return;
 	}
-
-	application.id = util.timeCode();
 	application.corpId = config.corpId;
 	application.corpName = config.corpName;
 
 	try {
-		let res = await Applications.create(application);
+		let res = await applicationService.create(application);
 		ctx.body = ServiceResult.getSuccess(res);
 	} catch (error) {
 		ctx.body = ServiceResult.getFail('保存申请单失败');

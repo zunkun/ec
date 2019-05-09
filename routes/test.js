@@ -13,8 +13,10 @@ router.prefix('/api/test');
  * @apiSuccess {Boolean} success 是否正确返回，true 正确, false错误
  * @apiSuccess {Object} data 正确返回时的数据
  */
-router.get('/connect', async (ctx, next) => {
-	ctx.body = {};
+router.post('/connect', async (ctx, next) => {
+	let data = ctx.request.body;
+	console.log({ data });
+	ctx.body = 'success';
 	await next();
 });
 

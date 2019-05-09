@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 // 员工审批人schema,如果一個員工有两个人或者两个角色，则有两条数据
 const processSchema = new mongoose.Schema(
 	{
+		applicationId: String, // 审批流
 		userId: String, // 角色
 		userName: String,
 		deptId: Number,
@@ -11,6 +12,7 @@ const processSchema = new mongoose.Schema(
 		corpId: String,
 		corpName: String,
 		year: Number,
+		type: String, // 申请类型
 		group: {
 			code: String,
 			name: String
@@ -22,27 +24,56 @@ const processSchema = new mongoose.Schema(
 			users: [ { // 人员为平级关系
 				userId: String,
 				userName: String
-			} ]
+			} ],
+			notified: Boolean, // 是否通知
+			notifiedTime: Date,
+			approvalUser: { // 审批操作领导
+				userId: String,
+				userName: String
+			},
+			approvalTime: Number,
+			status: Number // 审批状态 10-审批中 20-通过 30-拒绝 40-退回
 		} ],
-		applications: [ { // 预算申请审批人员
+		applications: [ { // 出差申请审批人员，为上下级关系
 			sequence: Number,
 			deptId: Number,
 			deptName: String,
-			users: [ {
+			users: [ { // 人员为平级关系
 				userId: String,
 				userName: String
-			} ]
+			} ],
+			notified: Boolean, // 是否通知
+			notifiedTime: Date,
+			approvalUser: { // 审批操作领导
+				userId: String,
+				userName: String
+			},
+			approvalTime: Date,
+			status: Number // 审批状态 10-审批中 20-通过 30-拒绝
 		} ],
-		finances: [ { // 财务人员，平级关系
-			userId: String,
-			userName: String
-		} ]
+		finances: {
+			users: [ { // 财务人员，平级关系
+				userId: String,
+				userName: String
+			} ],
+			notified: Boolean,
+			notifiedTime: Date,
+			status: Number, // 10-调整中 20-调整完成
+			adjustTime: Date // 调整时间
+		},
+		// 10-员工申请  11-员工取消
+		// 20-主管审批中 21-主管拒绝
+		// 30-财务调整中 31-财务撤回
+		// 40-调出部门审批中
+		// 50-调入部门审批中
+		// 60-审批通过 61-费用扣减成功 62-费用扣减失败
+		status: Number
 	}, {
-		collection: 'processes',
+		collection: 'process',
 		autoIndex: true,
 		timestamps: { createdAt: 'createTime', updatedAt: 'updateTime' }
 	});
 
-const Process = mongodb.model('processes', processSchema);
+const Process = mongodb.model('process', processSchema);
 
 module.exports = Process;
