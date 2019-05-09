@@ -32,6 +32,7 @@ const processSchema = new mongoose.Schema(
 				userName: String
 			},
 			approvalTime: Number,
+			note: String,
 			status: Number // 审批状态 10-审批中 20-通过 30-拒绝 40-退回
 		} ],
 		applications: [ { // 出差申请审批人员，为上下级关系
@@ -48,6 +49,7 @@ const processSchema = new mongoose.Schema(
 				userId: String,
 				userName: String
 			},
+			note: String, // 审批意见
 			approvalTime: Date,
 			status: Number // 审批状态 10-审批中 20-通过 30-拒绝
 		} ],
@@ -61,6 +63,13 @@ const processSchema = new mongoose.Schema(
 			status: Number, // 10-调整中 20-调整完成
 			adjustTime: Date // 调整时间
 		},
+		from: [ {
+			code: String,
+			name: String,
+			amount: Number // 调出金额
+		} ],
+		count: Number, // 财务调整金额总计
+
 		// 10-员工申请  11-员工取消
 		// 20-主管审批中 21-主管拒绝
 		// 30-财务调整中 31-财务撤回

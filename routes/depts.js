@@ -81,6 +81,20 @@ router.get('/group', async (ctx, next) => {
 	ctx.body = ServiceResult.getSuccess(groups);
 });
 
+router.get('/grouplists', async (ctx, next) => {
+	let year = Number(ctx.query.year) || new Date().getFullYear();
+	let deptGroups = await DeptGroups.find({ year, corpId: config.corpId });
+	let groups = [];
+	for (let deptGroup of deptGroups) {
+		let group = {
+			code: deptGroup.code,
+			name: deptGroup.name
+		};
+		groups.push(group);
+	}
+	ctx.body = ServiceResult.getSuccess(groups);
+});
+
 /**
  * @api {post} /api/depts/groupmap 生成部门和预算体对应关系
  * @apiName set-dept-group
