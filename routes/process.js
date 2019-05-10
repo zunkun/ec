@@ -63,11 +63,11 @@ router.post('/application/:id/cancel', async (ctx) => {
 			corpId: config.corpId,
 			applicationId: id,
 			status: { $in: [ 10, 20 ] },
-			'users.userId': user.userId
+			userId: user.userId
 		});
 
 		if (!process) {
-			ctx.body = ServiceResult.getFail('取消失敗');
+			ctx.body = ServiceResult.getFail('撤销失敗');
 			return;
 		}
 		await Process.updateOne({ _id: process._id }, { status: 11 });
