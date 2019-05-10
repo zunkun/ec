@@ -98,7 +98,7 @@ async function changeBudgets () {
 					catalog: to.catalog,
 					stock: budgetTo[to.catalog],
 					amount: Math.abs(amount),
-					balance: budgetTo[to.catalog] - Math.abs(amount)
+					balance: budgetTo[to.catalog] + Math.abs(amount)
 				},
 				status: 0,
 				staff: {

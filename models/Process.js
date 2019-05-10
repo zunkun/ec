@@ -66,13 +66,35 @@ const processSchema = new mongoose.Schema(
 		from: [ {
 			code: String,
 			name: String,
-			amount: Number // 调出金额
+			catalog: String,
+			amount: Number, // 调出金额
+			users: [ {
+				userId: String,
+				userName: String
+			} ],
+			notified: Boolean,
+			notifyTime: Date,
+			approvalUser: {
+				userId: String,
+				userName: String
+			},
+			approvalTime: Date,
+			note: String,
+			status: Number // 10-审批中 20-同意 30-拒绝
 		} ],
 		count: Number, // 财务调整金额总计
-
+		to: [ {
+			userId: String,
+			userName: String,
+			notified: Boolean,
+			notifyTime: Date,
+			approvalTime: Date,
+			note: String,
+			status: Number // 10-审批中 20-同意 30-拒绝
+		} ],
 		// 10-员工申请  11-员工取消
 		// 20-主管审批中 21-主管拒绝
-		// 30-财务调整中 31-财务撤回
+		// 30-财务调整中
 		// 40-调出部门审批中
 		// 50-调入部门审批中
 		// 60-审批通过 61-费用扣减成功 62-费用扣减失败

@@ -2,9 +2,11 @@ const StaffProcess = require('../models/StaffProcess');
 const Process = require('../models/Process');
 const ServiceResult = require('../core/ServiceResult');
 const applicationService = require('../services/applicationService');
+const budgetChange = require('../services/budgetChange');
 const jwt = require('jsonwebtoken');
+const Depts = require('../models/Depts');
+const message = require('../services/message');
 
-// const util = require('../core/util');
 const config = require('../config');
 
 const Router = require('koa-router');
@@ -152,6 +154,376 @@ router.post('/application/:id/agree', async (ctx) => {
 	} catch (error) {
 		console.log(error);
 		ctx.body = ServiceResult.getFail('拒绝失败');
+	}
+});
+
+router.post('/application/:id/financesave', async (ctx) => {
+	let id = ctx.params.id;
+	let { from } = ctx.request.body;
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+
+	if (!user.userId) {
+		ctx.body = ServiceResult.getFail('鉴权失败');
+		return;
+	}
+	try {
+		let process = await Process.findOne({
+			corpId: config.corpId,
+			applicationId: id,
+			status: { $in: [ 30, 31 ] },
+			'finances.users.userId': user.userId
+		});
+
+		if (!process) {
+			ctx.body = ServiceResult.getFail('操作失败');
+			return;
+		}
+
+		let toArray = [];
+		let toDept = await Depts.findOne({
+			'group.code': process.group.code,
+			corpId: config.corpId
+		});
+
+		if (toDept && toDept.managers.length) {
+			for (let manager of toDept.managers) {
+				toArray.push({
+					userId: manager.userId,
+					userName: manager.userName
+				});
+			}
+		}
+
+		let count = 0;
+		let userIds = [];
+		let fromArray = [];
+		for (let item of from) {
+			count += Number(item.amount);
+			let users = [];
+			let fromItem = {
+				code: item.code,
+				name: item.name,
+				amount: Number(item.amount),
+				notified: true,
+				notifyTime: new Date(),
+				status: 10
+			};
+
+			let dept = await Depts.findOne({
+				'group.code': item.code,
+				corpId: config.corpId
+			});
+
+			if (dept && dept.managers.length) {
+				for (let manager of dept.managers) {
+					userIds.push(manager.userId);
+					users.push({
+						userId: manager.userId,
+						userName: manager.userName
+					});
+				}
+			}
+
+			fromItem.users = users;
+			fromArray.push(fromItem);
+		}
+
+		userIds = Array.from(new Set(userIds));
+		await message.sendFromMsg(process, userIds);
+		await Process.updateOne({
+			_id: process._id
+		}, {
+			from: fromArray,
+			to: toArray,
+			count,
+			status: 40
+		});
+
+		ctx.body = ServiceResult.getSuccess({});
+	} catch (error) {
+		console.log(error);
+		ctx.body = ServiceResult.getFail('拒绝失败');
+	}
+});
+
+router.post('/application/:id/withdraw', async (ctx) => {
+	let id = ctx.params.id;
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+
+	if (!user.userId) {
+		ctx.body = ServiceResult.getFail('鉴权失败');
+		return;
+	}
+	try {
+		let process = await Process.findOne({
+			corpId: config.corpId,
+			applicationId: id,
+			status: { $in: [ 40, 50 ] },
+			'finances.users.userId': user.userId
+		});
+
+		if (!process) {
+			ctx.body = ServiceResult.getFail('操作失败');
+			return;
+		}
+
+		let userIds = [];
+		for (let item of process.from) {
+			for (let user of item.users) {
+				userIds.push(user.userId);
+			}
+		}
+		userIds = Array.from(new Set(userIds));
+
+		await message.sendWithdrawMsg(process, userIds);
+		await Process.updateOne({ _id: process._id }, {
+			from: [],
+			count: 0,
+			status: 30
+		});
+
+		ctx.body = ServiceResult.getSuccess({});
+	} catch (error) {
+		console.log(error);
+		ctx.body = ServiceResult.getFail('拒绝失败');
+	}
+});
+
+router.post('/application/:id/fromback', async (ctx) => {
+	let id = ctx.params.id;
+	let { note } = ctx.request.body;
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+	if (!user.userId) {
+		ctx.body = ServiceResult.getFail('鉴权失败');
+		return;
+	}
+	try {
+		let process = await Process.findOne({
+			corpId: config.corpId,
+			applicationId: id,
+			status: { $in: [ 40 ] },
+			'from.users.userId': user.userId
+		});
+
+		if (!process) {
+			ctx.body = ServiceResult.getFail('操作失败');
+			return;
+		}
+
+		let userIds = [];
+		for (let user of process.finances.users) {
+			userIds.push(user.userId);
+		}
+
+		userIds = Array.from(new Set(userIds));
+
+		await message.sendFromBackMsg(process, user, userIds, note);
+		await Process.updateOne({ _id: process._id }, {
+			from: [],
+			count: 0,
+			status: 30
+		});
+
+		ctx.body = ServiceResult.getSuccess({});
+	} catch (error) {
+		console.log(error);
+		ctx.body = ServiceResult.getFail('拒绝失败');
+	}
+});
+
+router.post('/application/:id/frompass', async (ctx) => {
+	let id = ctx.params.id;
+	let { note } = ctx.request.body;
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+	if (!user.userId) {
+		ctx.body = ServiceResult.getFail('鉴权失败');
+		return;
+	}
+	try {
+		let process = await Process.findOne({
+			corpId: config.corpId,
+			applicationId: id,
+			status: { $in: [ 40 ] },
+			'from.users.userId': user.userId,
+			'from.status': 10
+		});
+
+		if (!process) {
+			ctx.body = ServiceResult.getFail('操作失败');
+			return;
+		}
+
+		let newFrom = [];
+		// let allPass = true;
+		for (let item of process.from) {
+			if (item.status !== 10) {
+				newFrom.push(item);
+				continue;
+			}
+			for (let userInfo of item.users) {
+				if (user.userId === userInfo.userId) {
+					item.approvalTime = new Date();
+					item.approvalUser = {
+						userId: user.userId,
+						userName: user.userName
+					};
+					item.status = 20;
+					item.note = note;
+				}
+			}
+			newFrom.push(item);
+		}
+
+		await Process.updateOne({ _id: process._id }, {
+			from: newFrom
+		});
+
+		let exist = await Process.findOne({
+			corpId: config.corpId,
+			applicationId: id,
+			status: { $in: [ 40 ] },
+			'from.status': { $in: [ 10, 30 ] }
+		});
+
+		// 给调入的部门领导发消息
+		if (!exist) {
+			console.log('给调入部门领导发消息');
+			let userIds = [];
+			let newTo = [];
+			for (let item of process.to) {
+				userIds.push(item.userId);
+				newTo.push({
+					userId: item.userId,
+					userName: item.userName,
+					notified: true,
+					notifyTime: new Date(),
+					status: 10
+				});
+			}
+
+			userIds = Array.from(new Set(userIds));
+
+			await message.sendToMsg(process, userIds);
+			await Process.updateOne({ _id: process._id }, {
+				to: newTo,
+				status: 50
+			});
+		}
+
+		ctx.body = ServiceResult.getSuccess({});
+	} catch (error) {
+		console.log(error);
+		ctx.body = ServiceResult.getFail('操作失败');
+	}
+});
+
+router.post('/application/:id/toback', async (ctx) => {
+	let id = ctx.params.id;
+	let { note } = ctx.request.body;
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+	if (!user.userId) {
+		ctx.body = ServiceResult.getFail('鉴权失败');
+		return;
+	}
+	try {
+		let process = await Process.findOne({
+			corpId: config.corpId,
+			applicationId: id,
+			status: { $in: [ 50 ] },
+			'to.users.userId': user.userId
+		});
+
+		if (!process) {
+			ctx.body = ServiceResult.getFail('操作失败');
+			return;
+		}
+
+		let userIds = [];
+		for (let user of process.finances.users) {
+			userIds.push(user.userId);
+		}
+
+		userIds = Array.from(new Set(userIds));
+
+		await message.sendBackMsg(process, user, userIds, note);
+		await Process.updateOne({ _id: process._id }, {
+			from: [],
+			count: 0,
+			status: 30
+		});
+
+		ctx.body = ServiceResult.getSuccess({});
+	} catch (error) {
+		console.log(error);
+		ctx.body = ServiceResult.getFail('拒绝失败');
+	}
+});
+
+router.post('/application/:id/topass', async (ctx) => {
+	let id = ctx.params.id;
+	let { note } = ctx.request.body;
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+	if (!user.userId) {
+		ctx.body = ServiceResult.getFail('鉴权失败');
+		return;
+	}
+	try {
+		let process = await Process.findOne({
+			corpId: config.corpId,
+			applicationId: id,
+			status: { $in: [ 50 ] },
+			'to.userId': user.userId,
+			'to.status': 10
+		});
+
+		if (!process) {
+			ctx.body = ServiceResult.getFail('操作失败');
+			return;
+		}
+
+		let newTo = [];
+		// let allPass = true;
+		for (let item of process.to) {
+			if (item.status !== 10) {
+				newTo.push(item);
+				continue;
+			}
+			if (user.userId === item.userId) {
+				item.approvalTime = new Date();
+				item.approvalUser = {
+					userId: user.userId,
+					userName: user.userName
+				};
+				item.status = 20;
+				item.note = note;
+			}
+			newTo.push(item);
+		}
+
+		await Process.updateOne({ _id: process._id }, {
+			to: newTo
+		});
+
+		let exist = await Process.findOne({
+			corpId: config.corpId,
+			applicationId: id,
+			status: { $in: [ 50 ] },
+			'to.status': { $in: [ 10, 30 ] }
+		});
+
+		// 调整预算
+		if (!exist) {
+			await Process.updateOne({ _id: process._id }, {
+				status: 60
+			});
+
+			await budgetChange.start(process.applicationId);
+			message.sendAppSuccessMsg(process);
+		}
+		ctx.body = ServiceResult.getSuccess({});
+	} catch (error) {
+		console.log(error);
+		ctx.body = ServiceResult.getFail('操作失败');
 	}
 });
 
