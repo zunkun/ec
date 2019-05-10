@@ -1,4 +1,5 @@
 const BtripFee = require('../models/BTripFee');
+const NcFee = require('../models/NcFee');
 const Depts = require('../models/Depts');
 const Budgets = require('../models/Budgets');
 const config = require('../config');
@@ -27,6 +28,12 @@ class FeeService {
 			console.error('【错误】 执行sql出错', { sql, error });
 			return Promise.reject(error);
 		}
+	}
+	async ncExpenseLocal (code, type) {
+		type = type || 'trip';
+		let fee = await NcFee.findOne({ coprId: config.corpId, year: new Date().getFullYear(), 'group.code': code });
+		if (!fee) return 0;
+		return Number(fee[type]);
 	}
 
 	async tripBalanceByDeptId (deptId) {
@@ -72,7 +79,8 @@ class FeeService {
 		btripFees = btrip ? Number(btrip.total) : 0;
 
 		try {
-			let ncFees = await this.ncExpense(code, '交通差旅费');
+			// let ncFees = await this.ncExpense(code, '交通差旅费');
+			let ncFees = await this.ncExpenseLocal(code, 'trip');
 			return btripFees + ncFees;
 		} catch (error) {
 			return Promise.reject(error);

@@ -26,12 +26,10 @@ class ScheduleNc {
 
 	async syncService () {
 		let sql = 'SELECT PERIODV, FCODE, FNAME, TYPE, AMOUNT FROM nc633.v_dd_budget_fse_amount';
+		let startTime = Date.now();
 
 		try {
-			let startTime = Date.now();
 			let data = await oracle.execute(sql);
-			console.log(`用时: ${(Date.now() - startTime) / 1000}s`);
-
 			for (let row of data.rows) {
 				console.log(`【保存】 ${row[2]} ${row[3]} 费用`);
 				await NcFee.updateOne({
@@ -52,6 +50,7 @@ class ScheduleNc {
 		} catch (error) {
 			console.error('【错误】保存NC费用', error);
 		}
+		console.log(`用时: ${(Date.now() - startTime) / 1000}s`);
 		return Promise.resolve();
 	}
 }
