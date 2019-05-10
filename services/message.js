@@ -35,7 +35,7 @@ class Message {
 			action_card: {
 				title: '预算审批',
 				markdown: `# 预算审批 \n ${text}`,
-				single_title: '预算',
+				single_title: '预算审批',
 				single_url: singleUrl // 移动端访问地址
 			}
 		};

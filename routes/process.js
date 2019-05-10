@@ -50,6 +50,34 @@ router.get('/application/:id', async (ctx) => {
 	ctx.body = ServiceResult.getSuccess(process);
 });
 
+router.post('/application/:id/cancel', async (ctx) => {
+	let id = ctx.params.id;
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+
+	if (!user.userId) {
+		ctx.body = ServiceResult.getFail('鉴权失败');
+		return;
+	}
+	try {
+		let process = await Process.findOne({
+			corpId: config.corpId,
+			applicationId: id,
+			status: { $in: [ 10, 20 ] },
+			'users.userId': user.userId
+		});
+
+		if (!process) {
+			ctx.body = ServiceResult.getFail('取消失敗');
+			return;
+		}
+		await Process.updateOne({ _id: process._id }, { status: 11 });
+		ctx.body = ServiceResult.getSuccess({});
+	} catch (error) {
+		console.error(error);
+		ctx.body = ServiceResult.getFail('拒绝失败');
+	}
+});
+
 router.post('/application/:id/reject', async (ctx) => {
 	let id = ctx.params.id;
 	let body = ctx.request.body;
