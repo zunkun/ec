@@ -3,6 +3,7 @@ const FlightOrder = require('../models/FlightOrder');
 const TrainOrder = require('../models/TrainOrder');
 const VehicleOrder = require('../models/VehicleOrder');
 const HotelOrder = require('../models/HotelOrder');
+const Depts = require('../models/Depts');
 const computeService = require('./computeService');
 
 const Sync = require('../models/Sync');
@@ -17,6 +18,7 @@ const btripPaths = constants.btrip;
 class ScheduleBtrip {
 	constructor () {
 		this.dateLists = [];
+		this.deptGroupMap = new Map();
 	}
 
 	async start () {
@@ -30,12 +32,22 @@ class ScheduleBtrip {
 	async syncService () {
 		let startTime = Date.now();
 		this.getDateLists();
+		await this.setDeptGroupMap();
 		for (let date of this.dateLists) {
 			await this.syncBtripHistory(date);
 			await util.wait(200);
 		}
 		await computeService.compute();
 		console.log(`【完成】${config.corpName} 截止目前所有票务同步完成, 用时 ${(Date.now() - startTime) / 1000} s`);
+	}
+
+	async setDeptGroupMap () {
+		let depts = await Depts.find({ corpId: config.corpId });
+		for (let dept of depts) {
+			if (!dept.group) continue;
+
+			this.deptGroupMap.set(dept.deptId, dept.group);
+		}
 	}
 
 	/**
@@ -105,6 +117,8 @@ class ScheduleBtrip {
 				flight.month = month;
 				flight.day = day;
 				flight.total_fee = this.computeFee(flight.price_info_list);
+				flight.groupCode = this.deptGroupMap.get(flight.deptid).code;
+				flight.groupName = this.deptGroupMap.get(flight.deptid).name;
 
 				await FlightOrder.updateOne({ id: flight.id, apply_id: flight.apply_id, corpid: flight.corpid }, flight, { upsert: true });
 			}
@@ -152,6 +166,9 @@ class ScheduleBtrip {
 				train.month = month;
 				train.day = day;
 				train.total_fee = this.computeFee(train.price_info_list);
+
+				train.groupCode = this.deptGroupMap.get(train.deptid).code;
+				train.groupName = this.deptGroupMap.get(train.deptid).name;
 				await TrainOrder.updateOne({ id: train.id, apply_id: train.apply_id, corpid: train.corpid }, train, { upsert: true });
 			}
 		}
@@ -198,6 +215,9 @@ class ScheduleBtrip {
 				vehicle.month = month;
 				vehicle.day = day;
 				vehicle.total_fee = this.computeFee(vehicle.price_info_list);
+
+				vehicle.groupCode = this.deptGroupMap.get(vehicle.deptid).code;
+				vehicle.groupName = this.deptGroupMap.get(vehicle.deptid).name;
 				await VehicleOrder.updateOne({ id: vehicle.id, apply_id: vehicle.apply_id, corpid: vehicle.corpid }, vehicle, { upsert: true });
 			}
 		}
@@ -244,6 +264,9 @@ class ScheduleBtrip {
 				hotel.month = month;
 				hotel.day = day;
 				hotel.total_fee = this.computeFee(hotel.price_info_list);
+
+				hotel.groupCode = this.deptGroupMap.get(hotel.deptid).code;
+				hotel.groupName = this.deptGroupMap.get(hotel.deptid).name;
 				await HotelOrder.updateOne({ id: hotel.id, apply_id: hotel.apply_id, corpid: hotel.corpid }, hotel, { upsert: true });
 			}
 		}

@@ -26,6 +26,8 @@ const invoiceSchema = new mongoose.Schema({
 // 商旅酒店订单列表 参考alitrip.btrip.hotel.order.search
 const hotelOrderSchema = new mongoose.Schema(
 	{
+		groupCode: String, // group code
+		groupName: String, // group name
 		id: Number, // 酒店订单id
 		year: String,
 		month: String,

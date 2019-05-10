@@ -26,6 +26,8 @@ const invoiceSchema = new mongoose.Schema({
 // 商旅火车票订单列表 参考alitrip.btrip.train.order.search
 const TrainOrderSchema = new mongoose.Schema(
 	{
+		groupCode: String, // group code
+		groupName: String, // group name
 		id: Number, // 火车票订单id
 		year: String,
 		month: String,

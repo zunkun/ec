@@ -13,6 +13,8 @@ const priceSchema = new mongoose.Schema({
 // 商旅用车订单列表 参考alitrip.btrip.vehicle.order.search
 const VehicleOrderSchema = new mongoose.Schema(
 	{
+		groupCode: String, // group code
+		groupName: String, // group name
 		id: Number, // 火车票订单id
 		year: String,
 		month: String,

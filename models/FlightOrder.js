@@ -33,6 +33,8 @@ const invoiceSchema = new mongoose.Schema({
 // 商旅机票订单列表 参考alitrip.btrip.flight.order.search
 const flightOrderSchema = new mongoose.Schema(
 	{
+		groupCode: String, // group code
+		groupName: String, // group name
 		id: Number, // 机票订单id
 		year: String,
 		month: String,
