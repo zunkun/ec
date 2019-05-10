@@ -23,5 +23,17 @@ module.exports = {
 			name: 'SCHEDULE_PRODUCTION',
 			NODE_ENV: 'production'
 		}
+	}, {
+		name: 'EC_NC',
+		script: 'bin/scheduleNc.js',
+		instances: 1,
+		autorestart: true,
+		watch: false,
+		max_memory_restart: '2G',
+		env_production: {
+			PORT: 5604,
+			name: 'NC_PRODUCTION',
+			NODE_ENV: 'production'
+		}
 	} ]
 };

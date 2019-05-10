@@ -22,5 +22,6 @@ module.exports = {
 	appsecret: 'G7AA-I0BtNrbY7vOGYw64if1UqQnaKCaIyPBMZ2hqHE6MTw-9zBzhrvxhMAqVsEr',
 	deptCron: '0 0 6,15 * * *',
 	btripCron: '0 */20 * * * *',
+	ncCron: '0 */5 * * * *',
 	mobileBase: 'http://172.18.1.100:4500/#/'
 };
