@@ -32,6 +32,7 @@ const budgetRecordSchema = new mongoose.Schema(
 			userId: String,
 			userName: String
 		},
+		cause: String, // 原因
 		status: Number // 操作结果 null/0 等待操作 10 失败 20成功
 	}, {
 		collection: 'budgetRecords',
