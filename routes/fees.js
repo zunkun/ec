@@ -26,7 +26,9 @@ router.get('/balance', async (ctx, next) => {
 		return;
 	}
 	try {
+		let startTime = Date.now();
 		let balance = await feeService.tripBalanceByDeptId(deptId);
+		console.log(`用时: ${(Date.now() - startTime) / 1000}s`);
 		ctx.body = ServiceResult.getSuccess({
 			deptId,
 			approval: balance > 0,
@@ -48,7 +50,9 @@ router.get('/count', async (ctx, next) => {
 		return;
 	}
 	try {
+		let startTime = Date.now();
 		let balance = await feeService.tripBalanceByDeptId(deptId);
+		console.log(`用时: ${(Date.now() - startTime) / 1000}s`);
 		ctx.body = ServiceResult.getSuccess({
 			deptId,
 			balance: balance
