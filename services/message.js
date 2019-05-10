@@ -26,7 +26,7 @@ class Message {
 	}
 
 	async sendAppMsg (process, userIds) {
-		let singleUrl = `${config.mobileBase}budget?id=${process.applicationId}?type=application`;
+		let singleUrl = `${config.mobileBase}budget?id=${process.applicationId}&type=application`;
 		let text = `您好，您有一条预算申请需要审批，点击“预算审批”进行审批  \n 申请人:${process.userName}  \n部门: ${process.deptName} `;
 		const message = {
 			touser: userIds.join('|'),
@@ -50,7 +50,7 @@ class Message {
 	}
 
 	async sendFinanceMsg (process, userIds) {
-		let singleUrl = `${config.mobileBase}budget?id=${process.applicationId}?type=finance`;
+		let singleUrl = `${config.mobileBase}budget?id=${process.applicationId}&type=finance`;
 		let text = `您好，您有一条预算申请需要处理，点击“预算调整”进行审批  \n 申请人:${process.userName}  \n部门: ${process.deptName} `;
 		const message = {
 			touser: userIds.join('|'),
@@ -74,7 +74,7 @@ class Message {
 	}
 
 	async sendFromMsg (process, userIds) {
-		let singleUrl = `${config.mobileBase}budget?id=${process.applicationId}?type=from`;
+		let singleUrl = `${config.mobileBase}budget?id=${process.applicationId}&type=from`;
 		let text = `您好，您有一条预算调整申请需要处理，点击“预算审批”进行审批  \n 申请人:${process.userName}  \n部门: ${process.deptName} `;
 		const message = {
 			touser: userIds.join('|'),
@@ -98,7 +98,7 @@ class Message {
 	}
 
 	async sendWithdrawMsg (process, userIds) {
-		let singleUrl = `${config.mobileBase}budget?id=${process.applicationId}?type=withdraw`;
+		let singleUrl = `${config.mobileBase}budget?id=${process.applicationId}&type=withdraw`;
 		let text = `您好，您有一条预算调整审批被财务撤回，详情请点击“详情”进行查看  \n 申请人:${process.userName}  \n部门: ${process.deptName} `;
 		const message = {
 			touser: userIds.join('|'),
@@ -122,7 +122,7 @@ class Message {
 	}
 
 	async sendBackMsg (process, user, userIds, note) {
-		let singleUrl = `${config.mobileBase}budget?id=${process.applicationId}?type=finance`;
+		let singleUrl = `${config.mobileBase}budget?id=${process.applicationId}&type=finance`;
 		let text = `您好，您有一条预算调整审批被${user.userName}驳回，点击“预算调整”进行审批   \n 审核人:${user.userName}  \n部门: ${process.deptName}`;
 		if (note) {
 			text = `${text}  \n意见: ${note}`;
@@ -149,7 +149,7 @@ class Message {
 	}
 
 	async sendToMsg (process, userIds) {
-		let singleUrl = `${config.mobileBase}budget?id=${process.applicationId}?type=to`;
+		let singleUrl = `${config.mobileBase}budget?id=${process.applicationId}&type=to`;
 		let text = `您好，您有一条预算调整申请需要处理，点击“预算审批”进行审批  \n 申请人:${process.userName}  \n部门: ${process.deptName} `;
 		const message = {
 			touser: userIds.join('|'),
@@ -173,7 +173,7 @@ class Message {
 	}
 
 	async sendAppSuccessMsg (process) {
-		let singleUrl = `${config.mobileBase}budget?id=${process.applicationId}?type=from`;
+		let singleUrl = `${config.mobileBase}budget?id=${process.applicationId}&type=from`;
 		let text = '您好，您的预算申请已经审批通过，您可以进行出差申请了 ';
 		const message = {
 			touser: process.userId,
