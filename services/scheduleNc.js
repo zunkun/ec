@@ -33,7 +33,7 @@ class ScheduleNc {
 			let ncFees = {};
 			for (let row of data.rows) {
 				console.log(`【保存】 ${row[2]} ${row[3]} 费用`);
-				if (ncFees[row[1]]) {
+				if (!ncFees[row[1]]) {
 					ncFees[row[1]] = {
 						corpId: config.corpId,
 						corpName: config.corpName,
