@@ -30,22 +30,36 @@ class ScheduleNc {
 
 		try {
 			let data = await oracle.execute(sql);
+			let ncFees = {};
 			for (let row of data.rows) {
 				console.log(`【保存】 ${row[2]} ${row[3]} 费用`);
+				if (ncFees[row[1]]) {
+					ncFees[row[1]] = {
+						corpId: config.corpId,
+						corpName: config.corpName,
+						year: this.year,
+						group: {
+							code: row[1],
+							name: row[2]
+						},
+						trip: 0,
+						benefits: 0,
+						others: 0
+					};
+				}
+
+				ncFees[row[1]][feeTypeMap[row[3]]] += row[4];
+			}
+
+			for (let code of Object.keys(ncFees)) {
+				let ncFee = ncFees[code];
+
 				await NcFee.updateOne({
 					corpId: config.corpId,
 					year: this.year,
-					'group.code': row[1]
-				}, {
-					corpId: config.corpId,
-					corpName: config.corpName,
-					year: this.year,
-					group: {
-						code: row[1],
-						name: row[2]
-					},
-					[feeTypeMap[row[3]]]: row[4]
-				}, { upsert: true });
+					'group.code': code
+				},
+				ncFee, { upsert: true });
 			}
 		} catch (error) {
 			console.error('【错误】保存NC费用', error);
