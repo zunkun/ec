@@ -10,7 +10,7 @@ const ncfeeSchema = new mongoose.Schema(
 			code: String,
 			name: String
 		},
-		year: String,
+		year: Number,
 		trip: { type: Number, default: 0 },
 		benefits: { type: Number, default: 0 },
 		others: { type: Number, default: 0 }

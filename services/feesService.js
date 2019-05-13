@@ -31,7 +31,7 @@ class FeeService {
 	}
 	async ncExpenseLocal (code, type) {
 		type = type || 'trip';
-		let fee = await NcFee.findOne({ coprId: config.corpId, year: new Date().getFullYear(), 'group.code': code });
+		let fee = await NcFee.findOne({ corpId: config.corpId, year: new Date().getFullYear(), 'group.code': code });
 		if (!fee) return 0;
 		return Number(fee[type]);
 	}
