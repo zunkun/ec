@@ -77,6 +77,56 @@ router.get('/', async (ctx, next) => {
 	await next();
 });
 
+router.get('/lists', async (ctx, next) => {
+	let { year, page, limit } = ctx.query;
+	year = Number(year) || new Date().getFullYear();
+	page = Number(page) || 1;
+	limit = Number(limit) || 10;
+	let offset = (page - 1) * limit;
+
+	let rows = await Budgets.find({ year, corpId: config.corpId }).skip(offset).limit(limit);
+	let count = await Budgets.find({ year, corpId: config.corpId }).countDocuments();
+
+	try {
+		let budgets = [];
+		for (let row of rows) {
+			let tripExpense = await feesService.getTripFees(row.code);
+			let benefitsExpense = await feesService.ncExpenseLocal(row.code, '福利费');
+			let othersExpense = await feesService.ncExpenseLocal(row.code, '其他');
+
+			let budget = {
+				code: row.code,
+				name: row.name,
+				benefits: {
+					budget: row.benefits,
+					expense: benefitsExpense,
+					balance: row.benefits - benefitsExpense
+				},
+				trip: {
+					budget: row.trip,
+					expense: tripExpense,
+					balance: row.trip - tripExpense
+				},
+				others: {
+					budget: row.others,
+					expense: othersExpense,
+					balance: row.others - othersExpense
+				}
+			};
+
+			budgets.push(budget);
+		}
+
+		ctx.body = ServiceResult.getSuccess({
+			count,
+			budgets
+		});
+	} catch (error) {
+		ctx.body = ServiceResult.getFail(error);
+	}
+	await next();
+});
+
 /**
  * @api {post} /api/budgets/ 保存年度预算
  * @apiName create-yearly-budget

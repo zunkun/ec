@@ -2,6 +2,7 @@ const ServiceResult = require('../core/ServiceResult');
 const Depts = require('../models/Depts');
 const DeptGroups = require('../models/DeptGroups');
 const config = require('../config');
+const util = require('../core/util');
 
 const Router = require('koa-router');
 const router = new Router();
@@ -113,31 +114,25 @@ router.get('/grouplists', async (ctx, next) => {
  * @apiSuccess {String} data.code 预算体code
  */
 router.post('/groupmap', async (ctx, next) => {
-	let { deptId, code, year, notChild } = ctx.request.body;
+	let { deptIds, group, year } = ctx.request.body;
 	year = Number(year) || new Date().getFullYear();
-	deptId = Number(deptId);
-	if (!deptId || !code) {
+	deptIds = deptIds || [];
+	if (!deptIds.length || !group) {
 		ctx.body = ServiceResult.getFail('参数不正确', 404);
 		return;
 	}
 
-	let deptGroup = await DeptGroups.findOne({ code, year, corpId: config.corpId });
+	let deptGroup = await DeptGroups.findOne({ code: group, year, corpId: config.corpId });
 	if (!deptGroup) {
 		ctx.body = ServiceResult.getFail('系统没有找到预算体', 404);
 		return;
 	}
 
-	let dept = await Depts.findOne({ deptId });
-	if (!dept) {
-		ctx.body = ServiceResult.getFail('系统没有找到部门信息', 404);
-		return;
-	}
-	let conditions = { deptId, year };
-	if (!notChild) {
-		conditions.deptPath = deptId;
-	}
-	console.log(conditions, { group: { code, name: deptGroup.name } });
-	await Depts.updateOne(conditions, { group: { code, name: deptGroup.name } });
+	await Depts.updateMany({
+		corpId: config.corpId,
+		year,
+		deptId: { $in: deptIds }
+	}, { group: { code: group, name: deptGroup.name } });
 
 	ctx.body = ServiceResult.getSuccess(ctx.request.body);
 	await next();
@@ -185,6 +180,18 @@ router.get('/approval/:deptId', async (ctx, next) => {
 });
 
 module.exports = router;
+
+router.get('/trees', async (ctx, next) => {
+	let trees = [];
+	try {
+		trees = await util.getDeptsTree(1, []);
+	} catch (error) {
+		console.error(error);
+		trees = [];
+	}
+
+	ctx.body = ServiceResult.getSuccess(trees);
+});
 
 router.get('/:deptId', async (ctx, next) => {
 	let deptId = Number(ctx.params.deptId);

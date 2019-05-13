@@ -1,5 +1,7 @@
 const Catalogs = require('../../models/Catalogs');
 const Staffs = require('../../models/Staffs');
+const Depts = require('../../models/Depts');
+const config = require('../../config');
 
 class Util {
 	timeFmt (num) {
@@ -77,6 +79,30 @@ class Util {
 
 	parseNumber (str) {
 		return Number(str.trim().replace(/\,|-/g, ''));
+	}
+
+	async getDeptsTree (parentId = 1, trees = []) {
+		let year = new Date().getFullYear();
+		let depts = await Depts.find({ corpId: config.corpId, year, parentId });
+
+		for (let dept of depts) {
+			let tree = {
+				deptId: dept.deptId,
+				deptName: dept.deptName,
+				parentId: dept.parentId,
+				parentName: dept.parentName,
+				group: dept.group || {},
+				children: []
+			};
+
+			let sonCount = await Depts.find({ corpId: config.corpId, year, parentId: dept.deptId }).countDocuments();
+			if (sonCount) {
+				tree.children = await this.getDeptsTree(dept.deptId, []);
+			}
+
+			trees.push(tree);
+		}
+		return trees;
 	}
 }
 
