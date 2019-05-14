@@ -13,7 +13,19 @@ const stationSchema = new mongoose.Schema(
 		}, // 城市
 		code: String, // 城市代码
 		type: Number, // 1-火车站 2-飞机场
-		stations: [] // 火车站/飞机场
+		stations: [], // 火车站/飞机场
+		pinyin: {
+			province: {
+				normal: String, // 正常拼音
+				initial: String, // 声母
+				firstletter: String // 首字母
+			},
+			city: {
+				normal: String,
+				initial: String,
+				firstletter: String
+			}
+		}
 	}, {
 		collection: 'stations',
 		autoIndex: true,
