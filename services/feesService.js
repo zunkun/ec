@@ -33,7 +33,7 @@ class FeeService {
 		type = type || 'trip';
 		let fee = await NcFee.findOne({ corpId: config.corpId, year: new Date().getFullYear(), 'group.code': code });
 		if (!fee) return 0;
-		return Number(fee[type]);
+		return Number(fee[type] || 0);
 	}
 
 	async tripBalanceByDeptId (deptId) {
@@ -61,7 +61,7 @@ class FeeService {
 
 		try {
 			let tripFees = await this.getTripFees(dept.group.code);
-			return Number(budget.trip) - tripFees;
+			return Number(budget.trip || 0) - tripFees;
 		} catch (error) {
 			return Promise.reject(error);
 		}

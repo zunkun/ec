@@ -48,8 +48,8 @@ router.get('/', async (ctx, next) => {
 
 	try {
 		let tripExpense = await feesService.getTripFees(query.code);
-		let benefitsExpense = await feesService.ncExpense(query.code, '福利费');
-		let othersExpense = await feesService.ncExpense(query.code, '其他');
+		let benefitsExpense = await feesService.ncExpenseLocal(query.code, '福利费');
+		let othersExpense = await feesService.ncExpenseLocal(query.code, '其他');
 
 		ctx.body = ServiceResult.getSuccess({
 			year: Number(query.year) || date.getFullYear(),
@@ -93,24 +93,23 @@ router.get('/lists', async (ctx, next) => {
 			let tripExpense = await feesService.getTripFees(row.code);
 			let benefitsExpense = await feesService.ncExpenseLocal(row.code, '福利费');
 			let othersExpense = await feesService.ncExpenseLocal(row.code, '其他');
-
 			let budget = {
 				code: row.code,
 				name: row.name,
 				benefits: {
-					budget: row.benefits,
-					expense: benefitsExpense,
-					balance: row.benefits - benefitsExpense
+					budget: Number(row.benefits),
+					expense: Number(benefitsExpense),
+					balance: Number(row.benefits) - Number(benefitsExpense)
 				},
 				trip: {
-					budget: row.trip,
-					expense: tripExpense,
-					balance: row.trip - tripExpense
+					budget: Number(row.trip),
+					expense: Number(tripExpense),
+					balance: Number(row.trip) - Number(tripExpense)
 				},
 				others: {
-					budget: row.others,
-					expense: othersExpense,
-					balance: row.others - othersExpense
+					budget: Number(row.others),
+					expense: Number(othersExpense),
+					balance: Number(row.others) - Number(othersExpense)
 				}
 			};
 
