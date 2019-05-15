@@ -5,6 +5,7 @@ const config = require('../config');
 const btrip = require('./btrip');
 const util = require('../core/util');
 const message = require('./message');
+const StaffProcess = require('../models/StaffProcess');
 
 class ApprovalService {
 	async createApproval (staff, data) {
@@ -13,30 +14,27 @@ class ApprovalService {
 		let dept = await Depts.findOne({ deptId, corpId: config.corpId });
 		if (!approvalDepts || !approvalDepts.length) {
 			approvalDepts = [];
-			for (let i = 0, length = dept.deptPath.length; i < length; i++) {
-				let _deptId = dept.deptPath[i];
-				if (_deptId === 1) {
-					break;
-				}
-				let _dept = i === 0 ? dept : await Depts.findOne({ deptId: _deptId, corpId: config.corpId });
-
-				let _managers = [];
-				if (!_dept.managers.length) {
-					continue;
-				}
-				for (let manager of _dept.managers) {
-					_managers.push({
-						userId: manager.userId,
-						userName: manager.userName
-					});
-				}
-				approvalDepts.push({
-					deptId: _dept.deptId,
-					deptName: _dept.deptName,
-					users: _managers,
+			let staffProcess = await StaffProcess.findOne({ corpId: config.corpId, userId: staff.userId });
+			let approvals = staffProcess.approvals || [];
+			for (let index in approvals) {
+				let approval = approvals[index];
+				let approvalDept = {
+					deptId: approval.deptId,
+					deptName: approval.deptName,
 					notified: false,
 					approval: false
-				});
+				};
+
+				let users = approval.users || [];
+				let managers = [];
+				for (let user of users) {
+					managers.push({
+						userId: user.userId,
+						userName: user.userName
+					});
+				}
+				approvalDept.users = managers;
+				approvalDepts.push(approvalDept);
 			}
 		}
 

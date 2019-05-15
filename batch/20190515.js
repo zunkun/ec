@@ -17,14 +17,8 @@ async function syncStaffs () {
 		let approvals = process.approvals || [];
 
 		for (let index in approvals) {
-			if (!approvals[index].users) {
-				continue;
-			}
-			let users = JSON.stringify(approvals[index].users);
-			// console.log(users, JSON.parse(users));
-			let users2 = JSON.parse(users);
 			let arr = [];
-			for (let user of users2) {
+			for (let user of (approvals[index].users || [])) {
 				arr.push(user.userName);
 			}
 
