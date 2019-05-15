@@ -5,15 +5,10 @@ const mongoose = require('mongoose');
 const fileSchema = new mongoose.Schema(
 	{
 		year: Number,
+		type: String, // budgets-部门预算 incomings-收入目标
 		corpId: String,
 		name: String, // 文件本地保存名称
 		origin: String, // 文件原来明恒
-		user: {
-			userId: String, // 上传文件人
-			userName: String,
-			deptId: Number, // 部门
-			deptName: String
-		},
 		status: { // 0-上传成功 1-解析成功  2-解析失败
 			type: Number,
 			default: 0

@@ -10,7 +10,8 @@ const BudgetSchema = new mongoose.Schema(
 		name: String,
 		benefits: Number, // 福利
 		trip: Number, // 差旅
-		others: Number // 其他
+		others: Number, // 其他
+		self: {}
 	}, {
 		collection: 'budgets',
 		autoIndex: true,

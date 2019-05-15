@@ -31,26 +31,38 @@ router.prefix('/api/files');
 * @apiSuccess {Object} data 返回值
 */
 router.post('/upload', upload.single('file'), async (ctx, next) => {
-	const user = {};
 	const data = ctx.req.body;
-	const year = data.year || new Date().getFullYear();
+	const year = Number(data.year) || new Date().getFullYear();
+	if ([ 'budgets', 'incomings' ].indexOf(data.type) === -1) {
+		ctx.body = ServiceResult.getFail('参数不正确');
+		return;
+	}
 	const fileInfo = ctx.req.file;
 
-	await Files.updateOne({ year, corpId: config.corpId }, {
+	let file = await Files.updateOne({ year, corpId: config.corpId }, {
 		year,
 		corpId: config.corpId,
+		type: data.type,
 		name: fileInfo.filename,
 		origin: fileInfo.originalname,
-		user,
 		status: 0
 	}, { upsert: true });
 
 	try {
-		await budgetFileService.parse(year);
-		console.log(`【成功】${config.corpName} ${year} 预算文件解析成功`);
+		if (data.type === 'budgets') {
+			await budgetFileService.parse({
+				year,
+				name: fileInfo.filename
+			});
+		} else {
+			console.log('收入目标文件处理');
+		}
+		console.log(`【成功】${config.corpName} ${year} 文件解析成功`);
+		Files.updateOne({ _id: file._id }, { status: 1 });
 		ctx.body = ServiceResult.getSuccess({ year, name: fileInfo.name });
 	} catch (error) {
-		console.log(`【失败】${config.corpName} ${year} 预算文件解析失败`, error);
+		console.log(`【失败】${config.corpName} ${year} 文件解析失败`, error);
+		Files.updateOne({ _id: file._id }, { status: 2 });
 		ctx.body = ServiceResult.getFail(error, 500);
 	}
 	await next();

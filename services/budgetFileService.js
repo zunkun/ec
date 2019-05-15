@@ -1,103 +1,105 @@
+process.env.NODE_ENV = 'production';
+
 const XLSX = require('xlsx');
 const fs = require('fs');
 const path = require('path');
 const config = require('../config');
 const Files = require('../models/Files');
 const DeptGroups = require('../models/DeptGroups');
-// const Budget = require('../models/Budget');
-const Catalogs = require('../models/Catalogs');
-const util = require('../core/util');
+const Budgets = require('../models/Budgets');
+const Types = require('../models/Types');
 
 class BudgetFileService {
 	constructor () {
 		this.year = new Date().getFullYear();
-		this.fileData = {};
-		this.structMap = new Map();
-		this.dataLists = [];
-		this.groupCodeMap = new Map();
-		this.catalogMap = new Map();
+		this.name = '';
+		this.fileData = [];
+		this.groupMap = new Map();
+		this.selfTypes = [];
+	}
+
+	handleNum (str) {
+		if (!str) {
+			return 0;
+		}
+		str = str.trim().replace(/,|-/g, '');
+		return Number(str);
 	}
 
 	/**
 	 * 解析年度预算表
 	 * @param {Number} year 年费
 	 */
-	async parse (year) {
-		this.year = year;
+	async parse (options) {
+		console.log('开始解析预算文件');
+		this.year = options.year || new Date().getFullYear();
+		this.name = options.name;
+		if (!options.name) return Promise.reject('参数错误');
 		try {
+			await this.initSelfTypes();
+			await this.initGroups();
 			await this.parseExcel();
 			await this.parseData();
-			for (let data of this.dataLists) {
-				let groupCode = await this.getGroupCode(data['预算体']);
-				this.setCatalog(data['费用项目编码'], data['费用项目名称']);
-				let budgetData = {
-					corpId: config.corpId,
-					year: this.year,
-					group: { code: groupCode, name: data['预算体'] },
-					catalog: { code: data['费用项目编码'], name: data['费用项目名称'] },
-					budget: Number(data['年度合计']) || 0,
-					month1: Number(data['1月']) || 0,
-					month2: Number(data['2月']) || 0,
-					month3: Number(data['3月']) || 0,
-					month4: Number(data['4月']) || 0,
-					month5: Number(data['5月']) || 0,
-					month6: Number(data['6月']) || 0,
-					month7: Number(data['7月']) || 0,
-					month8: Number(data['8月']) || 0,
-					month9: Number(data['9月']) || 0,
-					month10: Number(data['10月']) || 0,
-					month11: Number(data['11月']) || 0,
-					month12: Number(data['12月']) || 0
-				};
-				console.log(`【开始】保存 ${budgetData.group.name} ${this.year}年 ${budgetData.catalog.name} 预算`);
-				// await AnnualBudget.updateOne({ year: this.year, corpId: config.corpId, 'group.code': groupCode, 'catalog.code': data['费用项目编码'] }, budgetData, { upsert: true });
-			}
 		} catch (error) {
-			console.log('【失败】解析预算文件失败');
+			console.log('【失败】解析预算文件失败', error);
 			return Promise.reject(error);
 		}
 	}
 
-	async getGroupCode (name) {
-		if (this.groupCodeMap.has(name)) {
-			return this.groupCodeMap.get(name);
+	async initSelfTypes () {
+		let types = await Types.find({ corpId: config.corpId, type: 'budgets', catalog: 1 });
+		for (let type of types) {
+			this.selfTypes.push(type.code);
 		}
-		let deptGroup = await DeptGroups.findOne({ name, corpId: config.corpId });
-		if (deptGroup) {
-			this.groupCodeMap.set(name, deptGroup.code);
-			return deptGroup.code;
-		}
-		let code = `Y${util.genCode()}`;
-		deptGroup = await DeptGroups.create({ corpId: config.corpId, year: this.year, code, name });
-		this.groupCodeMap.set(name, code);
-		return code;
 	}
+	async initGroups () {
+		let deptGroups = await DeptGroups.find({ corpId: config.corpId });
 
-	async setCatalog (code, name) {
-		return Catalogs.updateOne({ code }, { code, name, year: this.year }, { upsert: true });
+		for (let deptGroup of deptGroups) {
+			this.groupMap.set(deptGroup.code, deptGroup.name);
+		}
 	}
 
 	/**
 	 * 解析预算表中数据结构
 	 */
 	async parseData () {
+		console.log('开始处理数据');
 		if (!this.fileData || !this.fileData.length) {
 			let error = '文件表数据解析错误';
 			return Promise.reject(error);
 		}
-
-		let struct = this.fileData.shift();
-		for (let key in struct) {
-			this.structMap.set(struct[key], key);
-		}
-
+		let promiseArray = [];
 		for (let item of this.fileData) {
-			let data = {};
-			for (let key in item) {
-				data[struct[key]] = item[key];
+			let code = item.code.trim().replace();
+			if (!this.groupMap.has(code)) {
+				continue;
 			}
-			this.dataLists.push(data);
+
+			let data = {
+				corpId: config.corpId,
+				year: this.year,
+				code,
+				name: this.groupMap.get(code),
+				benefits: this.handleNum(item.benefits),
+				budgets: this.handleNum(item.budgets),
+				others: this.handleNum(item.others),
+				self: {}
+			};
+			if (this.selfTypes.length) {
+				for (let typeCode of this.selfTypes) {
+					data.self[typeCode] = this.handleNum(item[typeCode]);
+				}
+			}
+			console.log(`保存 ${this.groupMap.get(code)} 费用`);
+			let promise = Budgets.updateOne({
+				corpId: config.corpId,
+				year: this.year,
+				code
+			}, data, { upsert: true });
+			promiseArray.push(promise);
 		}
+		return Promise.all(promiseArray);
 	}
 
 	/**
@@ -105,15 +107,10 @@ class BudgetFileService {
 	 */
 	async parseExcel () {
 		console.log('【开始】解析excel文件');
-		let error = '文件不存在';
-		const file = await Files.findOne({ year: this.year, corpId: config.corpId });
-		if (!file) {
-			return Promise.reject(error);
-		}
-		const filePath = path.join(__dirname, `../uploads/${file.name}`);
+		const filePath = path.join(__dirname, `../uploads/${this.name}`);
 		let exists = fs.existsSync(filePath);
 		if (!exists) {
-			return Promise.reject(error);
+			return Promise.reject('解析失败，文件不存在');
 		}
 
 		try {
@@ -124,9 +121,13 @@ class BudgetFileService {
 			return Promise.resolve();
 		} catch (err) {
 			console.error(err);
-			error = '考勤文件解析错误';
-			return Promise.reject(error);
+			return Promise.reject('考勤文件解析错误');
 		}
+	}
+
+	async test () {
+		let file = await Files.findOne({});
+		await this.parse(file);
 	}
 }
 
