@@ -82,7 +82,7 @@ class BudgetFileService {
 				code,
 				name: this.groupMap.get(code),
 				benefits: this.handleNum(item.benefits),
-				budgets: this.handleNum(item.budgets),
+				trip: this.handleNum(item.trip),
 				others: this.handleNum(item.others),
 				self: {}
 			};
@@ -92,6 +92,7 @@ class BudgetFileService {
 				}
 			}
 			console.log(`保存 ${this.groupMap.get(code)} 费用`);
+			console.log({ data });
 			let promise = Budgets.updateOne({
 				corpId: config.corpId,
 				year: this.year,
