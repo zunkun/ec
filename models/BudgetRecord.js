@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 // 部门D1的year1年mongh1月catalog1预算-->(amount)-> 部门D2的year2年mongh2月catalog2预算
 const budgetRecordSchema = new mongoose.Schema(
 	{
+		corpId: String,
+		year: Number,
 		from: {
 			code: String, // 预算体code
 			name: String, // 部门名称

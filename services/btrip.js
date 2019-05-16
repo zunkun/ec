@@ -6,46 +6,60 @@ const moment = require('moment');
 const Approvals = require('../models/Approvals');
 
 class Btrip {
+	async getCostCenter (userId) {
+		let costRes = await dingding.btrip(btripPaths.costCenter, {
+			userid: userId,
+			corpid: config.corpId
+		});
+
+		if (costRes.errcode !== 0) {
+			const error = '【失败】获取用户成本中心列表';
+			console.error(error);
+			return Promise.reject(error);
+		}
+		let constCenterLists = costRes.cost_center_list || [];
+		if (!constCenterLists.length) {
+			let error = `商旅中沒有当前用户 ${userId} 的费用归属`;
+			console.error(error);
+			return Promise.reject(error);
+		}
+		return constCenterLists[0];
+	}
+
+	async getInvoice (userId) {
+		let invoiceRes = await dingding.btrip(btripPaths.invoice, {
+			userid: userId,
+			corpid: config.corpId
+		});
+
+		if (invoiceRes.errcode !== 0) {
+			let error = '【失败】获取用户发票列表';
+			console.error(error);
+			return Promise.reject(error);
+		}
+		let invoiceLists = invoiceRes.invoice || [];
+		if (!invoiceLists.length) {
+			let error = `商旅中沒有当前用户 ${userId}的发票抬头`;
+			console.error(error);
+			return Promise.reject(error);
+		}
+		return invoiceLists[0];
+	}
+
 	async createApproval (approval) {
 		// 获取商旅基础数据
 		console.log('【开始】获取商旅成本中心列表');
 		try {
-			let costRes = await dingding.btrip(btripPaths.costCenter, {
-				userid: approval.userId,
-				corpid: config.corpId
-			});
+			let costcenter;
+			let invoice;
 
-			if (costRes.errcode !== 0) {
-				const error = '【失败】获取用户成本中心列表';
-				console.error(error);
-				return Promise.reject(error);
+			if (!approval.costcenter) {
+				costcenter = await this.getCostCenter(approval.userId) || {};
 			}
-			let constCenterLists = costRes.cost_center_list || [];
-			if (!constCenterLists.length) {
-				let error = `商旅中沒有当前用户 ${approval.userId} ${approval.userName}的费用归属`;
-				console.error(error);
-				return Promise.reject(error);
-			}
-			let costCenter = constCenterLists[0];
 			console.log('【开始】获取商旅发票列表');
-
-			let invoiceRes = await dingding.btrip(btripPaths.invoice, {
-				userid: approval.userId,
-				corpid: config.corpId
-			});
-
-			if (invoiceRes.errcode !== 0) {
-				let error = '【失败】获取用户发票列表';
-				console.error(error);
-				return Promise.reject(error);
+			if (!approval.invoice) {
+				invoice = await this.getInvoice(approval.userId) || {};
 			}
-			let invoiceLists = invoiceRes.invoice || [];
-			if (!invoiceLists.length) {
-				let error = `商旅中沒有当前用户 ${approval.userId} ${approval.userName}的发票抬头`;
-				console.error(error);
-				return Promise.reject(error);
-			}
-			let invoice = invoiceLists[0];
 
 			// 组织数据
 			const rq = {
@@ -82,8 +96,8 @@ class Btrip {
 					traffic_type: Number(it.trafficType),
 					dep_city: it.depCity,
 					arr_city: it.arrCity,
-					invoice_id: invoice.id,
-					cost_center_id: costCenter.id,
+					invoice_id: approval.invoice ? approval.invoice.id : invoice.id,
+					cost_center_id: approval.costcenter ? approval.costcenter.id : costcenter.id,
 					dep_date: moment(it.depDate).format('YYYY-MM-DD HH:mm:ss'),
 					arr_date: moment(it.arrDate).format('YYYY-MM-DD HH:mm:ss')
 				});
@@ -92,7 +106,7 @@ class Btrip {
 			let btripRes = await dingding.btrip(btripPaths.approvalNew, rq);
 			if (btripRes.errcode !== 0) {
 				let error = `【失败】${approval.id} 写入商旅审批单失败`;
-				console.error(error);
+				console.error(btripRes);
 				return Promise.reject(error);
 			}
 			console.log(`【成功】${approval.id} 写入商旅审批单成功`);

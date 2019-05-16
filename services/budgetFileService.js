@@ -92,7 +92,6 @@ class BudgetFileService {
 				}
 			}
 			console.log(`保存 ${this.groupMap.get(code)} 费用`);
-			console.log({ data });
 			let promise = Budgets.updateOne({
 				corpId: config.corpId,
 				year: this.year,

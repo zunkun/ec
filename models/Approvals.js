@@ -53,8 +53,6 @@ const approvalSchema = new mongoose.Schema(
 		},
 		itineraries: [ itinerarySchema ], // 行程列表
 		cotravelers: [ travelerSchema ], // 	同行行人列表
-		corpId: String,
-		corpName: String,
 		title: {
 			type: String,
 			default: '商旅出差'

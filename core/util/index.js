@@ -104,6 +104,30 @@ class Util {
 		}
 		return trees;
 	}
+
+	validaeExchange (exchanges) {
+		let valid = true;
+		console.log(exchanges);
+		if (!exchanges.length) valid = false;
+		for (let exchange of exchanges) {
+			let from = exchange.from;
+			let to = exchange.to;
+			console.log(from, to);
+			if (!from.code || !from.amount || !from.catalog) {
+				valid = false;
+			}
+			if (!to.code || !to.catalog) {
+				valid = false;
+			}
+			if (from.code === to.code && from.catalog === to.catalog) {
+				valid = false;
+			}
+			if (!valid) {
+				break;
+			}
+		}
+		return valid;
+	}
 }
 
 const util = new Util();

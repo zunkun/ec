@@ -18,7 +18,7 @@ router.get('/', async (ctx, next) => {
 
 router.post('/', async (ctx, next) => {
 	let data = ctx.request.body;
-	if (!data.type || !data.code || !data.type) {
+	if (!data.type || !data.code) {
 		ctx.body = ServiceResult.getFail('参数不正确');
 		return;
 	}

@@ -195,7 +195,7 @@ router.post('/:id/reject', async (ctx, next) => {
 		approvalDepts: {
 			$elemMatch: {
 				'users.userId': user.userId,
-				approval: false
+				approval: { $ne: true }
 			}
 		}
 	});
@@ -209,7 +209,7 @@ router.post('/:id/reject', async (ctx, next) => {
 		approvalDepts: {
 			$elemMatch: {
 				'users.userId': user.userId,
-				approval: false
+				approval: { $ne: true }
 			}
 		}
 	}, {
@@ -228,14 +228,14 @@ router.post('/:id/reject', async (ctx, next) => {
 router.post('/:id/pass', async (ctx, next) => {
 	let { id } = ctx.params;
 	let user = jwt.decode(ctx.header.authorization.substr(7));
-
+	console.log({ user, id });
 	try {
 		let approval = await Approvals.findOne({
 			id,
 			approvalDepts: {
 				$elemMatch: {
 					'users.userId': user.userId,
-					approval: false
+					approval: { $ne: true }
 				}
 			}
 		});
@@ -249,7 +249,7 @@ router.post('/:id/pass', async (ctx, next) => {
 			approvalDepts: {
 				$elemMatch: {
 					'users.userId': user.userId,
-					approval: false
+					approval: { $ne: true }
 				}
 			}
 		}, {
@@ -296,6 +296,21 @@ router.post('/:id/pass', async (ctx, next) => {
 
 		ctx.body = ServiceResult.getSuccess({});
 	} catch (error) {
+		await Approvals.updateOne({
+			id,
+			approvalDepts: {
+				$elemMatch: {
+					'users.userId': user.userId
+				}
+			}
+		}, {
+			$set: {
+				status: 20,
+				'approvalDepts.$.approval': false,
+				'approvalDepts.$.approvalUser': null,
+				'approvalDepts.$.approvalTime': null
+			}
+		});
 		ctx.body = ServiceResult.getFail(error);
 	}
 	await next();

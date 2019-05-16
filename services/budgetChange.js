@@ -51,20 +51,18 @@ class BudgetChange {
 		}
 	}
 
-	async changeBudgets (changeDatas) {
-		console.log({ changeDatas });
+	async changeBudgets (changeDatas, year) {
+		this.year = year || new Date().getFullYear();
 		for (let changeData of changeDatas) {
 			let { from, to, amount } = changeData;
 			let budgetFrom = await Budgets.findOne({ code: from.code, year: this.year, corpId: config.corpId });
-
 			let budgetTo = await Budgets.findOne({ code: from.code, year: this.year, corpId: config.corpId });
 			let budgetRecord;
 
-			console.log({ budgetFrom });
-			console.log({ budgetTo });
-
 			try {
 				budgetRecord = await BudgetRecord.create({
+					corpId: config.corpId,
+					year: this.year,
 					from: {
 						code: from.code,
 						name: from.name,
@@ -89,26 +87,26 @@ class BudgetChange {
 					},
 					timestamp: Date.now()
 				});
-				await Budgets.update({ _id: budgetFrom._id }, {
+				await Budgets.updateOne({ _id: budgetFrom._id }, {
 					[from.catalog]: budgetFrom[from.catalog] - Math.abs(amount)
 				});
-				await Budgets.update({ _id: budgetTo._id }, {
+				await Budgets.updateOne({ _id: budgetTo._id }, {
 					[to.catalog]: budgetTo[to.catalog] - Math.abs(amount)
 				});
 
-				await BudgetRecord.update({ _id: budgetRecord._id }, { timestamp: Date.now(), status: 20 });
+				await BudgetRecord.updateOne({ _id: budgetRecord._id }, { timestamp: Date.now(), status: 20 });
 				console.log(`【成功】 费用预算从 ${from.name}(${from.catalog}) ---${amount}--> ${to.name}(${to.catalog})成功`);
 			} catch (error) {
 				console.log(`【失败】 费用预算从 ${from.name}(${from.catalog}) ---${amount}--> ${to.name}(${to.catalog})失败`, error);
 				if (budgetRecord) {
-					await BudgetRecord.update({ _id: budgetRecord._id }, { timestamp: Date.now(), status: 10 });
+					await BudgetRecord.updateOne({ _id: budgetRecord._id }, { timestamp: Date.now(), status: 10 });
 				}
 				console.log('【回滚】 数据开始回滚');
-				await Budgets.update({ _id: budgetFrom._id }, {
+				await Budgets.updateOne({ _id: budgetFrom._id }, {
 					[from.catalog]: budgetFrom[from.catalog]
 				});
 
-				await Budgets.update({ _id: budgetTo._id }, {
+				await Budgets.updateOne({ _id: budgetTo._id }, {
 					[to.catalog]: budgetTo[to.catalog]
 				});
 				console.log('【回滚】 数据回滚成功');
