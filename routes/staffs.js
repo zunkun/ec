@@ -10,19 +10,35 @@ const jwt = require('jsonwebtoken');
 router.prefix('/api/staffs');
 
 router.get('/', async (ctx, next) => {
-	let staffs = await Staffs.find({});
+	let { page, limit, keywords } = ctx.query;
+	page = Number(page) || 1;
+	limit = Number(limit) || 10;
+	let offset = (page - 1) * limit;
 
-	let data = [];
+	let options = {
+		corpId: config.corpId
+	};
+	if (keywords && keywords !== 'undefined') {
+		let regex = new RegExp(keywords, 'i');
+		options.$or = [
+			{ userName: { $regex: regex } },
+			{ 'departments.deptName': { $regex: regex } }
+		];
+	}
+	let rows = [];
+
+	let staffs = await Staffs.find(options).skip(offset).limit(limit);
+	let count = await Staffs.find(options).countDocuments();
+
 	for (let staff of staffs) {
-		data.push({
+		rows.push({
 			userId: staff.userId,
 			userName: staff.userName,
-			deptId: staff.deptId,
-			deptName: staff.deptName
+			departments: staff.departments || []
 		});
 	}
 
-	ctx.body = ServiceResult.getSuccess(data);
+	ctx.body = ServiceResult.getSuccess({ rows, count });
 	await next();
 });
 
@@ -89,7 +105,6 @@ router.get('/depts2', async (ctx, next) => {
 });
 
 router.get('/process', async (ctx, next) => {
-	console.log(124214);
 	let user = jwt.decode(ctx.header.authorization.substr(7));
 	let process = await StaffProcess.findOne({
 		corpId: config.corpId,
@@ -102,6 +117,30 @@ router.get('/process', async (ctx, next) => {
 	}
 
 	ctx.body = ServiceResult.getSuccess(process.approvals || []);
+});
+
+router.put('/process', async (ctx, next) => {
+	let { approvals, type, userId } = ctx.request.body;
+	type = Number(type) || 0;
+	approvals = approvals || [];
+
+	try {
+		await Staffs.updateOne({ userId, corpId: config.corpId }, { processType: type });
+
+		await StaffProcess.updateOne({
+			userId,
+			corpId: config.corpId
+		}, {
+			type,
+			approvals
+		});
+	} catch (error) {
+		console.error(error);
+		ctx.body = ServiceResult.getFail('保存错误');
+		return;
+	}
+
+	ctx.body = ServiceResult.getSuccess({});
 });
 
 module.exports = router;

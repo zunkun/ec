@@ -64,5 +64,4 @@ class RoleServices {
 }
 
 let roleService = new RoleServices();
-roleService.start();
 module.exports = roleService;

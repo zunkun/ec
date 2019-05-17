@@ -6,6 +6,10 @@ const processSchema = new mongoose.Schema(
 	{
 		userId: String, // 角色
 		userName: String,
+		type: {
+			type: Number,
+			default: 0
+		}, // 员工processType, 流程类型 0-普通，同步考勤是修改流程 1-特殊，同步考勤不修改流程
 		deptId: Number,
 		deptName: String,
 		corpId: String,

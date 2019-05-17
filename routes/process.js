@@ -59,6 +59,7 @@ router.get('/staffs', async (ctx, next) => {
 			deptId: process.deptId,
 			deptName: process.deptName,
 			group: process.group,
+			type: process.type,
 			approvals: process.approvals,
 			managers1,
 			managers2

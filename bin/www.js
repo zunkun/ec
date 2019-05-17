@@ -7,11 +7,6 @@ if (process.env.NODE_ENV === 'production') {
 	console.log('测试环境');
 }
 
-let dingding = require('../core/dingding');
-dingding.getAccessToken(data => {
-	console.log({ data });
-});
-
 const app = require('../app');
 const http = require('http');
 

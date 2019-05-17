@@ -31,7 +31,11 @@ const staffSchema = new mongoose.Schema(
 		invoices: [ {
 			id: String,	// 商旅发票id
 			title: String // 发票抬头
-		} ]
+		} ],
+		processType: {
+			type: Number,
+			default: 0
+		} // 流程类型 0-普通，同步考勤是修改流程 1-特殊，同步考勤不修改流程
 	}, {
 		collection: 'staffs',
 		autoIndex: true,
