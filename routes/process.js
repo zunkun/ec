@@ -14,6 +14,62 @@ const router = new Router();
 
 router.prefix('/api/processes');
 
+router.get('/staffs', async (ctx, next) => {
+	let { page, limit, keywords } = ctx.query;
+	page = Number(page) || 1;
+	limit = Number(limit) || 10;
+	let offset = (page - 1) * limit;
+
+	let options = {
+		corpId: config.corpId
+	};
+	if (keywords && keywords !== 'undefined') {
+		let regex = new RegExp(keywords, 'i');
+		options.$or = [
+			{ userName: { $regex: regex } },
+			{ deptName: { $regex: regex } },
+			{ 'group.name': { $regex: regex } },
+			{ 'approvals.users.userName': { $regex: regex } }
+		];
+	}
+	let rows = [];
+	let processes = await StaffProcess.find(options).skip(offset).limit(limit);
+	let count = await StaffProcess.find(options).countDocuments();
+
+	for (let process of processes) {
+		let managers1 = [];
+		let managers2 = [];
+		let approvals = process.approvals;
+		if (approvals[0]) {
+			for (let user of approvals[0].users) {
+				managers1.push(user.userName);
+			}
+		}
+
+		if (approvals[1]) {
+			for (let user of approvals[1].users) {
+				managers2.push(user.userName);
+			}
+		}
+
+		let row = {
+			_id: process._id,
+			userId: process.userId,
+			userName: process.userName,
+			deptId: process.deptId,
+			deptName: process.deptName,
+			group: process.group,
+			approvals: process.approvals,
+			managers1,
+			managers2
+		};
+
+		rows.push(row);
+	}
+
+	ctx.body = ServiceResult.getSuccess({ rows, count });
+});
+
 router.get('/personal/:deptId', async (ctx) => {
 	let deptId = Number(ctx.params.deptId);
 	let user = jwt.decode(ctx.header.authorization.substr(7));

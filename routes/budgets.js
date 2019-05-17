@@ -78,14 +78,27 @@ router.get('/', async (ctx, next) => {
 });
 
 router.get('/lists', async (ctx, next) => {
-	let { year, page, limit } = ctx.query;
+	let { year, page, limit, keywords } = ctx.query;
 	year = Number(year) || new Date().getFullYear();
 	page = Number(page) || 1;
 	limit = Number(limit) || 10;
 	let offset = (page - 1) * limit;
 
-	let rows = await Budgets.find({ year, corpId: config.corpId }).skip(offset).limit(limit);
-	let count = await Budgets.find({ year, corpId: config.corpId }).countDocuments();
+	let options = {
+		year,
+		corpId: config.corpId
+	};
+
+	if (keywords && keywords !== 'undefined') {
+		let regex = new RegExp(keywords, 'i');
+		options.$or = [
+			{ code: { $regex: regex } },
+			{ name: { $regex: regex } }
+		];
+	}
+
+	let rows = await Budgets.find(options).skip(offset).limit(limit);
+	let count = await Budgets.find(options).countDocuments();
 
 	try {
 		let budgets = [];
@@ -123,7 +136,6 @@ router.get('/lists', async (ctx, next) => {
 	} catch (error) {
 		ctx.body = ServiceResult.getFail(error);
 	}
-	await next();
 });
 
 /**
