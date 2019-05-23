@@ -56,7 +56,7 @@ class BudgetChange {
 		for (let changeData of changeDatas) {
 			let { from, to, amount } = changeData;
 			let budgetFrom = await Budgets.findOne({ code: from.code, year: this.year, corpId: config.corpId });
-			let budgetTo = await Budgets.findOne({ code: from.code, year: this.year, corpId: config.corpId });
+			let budgetTo = await Budgets.findOne({ code: to.code, year: this.year, corpId: config.corpId });
 			let budgetRecord;
 
 			try {
@@ -88,10 +88,10 @@ class BudgetChange {
 					timestamp: Date.now()
 				});
 				await Budgets.updateOne({ _id: budgetFrom._id }, {
-					[from.catalog]: budgetFrom[from.catalog] - Math.abs(amount)
+					[from.catalog]: Number(budgetFrom[from.catalog]) - Math.abs(amount)
 				});
 				await Budgets.updateOne({ _id: budgetTo._id }, {
-					[to.catalog]: budgetTo[to.catalog] - Math.abs(amount)
+					[to.catalog]: Number(budgetTo[to.catalog]) + Math.abs(amount)
 				});
 
 				await BudgetRecord.updateOne({ _id: budgetRecord._id }, { timestamp: Date.now(), status: 20 });
