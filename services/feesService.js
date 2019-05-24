@@ -106,6 +106,29 @@ class FeeService {
 			return Promise.reject(error);
 		}
 	}
+
+	async getTripFeeData (code) {
+		let error;
+		let date = new Date();
+		let year = date.getFullYear().toString();
+
+		// 获取部门年度预算
+		let budget = await Budgets.findOne({ corpId: config.corpId, year, code });
+		if (!budget) {
+			error = `系统没有查询到当前部门 ${code}的预算`;
+			return Promise.reject(error);
+		}
+
+		try {
+			let tripFees = await this.getTripFees(code);
+			return {
+				trip: Number(budget.trip),
+				tripFees
+			};
+		} catch (error) {
+			return Promise.reject(error);
+		}
+	}
 }
 
 const feeService = new FeeService();

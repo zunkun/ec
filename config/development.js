@@ -23,5 +23,7 @@ module.exports = {
 	deptCron: '0 0 6,15 * * *',
 	btripCron: '0 */20 * * * *',
 	ncCron: '0 */2 * * * *',
-	mobileBase: 'http://172.18.1.100:4500/#/'
+	mobileBase: 'http://172.18.1.100:4500/#/',
+	warningLines: [ 0.8, 0.9, 0.95 ],
+	warningCron: '0 * */1 * * *'
 };

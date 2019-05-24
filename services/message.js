@@ -195,6 +195,46 @@ class Message {
 			// return Promise.reject('发送预算审批信息失败');
 		}
 	}
+
+	async sendFinanceWarningMsg (userIds, line, groupName) {
+		let text = `您好，${groupName} 部门差旅费已使用超过 ${line * 100}%, 请关注并调整该部门差旅费预算`;
+		const message = {
+			touser: userIds.join('|'),
+			agentid: config.agentid,
+			msgtype: 'text',
+			text: {
+				content: text
+			}
+		};
+		console.log(message);
+		try {
+			// await dingding.sendMsg(message);
+		} catch (error) {
+			console.log({ error });
+			return Promise.resolve();
+			// return Promise.reject('发送预算审批信息失败');
+		}
+	}
+
+	async sendManagerWarningMsg (userIds, line, groupName) {
+		let text = `您好，${groupName} 部门差旅费已使用超过 ${line * 100}%, 您可以联系财务部门调整部门预算`;
+		const message = {
+			touser: userIds.join('|'),
+			agentid: config.agentid,
+			msgtype: 'text',
+			text: {
+				content: text
+			}
+		};
+		console.log(message);
+		try {
+			// await dingding.sendMsg(message);
+		} catch (error) {
+			console.log({ error });
+			return Promise.resolve();
+			// return Promise.reject('发送预算审批信息失败');
+		}
+	}
 }
 
 const message = new Message();

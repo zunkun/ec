@@ -22,5 +22,7 @@ module.exports = {
 	deptCron: '0 0 6,12 * * *',
 	btripCron: '0 */20 * * * *',
 	ncCron: '0 */2 * * * *',
-	mobileBase: 'https://portal.haierfinancial.com:18612/ec/ecmobile/#/'
+	mobileBase: 'https://portal.haierfinancial.com:18612/ec/ecmobile/#/',
+	warningLines: [ 0.8, 0.9, 0.95 ],
+	warningCron: '0 * */1 * * *'
 };

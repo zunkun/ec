@@ -31,7 +31,7 @@ router.get('/', async (ctx, next) => {
 			{ 'to.name': { $regex: regex } }
 		];
 	}
-	let rows = await BudgetRecord.find(options).skip(offset).limit(limit);
+	let rows = await BudgetRecord.find(options).sort({ 'createTime': -1 }).skip(offset).limit(limit);
 	let count = await BudgetRecord.find(options).countDocuments();
 
 	ctx.body = ServiceResult.getSuccess({
