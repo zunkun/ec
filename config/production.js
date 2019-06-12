@@ -2,7 +2,7 @@ module.exports = {
 	PORT: 5600,
 	secret: 'haier-ec',
 	mongodb: {
-		uri: 'mongodb://10.227.232.23:27017/haier',
+		uri: 'mongodb://127.0.0.1:27017/haier',
 		user: 'haieradmin',
 		pass: 'abcd1234'
 	},
