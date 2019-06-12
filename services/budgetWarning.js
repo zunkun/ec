@@ -47,10 +47,13 @@ class BudgetWarning {
 			console.log(`計算 ${group.name} 部門預算百分比`);
 			try {
 				let feeData = await feesService.getTripFeeData(group.code);
-
 				let trip = Number(feeData.trip) || 0;
 				let tripFees = Number(feeData.tripFees) || 0;
 				let percent = tripFees / trip;
+				if (trip === 0) {
+					percent = 1;
+				}
+
 				console.log(`${group.name}部门预算已用 ${percent * 100} %`);
 				if (percent < low) {
 					await FeeWarning.updateOne({
@@ -73,7 +76,6 @@ class BudgetWarning {
 						line = item;
 					}
 				}
-
 				let feeWarining = await FeeWarning.findOne({ corpId: config.corpId, year: this.year, code: group.code });
 				if (!feeWarining) {
 					feeWarining = await FeeWarning.create({ corpId: config.corpId, year: this.year, code: group.code, name: group.name, warining: false, line: 0 });

@@ -197,18 +197,19 @@ class Message {
 	}
 
 	async sendFinanceWarningMsg (userIds, line, groupName) {
-		let text = `您好，${groupName} 部门差旅费已使用超过 ${line * 100}%, 请关注并调整该部门差旅费预算`;
+		let text = `#### <font color=#1E90FF>预算预警 </font> \n您好，${groupName}的差旅费可用预算不足${Math.floor((1 - line) * 100)}%, 请关注`;
 		const message = {
 			touser: userIds.join('|'),
 			agentid: config.agentid,
-			msgtype: 'text',
-			text: {
-				content: text
+			msgtype: 'markdown',
+			markdown: {
+				title: '预算预警',
+				text: text
 			}
 		};
 		console.log(message);
 		try {
-			// await dingding.sendMsg(message);
+			await dingding.sendMsg(message);
 		} catch (error) {
 			console.log({ error });
 			return Promise.resolve();
@@ -217,18 +218,19 @@ class Message {
 	}
 
 	async sendManagerWarningMsg (userIds, line, groupName) {
-		let text = `您好，${groupName} 部门差旅费已使用超过 ${line * 100}%, 您可以联系财务部门调整部门预算`;
+		let text = `#### <font color=#1E90FF>预算预警 </font> \n您好，${groupName}的差旅费可用预算不足${Math.floor((1 - line) * 100)}%, 请合理安排后续费用使用`;
 		const message = {
 			touser: userIds.join('|'),
 			agentid: config.agentid,
-			msgtype: 'text',
-			text: {
-				content: text
+			msgtype: 'markdown',
+			markdown: {
+				title: '预算预警',
+				text: text
 			}
 		};
 		console.log(message);
 		try {
-			// await dingding.sendMsg(message);
+			await dingding.sendMsg(message);
 		} catch (error) {
 			console.log({ error });
 			return Promise.resolve();

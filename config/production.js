@@ -2,7 +2,7 @@ module.exports = {
 	PORT: 5600,
 	secret: 'haier-ec',
 	mongodb: {
-		uri: 'mongodb://127.0.0.1:27017/haier',
+		uri: 'mongodb://10.227.232.23:27017/haier',
 		user: 'haieradmin',
 		pass: 'abcd1234'
 	},
@@ -24,5 +24,5 @@ module.exports = {
 	ncCron: '0 */2 * * * *',
 	mobileBase: 'https://portal.haierfinancial.com:18612/ec/ecmobile/#/',
 	warningLines: [ 0.8, 0.9, 0.95 ],
-	warningCron: '0 * */1 * * *'
+	warningCron: '0 0 9,18 * * *'
 };
