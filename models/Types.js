@@ -8,6 +8,10 @@ const typeSchema = new mongoose.Schema(
 		code: String,
 		name: String,
 		type: String, // budgets-预算费用 incomings-收入目标
+		axis: Number, // 1-横轴 2-纵轴
+		qq: Number, // 1-定量 2-定性
+		pm: Number, // 1-正 2-负
+		unit: String, // 单位
 		catalog: Number // 0-系统 1-自定义
 	}, {
 		collection: 'types',

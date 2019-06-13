@@ -16,7 +16,6 @@ class IncomingFileService {
 		this.fileData = [];
 		this.staffMap = new Map();
 		this.typeMap = new Map();
-		this.selfTypes = [];
 		this.manager = {};
 	}
 
@@ -56,7 +55,7 @@ class IncomingFileService {
 	async initTypes () {
 		let types = await Types.find({ corpId: config.corpId, type: 'incomings' });
 		for (let type of types) {
-			this.typeMap.set(type.code, type.name);
+			this.typeMap.set(type.code, type);
 		}
 	}
 	async initStaffs () {
@@ -92,7 +91,7 @@ class IncomingFileService {
 			if (!this.staffMap.has(jobnumber) || !this.typeMap.has(code) || !period) {
 				continue;
 			}
-
+			let type = this.typeMap.get(code);
 			let data = {
 				corpId: config.corpId,
 				year: this.year,
@@ -101,7 +100,11 @@ class IncomingFileService {
 				userName: this.staffMap.get(jobnumber).userName,
 				code,
 				period,
-				typeName: this.typeMap.get(code),
+				typeName: type.name,
+				axis: type.axis,
+				qq: type.qq,
+				pm: type.pm,
+				weights: Number(item['权重']) || 0,
 				incomings: Number(item['目标']) || 0,
 				line2: Number(item['2区位']) || 0,
 				line4: Number(item['4区位']) || 0,
@@ -137,7 +140,11 @@ class IncomingFileService {
 					userName: this.staffMap.get(jobnumber).userName,
 					code,
 					period,
-					typeName: this.typeMap.get(code),
+					typeName: type.name,
+					axis: type.axis,
+					qq: type.qq,
+					pm: type.pm,
+					weights: Number(item['权重']) || 0,
 					changeType: 2,
 					before: {
 						incomings: incoming.incomings,
@@ -170,7 +177,11 @@ class IncomingFileService {
 					userName: this.staffMap.get(jobnumber).userName,
 					code,
 					period,
-					typeName: this.typeMap.get(code),
+					typeName: type.name,
+					axis: type.axis,
+					qq: type.qq,
+					pm: type.pm,
+					weights: Number(item['权重']) || 0,
 					changeType: 1,
 					before: {
 						incomings: null,

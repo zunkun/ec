@@ -95,6 +95,7 @@ router.post('/', async (ctx, next) => {
 	}
 
 	incoming = await Incomings.create({
+		corpId: config.corpId,
 		jobnumber: data.jobnumber,
 		userId: staff.userId,
 		userName: staff.userName,
@@ -102,6 +103,10 @@ router.post('/', async (ctx, next) => {
 		period: data.period,
 		code: data.code,
 		typeName: type.name,
+		axis: type.axis,
+		qq: type.qq,
+		pm: type.pm,
+		weights: Number(data.weights) || 0,
 		incomings: Number(data.incomings) || 0,
 		line2: Number(data.line2) || 0,
 		line4: Number(data.line4) || 0,
@@ -112,6 +117,7 @@ router.post('/', async (ctx, next) => {
 	});
 
 	IncomingRecords.create({
+		corpId: config.corpId,
 		jobnumber: data.jobnumber,
 		userId: staff.userId,
 		userName: staff.userName,
@@ -119,8 +125,12 @@ router.post('/', async (ctx, next) => {
 		period: data.period,
 		code: data.code,
 		typeName: type.name,
+		axis: type.axis,
+		qq: type.qq,
+		pm: type.pm,
 		changeType: 1,
 		before: {
+			weights: null,
 			incomings: null,
 			line2: null,
 			line4: null,
@@ -130,6 +140,7 @@ router.post('/', async (ctx, next) => {
 			status: null
 		},
 		after: {
+			weights: Number(data.weights) || 0,
 			incomings: Number(data.incomings) || 0,
 			line2: Number(data.line2) || 0,
 			line4: Number(data.line4) || 0,
@@ -173,6 +184,7 @@ router.delete('/', async (ctx, next) => {
 	});
 
 	IncomingRecords.create({
+		corpId: config.corpId,
 		jobnumber: incoming.jobnumber,
 		userId: incoming.userId,
 		userName: incoming.userName,
@@ -180,8 +192,12 @@ router.delete('/', async (ctx, next) => {
 		period: incoming.period,
 		code: incoming.code,
 		typeName: incoming.typeName,
+		axis: incoming.axis,
+		qq: incoming.qq,
+		pm: incoming.pm,
 		changeType: 3,
 		before: {
+			weights: incoming.weights,
 			incomings: incoming.incomings,
 			line2: incoming.line2,
 			line4: incoming.line4,
@@ -191,6 +207,7 @@ router.delete('/', async (ctx, next) => {
 			status: incoming.status
 		},
 		after: {
+			weights: null,
 			incomings: null,
 			line2: null,
 			line4: null,
@@ -226,26 +243,16 @@ router.put('/', async (ctx, next) => {
 	}
 
 	let document = {};
-	if (data.incomings) {
-		document.incomings = Number(data.incomings);
-	}
-	if (data.line2) {
-		document.line2 = Number(data.line2);
-	}
-	if (data.line4) {
-		document.line4 = Number(data.line4);
-	}
-	if (data.line6) {
-		document.line6 = Number(data.line6);
-	}
-	if (data.line8) {
-		document.line8 = Number(data.line8);
-	}
-	if (data.line10) {
-		document.line10 = Number(data.line10);
-	}
+	document.incomings = Number(data.incomings) || incoming.incomings;
+	document.line2 = Number(data.line2) || incoming.line2;
+	document.line4 = Number(data.line4) || incoming.line4;
+	document.line6 = Number(data.line6) || incoming.line6;
+	document.line8 = Number(data.line8) || incoming.line8;
+	document.line10 = Number(data.line10) || incoming.line10;
+	document.weights = Number(data.weights) || incoming.weights;
 
 	await Incomings.update({
+		corpId: config.corpId,
 		jobnumber: data.jobnumber,
 		code: data.code,
 		period: data.period,
@@ -253,6 +260,7 @@ router.put('/', async (ctx, next) => {
 	}, document);
 
 	IncomingRecords.create({
+		corpId: config.corpId,
 		jobnumber: incoming.jobnumber,
 		userId: incoming.userId,
 		userName: incoming.userName,
@@ -260,8 +268,12 @@ router.put('/', async (ctx, next) => {
 		period: incoming.period,
 		code: incoming.code,
 		typeName: incoming.typeName,
+		axis: incoming.axis,
+		qq: incoming.qq,
+		pm: incoming.pm,
 		changeType: 2,
 		before: {
+			weights: incoming.weights,
 			incomings: incoming.incomings,
 			line2: incoming.line2,
 			line4: incoming.line4,

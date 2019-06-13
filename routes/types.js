@@ -23,6 +23,11 @@ router.post('/', async (ctx, next) => {
 		return;
 	}
 
+	if (data.type === 'incomings' && (!data.qq || !data.axis || !data.pm || !data.unit)) {
+		ctx.body = ServiceResult.getFail('参数不正确');
+		return;
+	}
+
 	let exist = await Types.findOne({ corpId: config.corpId, code: data.code, type: data.type });
 	if (exist) {
 		ctx.body = ServiceResult.getFail(`已存在编码 ${data.code}`);

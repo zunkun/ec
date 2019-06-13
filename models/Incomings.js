@@ -12,6 +12,11 @@ const incomingsSchema = new mongoose.Schema(
 		period: String, // 周期
 		code: String, // 目标编码
 		typeName: String, // 目标名称
+		axis: Number,
+		qq: Number,
+		pm: Number,
+		unit: String,
+		weights: Number,
 		incomings: Number, // 目标
 		line2: Number, // 2区位
 		line4: Number,
