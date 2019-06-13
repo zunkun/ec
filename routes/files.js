@@ -4,6 +4,8 @@ const multer = require('koa-multer');
 const config = require('../config');
 const ServiceResult = require('../core/ServiceResult');
 const budgetFileService = require('../services/budgetFileService');
+const incomingFileService = require('../services/incomingFileService');
+const send = require('koa-send');
 
 const storage = multer.diskStorage({
 	// 文件保存路径
@@ -55,7 +57,10 @@ router.post('/upload', upload.single('file'), async (ctx, next) => {
 				name: fileInfo.filename
 			});
 		} else {
-			console.log('收入目标文件处理');
+			await incomingFileService.parse({
+				year,
+				name: fileInfo.filename
+			});
 		}
 		console.log(`【成功】${config.corpName} ${year} 文件解析成功`);
 		Files.updateOne({ _id: file._id }, { status: 1 });
@@ -65,6 +70,13 @@ router.post('/upload', upload.single('file'), async (ctx, next) => {
 		Files.updateOne({ _id: file._id }, { status: 2 });
 		ctx.body = ServiceResult.getFail(error, 500);
 	}
+	await next();
+});
+
+router.get('/template', async (ctx, next) => {
+	const path = 'public/files/模板.zip';
+	ctx.attachment(path);
+	await send(ctx, path);
 	await next();
 });
 

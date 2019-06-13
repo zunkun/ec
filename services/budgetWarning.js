@@ -1,4 +1,4 @@
-process.env.NODE_ENV = 'production';
+// process.env.NODE_ENV = 'production';
 const config = require('../config');
 const message = require('./message');
 

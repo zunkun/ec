@@ -3,16 +3,17 @@ const fs = require('fs');
 const path = require('path');
 const config = require('../config');
 const Files = require('../models/Files');
-const DeptGroups = require('../models/DeptGroups');
-const Budgets = require('../models/Budgets');
+const Incomings = require('../models/Incomings');
+const Staffs = require('../models/Staffs');
 const Types = require('../models/Types');
 
-class BudgetFileService {
+class IncomingFileService {
 	constructor () {
 		this.year = new Date().getFullYear();
 		this.name = '';
 		this.fileData = [];
-		this.groupMap = new Map();
+		this.staffMap = new Map();
+		this.typeMap = new Map();
 		this.selfTypes = [];
 	}
 
@@ -25,41 +26,46 @@ class BudgetFileService {
 	}
 
 	/**
-	 * 解析年度预算表
+	 * 解析年度输入目标表
 	 * @param {Number} year 年费
 	 */
 	async parse (options) {
-		console.log('开始解析预算文件');
+		console.log('开始解析输入目标文件');
 		this.year = options.year || new Date().getFullYear();
 		this.name = options.name;
 		if (!options.name) return Promise.reject('参数错误');
 		try {
-			await this.initSelfTypes();
-			await this.initGroups();
+			await this.initTypes();
+			await this.initStaffs();
 			await this.parseExcel();
 			await this.parseData();
 		} catch (error) {
-			console.log('【失败】解析预算文件失败', error);
+			console.log('【失败】解析输入目标文件失败', error);
 			return Promise.reject(error);
 		}
 	}
 
-	async initSelfTypes () {
-		let types = await Types.find({ corpId: config.corpId, type: 'budgets', catalog: 1 });
+	async initTypes () {
+		let types = await Types.find({ corpId: config.corpId, type: 'incomings' });
 		for (let type of types) {
-			this.selfTypes.push(type.code);
+			this.typeMap.set(type.code, type.name);
 		}
 	}
-	async initGroups () {
-		let deptGroups = await DeptGroups.find({ corpId: config.corpId });
-
-		for (let deptGroup of deptGroups) {
-			this.groupMap.set(deptGroup.code, deptGroup.name);
+	async initStaffs () {
+		let staffs = await Staffs.find({ corpId: config.corpId });
+		for (let staff of staffs) {
+			if (!staff.jobnumber) {
+				continue;
+			}
+			this.staffMap.set(staff.jobnumber, {
+				userId: staff.userId,
+				userName: staff.userName
+			});
 		}
 	}
 
 	/**
-	 * 解析预算表中数据结构
+	 * 解析输入目标表中数据结构
 	 */
 	async parseData () {
 		console.log('开始处理数据');
@@ -69,31 +75,38 @@ class BudgetFileService {
 		}
 		let promiseArray = [];
 		for (let item of this.fileData) {
-			let code = item['预算体编码'].trim();
-			if (!this.groupMap.has(code)) {
+			let jobnumber = item['工号'] ? `${item['工号']}`.trim() : '';
+			let code = item['编码'] ? `${item['编码']}`.trim() : '';
+			let period = item['周期'] ? `${item['周期']}`.trim() : '';
+
+			if (!this.staffMap.has(jobnumber) || !this.typeMap.has(code) || !period) {
 				continue;
 			}
 
 			let data = {
 				corpId: config.corpId,
 				year: this.year,
+				jobnumber,
+				userId: this.staffMap.get(jobnumber).userId,
+				userName: this.staffMap.get(jobnumber).userName,
 				code,
-				name: this.groupMap.get(code),
-				benefits: this.handleNum(item.benefits),
-				trip: this.handleNum(item.trip),
-				others: this.handleNum(item.others),
-				self: {}
+				typeName: this.typeMap.get(code),
+				incomings: Number(item['目标']) || 0,
+				line2: Number(item['2区位']) || 0,
+				line4: Number(item['4区位']) || 0,
+				line6: Number(item['6区位']) || 0,
+				line8: Number(item['8区位']) || 0,
+				line10: Number(item['10区位']) || 0,
+				status: 1
 			};
-			if (this.selfTypes.length) {
-				for (let typeCode of this.selfTypes) {
-					data.self[typeCode] = this.handleNum(item[typeCode]);
-				}
-			}
-			console.log(`保存 ${this.groupMap.get(code)} 费用`);
-			let promise = Budgets.updateOne({
+
+			console.log(`保存 ${this.staffMap.get(jobnumber).userName}  ${this.typeMap.get(code)} ${period} 目标`);
+			let promise = Incomings.updateOne({
 				corpId: config.corpId,
 				year: this.year,
-				code
+				jobnumber,
+				code,
+				period
 			}, data, { upsert: true });
 			promiseArray.push(promise);
 		}
@@ -129,6 +142,6 @@ class BudgetFileService {
 	}
 }
 
-const budgetFileService = new BudgetFileService();
+const incomingFileService = new IncomingFileService();
 
-module.exports = budgetFileService;
+module.exports = incomingFileService;
