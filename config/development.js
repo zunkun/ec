@@ -25,5 +25,6 @@ module.exports = {
 	ncCron: '0 */2 * * * *',
 	mobileBase: 'http://172.18.1.100:4500/#/',
 	warningLines: [ 0.8, 0.9, 0.95 ],
-	warningCron: '0 0 9,18 * * *'
+	warningCron: '0 0 9,18 * * *',
+	incomingUri: 'http://127.0.0.1:3000/api/incomings'
 };

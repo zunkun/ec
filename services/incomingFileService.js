@@ -7,6 +7,7 @@ const Incomings = require('../models/Incomings');
 const Staffs = require('../models/Staffs');
 const Types = require('../models/Types');
 const IncomingRecords = require('../models/IncomingRecords');
+const syncIncomings = require('./syncIncomings');
 
 class IncomingFileService {
 	constructor () {
@@ -82,6 +83,7 @@ class IncomingFileService {
 		}
 		let promiseArray = [];
 		let promiseArray2 = [];
+		let incomings = [];
 		for (let item of this.fileData) {
 			let jobnumber = item['工号'] ? `${item['工号']}`.trim() : '';
 			let code = item['编码'] ? `${item['编码']}`.trim() : '';
@@ -108,6 +110,8 @@ class IncomingFileService {
 				line10: Number(item['10区位']) || 0,
 				status: 1
 			};
+
+			incomings.push(data);
 
 			console.log(`保存 ${this.staffMap.get(jobnumber).userName}  ${this.typeMap.get(code)} ${period} 目标`);
 			let options = {
@@ -193,7 +197,9 @@ class IncomingFileService {
 			promiseArray2.push(promise2);
 		}
 		Promise.all(promiseArray2).then();
-		return Promise.all(promiseArray);
+		return Promise.all(promiseArray).then(() => {
+			return syncIncomings.syncArray(incomings, 1, this.year);
+		});
 	}
 
 	/**

@@ -35,7 +35,12 @@ const incomingRecordsSchema = new mongoose.Schema(
 			userId: String,
 			userName: String
 		},
-		recordsId: String // 收入调整审批单Id
+		recordsId: String, // 收入调整审批单Id
+		sync: { // 是否已同步
+			type: Boolean,
+			default: false
+		},
+		syncTime: Date
 	}, {
 		collection: 'incomingRecords',
 		autoIndex: true,

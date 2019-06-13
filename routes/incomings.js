@@ -5,6 +5,7 @@ const Types = require('../models/Types');
 const config = require('../config');
 const ServiceResult = require('../core/ServiceResult');
 const jwt = require('jsonwebtoken');
+const syncIncomings = require('../services/syncIncomings');
 
 const Router = require('koa-router');
 const router = new Router();
@@ -141,7 +142,9 @@ router.post('/', async (ctx, next) => {
 			userId: user.userId,
 			userName: user.userName
 		}
-	}).then();
+	}).then(() => {
+		return syncIncomings.sync(incoming, 1, year);
+	});
 	ctx.body = ServiceResult.getSuccess(incoming);
 	await next();
 });
@@ -160,7 +163,6 @@ router.delete('/', async (ctx, next) => {
 		ctx.body = ServiceResult.getFail('参数错误');
 		return;
 	}
-	console.log({ data });
 	await Incomings.update({
 		jobnumber: data.jobnumber,
 		code: data.code,
@@ -201,7 +203,9 @@ router.delete('/', async (ctx, next) => {
 			userId: user.userId,
 			userName: user.userName
 		}
-	}).then();
+	}).then(() => {
+		return syncIncomings.sync(incoming, 0, data.year);
+	});
 
 	ctx.body = ServiceResult.getSuccess({});
 	await next();
@@ -271,7 +275,9 @@ router.put('/', async (ctx, next) => {
 			userId: user.userId,
 			userName: user.userName
 		}
-	}).then();
+	}).then(() => {
+		return syncIncomings.sync(incoming, 1, data.year);
+	});
 	ctx.body = ServiceResult.getSuccess({});
 	await next();
 });

@@ -24,5 +24,6 @@ module.exports = {
 	ncCron: '0 */2 * * * *',
 	mobileBase: 'https://portal.haierfinancial.com:18612/ec/ecmobile/#/',
 	warningLines: [ 0.8, 0.9, 0.95 ],
-	warningCron: '0 0 9,18 * * *'
+	warningCron: '0 0 9,18 * * *',
+	incomingUri: 'http://127.0.0.1:3000/api/incomings'
 };
