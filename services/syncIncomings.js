@@ -16,13 +16,28 @@ class SyncIncomings {
 		for (let i = 0, length = incomings.length; i < length; i += 50) {
 			let incomingArray = incomings.slice(i, 50);
 
-			// TODO: 处理data
-			let data = [];
+			// TODO: 处理info
+			let info = [];
+			for (let incoming of incomingArray) {
+				info.push({
+					opNo: incoming.jobnumber,
+					billCode: incoming.code,
+					billName: incoming.typeName,
+					billCycle: incoming.period,
+					ownYear: incoming.year,
+					betSgin: incoming.incomings,
+					twoLocation: incoming.line2,
+					fourLoaction: incoming.line4,
+					sixLocation: incoming.line6,
+					eightLocation: incoming.line8,
+					tenLocation: incoming.line10
+				});
+			}
 
 			let promise = rp.post(config.incomingUri, {
 				data: {
-					status,
-					data
+					flag: status ? 'insert' : 'delete',
+					info
 				}
 			}).then(async () => {
 				for (let incoming of incomingArray) {
