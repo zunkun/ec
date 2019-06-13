@@ -1,7 +1,7 @@
 const mongodb = require('../core/db/mongodb');
 const mongoose = require('mongoose');
 
-// 商旅部门费用统计表，按月统计
+// 收入预算
 const incomingsSchema = new mongoose.Schema(
 	{
 		corpId: String, // 公司

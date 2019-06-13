@@ -35,6 +35,7 @@ router.prefix('/api/files');
 router.post('/upload', upload.single('file'), async (ctx, next) => {
 	const data = ctx.req.body;
 	const year = Number(data.year) || new Date().getFullYear();
+	const userId = data.userId;
 	if ([ 'budgets', 'incomings' ].indexOf(data.type) === -1) {
 		ctx.body = ServiceResult.getFail('参数不正确');
 		return;
@@ -54,12 +55,14 @@ router.post('/upload', upload.single('file'), async (ctx, next) => {
 		if (data.type === 'budgets') {
 			await budgetFileService.parse({
 				year,
-				name: fileInfo.filename
+				name: fileInfo.filename,
+				userId
 			});
 		} else {
 			await incomingFileService.parse({
 				year,
-				name: fileInfo.filename
+				name: fileInfo.filename,
+				userId
 			});
 		}
 		console.log(`【成功】${config.corpName} ${year} 文件解析成功`);

@@ -1,8 +1,10 @@
 const Incomings = require('../models/Incomings');
+const IncomingRecords = require('../models/IncomingRecords');
 const Staffs = require('../models/Staffs');
 const Types = require('../models/Types');
 const config = require('../config');
 const ServiceResult = require('../core/ServiceResult');
+const jwt = require('jsonwebtoken');
 
 const Router = require('koa-router');
 const router = new Router();
@@ -42,6 +44,8 @@ router.get('/', async (ctx, next) => {
 
 router.post('/', async (ctx, next) => {
 	let data = ctx.request.body;
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+
 	if (!data.jobnumber || !data.code || !data.period || !data.incomings) {
 		ctx.body = ServiceResult.getFail('参数不正确');
 		return;
@@ -76,23 +80,57 @@ router.post('/', async (ctx, next) => {
 		status: 1
 	});
 
+	IncomingRecords.create({
+		jobnumber: data.jobnumber,
+		userId: staff.userId,
+		userName: staff.userName,
+		year,
+		period: data.period,
+		code: data.code,
+		typeName: type.name,
+		changeType: 1,
+		before: {
+			incomings: null,
+			line2: null,
+			line4: null,
+			line6: null,
+			line8: null,
+			line10: null,
+			status: null
+		},
+		after: {
+			incomings: Number(data.incomings) || 0,
+			line2: Number(data.line2) || 0,
+			line4: Number(data.line4) || 0,
+			line6: Number(data.line6) || 0,
+			line8: Number(data.line8) || 0,
+			line10: Number(data.line10) || 0,
+			status: 1
+		},
+		manager: {
+			userId: user.userId,
+			userName: user.userName
+		}
+	}).then();
 	ctx.body = ServiceResult.getSuccess(incoming);
 	await next();
 });
 
 router.delete('/', async (ctx, next) => {
 	let data = ctx.request.body;
+	let user = jwt.decode(ctx.header.authorization.substr(7));
+
 	if (!data.jobnumber || !data.code || !data.period || !data.year) {
 		ctx.body = ServiceResult.getFail('参数不正确');
 		return;
 	}
 
 	let incoming = await Incomings.findOne({ corpId: config.corpId, year: data.year, jobnumber: data.jobnumber, code: data.code, period: data.period, status: 1 });
-	if (incoming) {
+	if (!incoming) {
 		ctx.body = ServiceResult.getFail('参数错误');
 		return;
 	}
-
+	console.log({ data });
 	await Incomings.update({
 		jobnumber: data.jobnumber,
 		code: data.code,
@@ -102,19 +140,53 @@ router.delete('/', async (ctx, next) => {
 		status: 0
 	});
 
+	IncomingRecords.create({
+		jobnumber: incoming.jobnumber,
+		userId: incoming.userId,
+		userName: incoming.userName,
+		year: incoming.year,
+		period: incoming.period,
+		code: incoming.code,
+		typeName: incoming.typeName,
+		changeType: 3,
+		before: {
+			incomings: incoming.incomings,
+			line2: incoming.line2,
+			line4: incoming.line4,
+			line6: incoming.line6,
+			line8: incoming.line8,
+			line10: incoming.line10,
+			status: incoming.status
+		},
+		after: {
+			incomings: null,
+			line2: null,
+			line4: null,
+			line6: null,
+			line8: null,
+			line10: null,
+			status: 0
+		},
+		manager: {
+			userId: user.userId,
+			userName: user.userName
+		}
+	}).then();
+
 	ctx.body = ServiceResult.getSuccess({});
 	await next();
 });
 
 router.put('/', async (ctx, next) => {
 	let data = ctx.request.body;
+	let user = jwt.decode(ctx.header.authorization.substr(7));
 	if (!data.jobnumber || !data.code || !data.period || !data.year) {
 		ctx.body = ServiceResult.getFail('参数不正确');
 		return;
 	}
 
 	let incoming = await Incomings.findOne({ corpId: config.corpId, year: data.year, jobnumber: data.jobnumber, code: data.code, period: data.period, status: 1 });
-	if (incoming) {
+	if (!incoming) {
 		ctx.body = ServiceResult.getFail('参数错误');
 		return;
 	}
@@ -146,6 +218,30 @@ router.put('/', async (ctx, next) => {
 		year: Number(data.year)
 	}, document);
 
+	IncomingRecords.create({
+		jobnumber: incoming.jobnumber,
+		userId: incoming.userId,
+		userName: incoming.userName,
+		year: incoming.year,
+		period: incoming.period,
+		code: incoming.code,
+		typeName: incoming.typeName,
+		changeType: 2,
+		before: {
+			incomings: incoming.incomings,
+			line2: incoming.line2,
+			line4: incoming.line4,
+			line6: incoming.line6,
+			line8: incoming.line8,
+			line10: incoming.line10,
+			status: incoming.status
+		},
+		after: document,
+		manager: {
+			userId: user.userId,
+			userName: user.userName
+		}
+	}).then();
 	ctx.body = ServiceResult.getSuccess({});
 	await next();
 });
