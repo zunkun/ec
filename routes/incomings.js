@@ -42,6 +42,36 @@ router.get('/', async (ctx, next) => {
 	});
 });
 
+router.get('/history', async (ctx, next) => {
+	let { year, page, limit, keywords } = ctx.query;
+	year = Number(year) || new Date().getFullYear();
+	page = Number(page) || 1;
+	limit = Number(limit) || 10;
+	let offset = (page - 1) * limit;
+
+	let options = {
+		year,
+		corpId: config.corpId
+	};
+
+	if (keywords && keywords !== 'undefined') {
+		let regex = new RegExp(keywords, 'i');
+		options.$or = [
+			{ code: { $regex: regex } },
+			{ typeName: { $regex: regex } },
+			{ userName: { $regex: regex } },
+			{ jobnumber: { $regex: regex } }
+		];
+	}
+
+	let rows = await IncomingRecords.find(options).sort({ userName: 1, code: 1, createdAt: 1 }).skip(offset).limit(limit);
+	let count = await IncomingRecords.find(options).countDocuments();
+	ctx.body = ServiceResult.getSuccess({
+		count,
+		rows
+	});
+});
+
 router.post('/', async (ctx, next) => {
 	let data = ctx.request.body;
 	let user = jwt.decode(ctx.header.authorization.substr(7));
