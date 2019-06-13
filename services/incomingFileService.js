@@ -98,6 +98,7 @@ class IncomingFileService {
 				userId: this.staffMap.get(jobnumber).userId,
 				userName: this.staffMap.get(jobnumber).userName,
 				code,
+				period,
 				typeName: this.typeMap.get(code),
 				incomings: Number(item['目标']) || 0,
 				line2: Number(item['2区位']) || 0,
@@ -131,6 +132,7 @@ class IncomingFileService {
 					userId: this.staffMap.get(jobnumber).userId,
 					userName: this.staffMap.get(jobnumber).userName,
 					code,
+					period,
 					typeName: this.typeMap.get(code),
 					changeType: 2,
 					before: {
@@ -163,6 +165,7 @@ class IncomingFileService {
 					userId: this.staffMap.get(jobnumber).userId,
 					userName: this.staffMap.get(jobnumber).userName,
 					code,
+					period,
 					typeName: this.typeMap.get(code),
 					changeType: 1,
 					before: {
