@@ -106,6 +106,7 @@ router.post('/', async (ctx, next) => {
 		axis: type.axis,
 		qq: type.qq,
 		pm: type.pm,
+		unit: type.unit,
 		weights: Number(data.weights) || 0,
 		incomings: Number(data.incomings) || 0,
 		line2: Number(data.line2) || 0,
@@ -128,6 +129,7 @@ router.post('/', async (ctx, next) => {
 		axis: type.axis,
 		qq: type.qq,
 		pm: type.pm,
+		unit: type.unit,
 		changeType: 1,
 		before: {
 			weights: null,
@@ -195,6 +197,7 @@ router.delete('/', async (ctx, next) => {
 		axis: incoming.axis,
 		qq: incoming.qq,
 		pm: incoming.pm,
+		unit: incoming.unit,
 		changeType: 3,
 		before: {
 			weights: incoming.weights,
@@ -271,6 +274,7 @@ router.put('/', async (ctx, next) => {
 		axis: incoming.axis,
 		qq: incoming.qq,
 		pm: incoming.pm,
+		unit: incoming.unit,
 		changeType: 2,
 		before: {
 			weights: incoming.weights,

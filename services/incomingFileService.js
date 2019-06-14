@@ -104,6 +104,7 @@ class IncomingFileService {
 				axis: type.axis,
 				qq: type.qq,
 				pm: type.pm,
+				unit: type.unit,
 				weights: Number(item['权重']) || 0,
 				incomings: Number(item['目标']) || 0,
 				line2: Number(item['2区位']) || 0,
@@ -144,6 +145,7 @@ class IncomingFileService {
 					axis: type.axis,
 					qq: type.qq,
 					pm: type.pm,
+					unit: type.unit,
 					weights: Number(item['权重']) || 0,
 					changeType: 2,
 					before: {
@@ -181,6 +183,7 @@ class IncomingFileService {
 					axis: type.axis,
 					qq: type.qq,
 					pm: type.pm,
+					unit: type.unit,
 					weights: Number(item['权重']) || 0,
 					changeType: 1,
 					before: {
