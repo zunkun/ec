@@ -146,9 +146,9 @@ class IncomingFileService {
 					qq: type.qq,
 					pm: type.pm,
 					unit: type.unit,
-					weights: Number(item['权重']) || 0,
 					changeType: 2,
 					before: {
+						weights: incoming.weights,
 						incomings: incoming.incomings,
 						line2: incoming.line2,
 						line4: incoming.line4,
@@ -158,6 +158,7 @@ class IncomingFileService {
 						status: incoming.status
 					},
 					after: {
+						weights: Number(item['权重']) || 0,
 						incomings: Number(item['目标']) || 0,
 						line2: Number(item['2区位']) || 0,
 						line4: Number(item['4区位']) || 0,
@@ -184,9 +185,9 @@ class IncomingFileService {
 					qq: type.qq,
 					pm: type.pm,
 					unit: type.unit,
-					weights: Number(item['权重']) || 0,
 					changeType: 1,
 					before: {
+						weights: null,
 						incomings: null,
 						line2: null,
 						line4: null,
@@ -196,6 +197,7 @@ class IncomingFileService {
 						status: null
 					},
 					after: {
+						weights: Number(item['权重']) || 0,
 						incomings: Number(item['目标']) || 0,
 						line2: Number(item['2区位']) || 0,
 						line4: Number(item['4区位']) || 0,

@@ -65,7 +65,7 @@ router.get('/history', async (ctx, next) => {
 		];
 	}
 
-	let rows = await IncomingRecords.find(options).sort({ userName: 1, code: 1, createdAt: 1 }).skip(offset).limit(limit);
+	let rows = await IncomingRecords.find(options).sort({ createTime: -1, userName: 1, code: 1 }).skip(offset).limit(limit);
 	let count = await IncomingRecords.find(options).countDocuments();
 	ctx.body = ServiceResult.getSuccess({
 		count,

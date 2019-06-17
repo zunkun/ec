@@ -12,8 +12,13 @@ const incomingRecordsSchema = new mongoose.Schema(
 		period: String, // 周期
 		code: String, // 目标编码
 		typeName: String, // 目标名称
+		axis: Number, // 1-横轴 2-纵轴
+		qq: Number, // 1-定量 2-定性
+		pm: Number, // 1-正 2-负
+		unit: String, // 单位
 		changeType: Number, // 1-新增 2-修改 3-删除
 		before: {
+			weights: Number,
 			incomings: Number, // 目标
 			line2: Number, // 2区位
 			line4: Number,
@@ -23,6 +28,7 @@ const incomingRecordsSchema = new mongoose.Schema(
 			status: Number // 0-弃用 1-使用
 		},
 		after: {
+			weights: Number,
 			incomings: Number, // 目标
 			line2: Number, // 2区位
 			line4: Number,
