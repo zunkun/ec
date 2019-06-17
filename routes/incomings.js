@@ -76,7 +76,7 @@ router.get('/history', async (ctx, next) => {
 router.post('/', async (ctx, next) => {
 	let data = ctx.request.body;
 	let user = jwt.decode(ctx.header.authorization.substr(7));
-
+	let timestamp = Date.now();
 	if (!data.jobnumber || !data.code || !data.period || !data.incomings) {
 		ctx.body = ServiceResult.getFail('参数不正确');
 		return;
@@ -131,6 +131,7 @@ router.post('/', async (ctx, next) => {
 		pm: type.pm,
 		unit: type.unit,
 		changeType: 1,
+		timestamp,
 		before: {
 			weights: null,
 			incomings: null,
@@ -156,7 +157,7 @@ router.post('/', async (ctx, next) => {
 			userName: user.userName
 		}
 	}).then(() => {
-		return syncIncomings.sync(incoming, 1, year);
+		return syncIncomings.sync(incoming, 1, timestamp, year);
 	});
 	ctx.body = ServiceResult.getSuccess(incoming);
 	await next();
@@ -165,7 +166,7 @@ router.post('/', async (ctx, next) => {
 router.delete('/', async (ctx, next) => {
 	let data = ctx.request.body;
 	let user = jwt.decode(ctx.header.authorization.substr(7));
-
+	let timestamp = Date.now();
 	if (!data.jobnumber || !data.code || !data.period || !data.year) {
 		ctx.body = ServiceResult.getFail('参数不正确');
 		return;
@@ -199,6 +200,7 @@ router.delete('/', async (ctx, next) => {
 		pm: incoming.pm,
 		unit: incoming.unit,
 		changeType: 3,
+		timestamp,
 		before: {
 			weights: incoming.weights,
 			incomings: incoming.incomings,
@@ -224,7 +226,7 @@ router.delete('/', async (ctx, next) => {
 			userName: user.userName
 		}
 	}).then(() => {
-		return syncIncomings.sync(incoming, 0, data.year);
+		return syncIncomings.sync(incoming, 0, timestamp, data.year);
 	});
 
 	ctx.body = ServiceResult.getSuccess({});
@@ -234,6 +236,7 @@ router.delete('/', async (ctx, next) => {
 router.put('/', async (ctx, next) => {
 	let data = ctx.request.body;
 	let user = jwt.decode(ctx.header.authorization.substr(7));
+	let timestamp = Date.now();
 	if (!data.jobnumber || !data.code || !data.period || !data.year) {
 		ctx.body = ServiceResult.getFail('参数不正确');
 		return;
@@ -276,6 +279,7 @@ router.put('/', async (ctx, next) => {
 		pm: incoming.pm,
 		unit: incoming.unit,
 		changeType: 2,
+		timestamp,
 		before: {
 			weights: incoming.weights,
 			incomings: incoming.incomings,
@@ -292,7 +296,7 @@ router.put('/', async (ctx, next) => {
 			userName: user.userName
 		}
 	}).then(() => {
-		return syncIncomings.sync(incoming, 1, data.year);
+		return syncIncomings.sync(incoming, 1, timestamp, data.year);
 	});
 	ctx.body = ServiceResult.getSuccess({});
 	await next();

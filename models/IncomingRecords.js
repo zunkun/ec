@@ -17,6 +17,7 @@ const incomingRecordsSchema = new mongoose.Schema(
 		pm: Number, // 1-正 2-负
 		unit: String, // 单位
 		changeType: Number, // 1-新增 2-修改 3-删除
+		timestamp: Number,
 		before: {
 			weights: Number,
 			incomings: Number, // 目标

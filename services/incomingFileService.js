@@ -83,6 +83,7 @@ class IncomingFileService {
 		let promiseArray = [];
 		let promiseArray2 = [];
 		let incomings = [];
+		let timestamp = Date.now();
 		for (let item of this.fileData) {
 			let jobnumber = item['工号'] ? `${item['工号']}`.trim() : '';
 			let code = item['编码'] ? `${item['编码']}`.trim() : '';
@@ -147,6 +148,7 @@ class IncomingFileService {
 					pm: type.pm,
 					unit: type.unit,
 					changeType: 2,
+					timestamp,
 					before: {
 						weights: incoming.weights,
 						incomings: incoming.incomings,
@@ -186,6 +188,7 @@ class IncomingFileService {
 					pm: type.pm,
 					unit: type.unit,
 					changeType: 1,
+					timestamp,
 					before: {
 						weights: null,
 						incomings: null,
@@ -214,7 +217,7 @@ class IncomingFileService {
 		}
 		Promise.all(promiseArray2).then();
 		return Promise.all(promiseArray).then(() => {
-			return syncIncomings.syncArray(incomings, 1, this.year);
+			return syncIncomings.syncArray(incomings, 1, timestamp, this.year);
 		});
 	}
 

@@ -8,7 +8,7 @@ class SyncIncomings {
 		this.year = new Date().getFullYear();
 	}
 
-	async syncArray (incomings, status = 1, year) {
+	async syncArray (incomings, status = 1, timestamp = Date.now(), year) {
 		console.log('【同步】收入预算到系统');
 		this.year = year || new Date().getFullYear();
 		let promiseArray = [];
@@ -16,7 +16,6 @@ class SyncIncomings {
 		for (let i = 0, length = incomings.length; i < length; i += 50) {
 			let incomingArray = incomings.slice(i, 50);
 
-			// TODO: 处理info
 			let info = [];
 			for (let incoming of incomingArray) {
 				info.push({
@@ -51,7 +50,8 @@ class SyncIncomings {
 						year: incoming.year,
 						jobnumber: incoming.jobnumber,
 						code: incoming.code,
-						period: incoming.period
+						period: incoming.period,
+						timestamp
 					}, {
 						sync: true,
 						syncTime: new Date()
@@ -65,7 +65,8 @@ class SyncIncomings {
 						year: incoming.year,
 						jobnumber: incoming.jobnumber,
 						code: incoming.code,
-						period: incoming.period
+						period: incoming.period,
+						timestamp
 					}, {
 						sync: false,
 						syncTime: new Date()
@@ -81,8 +82,8 @@ class SyncIncomings {
 		});
 	}
 
-	async sync (incoming, status, year) {
-		return this.syncArray([ incoming ], status || incoming.status, incoming.year || year);
+	async sync (incoming, status, timestamp, year) {
+		return this.syncArray([ incoming ], status || incoming.status, timestamp, incoming.year || year);
 	}
 }
 
