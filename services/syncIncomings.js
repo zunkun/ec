@@ -43,7 +43,8 @@ class SyncIncomings {
 					flag: status ? 'insert' : 'delete',
 					info
 				}
-			}).then(async () => {
+			}).then(async (res) => {
+				console.log({ res });
 				for (let incoming of incomingArray) {
 					await IncomingRecords.updateOne({
 						corpId: incoming.corpId,
@@ -58,7 +59,8 @@ class SyncIncomings {
 					});
 				}
 				return Promise.resolve();
-			}).catch(async () => {
+			}).catch(async (error) => {
+				console.log({ error });
 				for (let incoming of incomingArray) {
 					await IncomingRecords.updateOne({
 						corpId: incoming.corpId,
