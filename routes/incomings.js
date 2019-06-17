@@ -177,7 +177,7 @@ router.delete('/', async (ctx, next) => {
 		ctx.body = ServiceResult.getFail('参数错误');
 		return;
 	}
-	await Incomings.update({
+	await Incomings.updateOne({
 		jobnumber: data.jobnumber,
 		code: data.code,
 		period: data.period,
@@ -257,7 +257,7 @@ router.put('/', async (ctx, next) => {
 	document.line10 = Number(data.line10) || incoming.line10;
 	document.weights = Number(data.weights) || incoming.weights;
 
-	await Incomings.update({
+	await Incomings.updateOne({
 		corpId: config.corpId,
 		jobnumber: data.jobnumber,
 		code: data.code,

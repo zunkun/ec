@@ -45,7 +45,7 @@ class SyncIncomings {
 				}
 			}).then(async () => {
 				for (let incoming of incomingArray) {
-					await IncomingRecords.update({
+					await IncomingRecords.updateOne({
 						corpId: incoming.corpId,
 						year: incoming.year,
 						jobnumber: incoming.jobnumber,
@@ -60,7 +60,7 @@ class SyncIncomings {
 				return Promise.resolve();
 			}).catch(async () => {
 				for (let incoming of incomingArray) {
-					await IncomingRecords.update({
+					await IncomingRecords.updateOne({
 						corpId: incoming.corpId,
 						year: incoming.year,
 						jobnumber: incoming.jobnumber,
