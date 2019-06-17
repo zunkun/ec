@@ -38,11 +38,14 @@ class SyncIncomings {
 				});
 			}
 
-			let promise = rp.post(config.incomingUri, {
-				data: {
+			let promise = rp({
+				method: 'POST',
+				uri: config.incomingUri,
+				body: {
 					flag: status ? 'insert' : 'delete',
 					info
-				}
+				},
+				json: true
 			}).then(async (res) => {
 				console.log({ res });
 				for (let incoming of incomingArray) {
