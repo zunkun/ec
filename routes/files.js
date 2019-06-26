@@ -10,7 +10,7 @@ const send = require('koa-send');
 const storage = multer.diskStorage({
 	// 文件保存路径
 	destination: (req, file, cb) => {
-		cb(null, 'uploads/');
+		cb(null, 'public/files/上传文件/');
 	},
 	// 修改文件名称
 	filename: (req, file, cb) => {
@@ -42,14 +42,14 @@ router.post('/upload', upload.single('file'), async (ctx, next) => {
 	}
 	const fileInfo = ctx.req.file;
 
-	let file = await Files.updateOne({ year, corpId: config.corpId }, {
+	let file = await Files.create({
 		year,
 		corpId: config.corpId,
 		type: data.type,
 		name: fileInfo.filename,
 		origin: fileInfo.originalname,
 		status: 0
-	}, { upsert: true });
+	});
 
 	try {
 		if (data.type === 'budgets') {
@@ -76,8 +76,47 @@ router.post('/upload', upload.single('file'), async (ctx, next) => {
 	await next();
 });
 
+router.get('/history', async (ctx, next) => {
+	let { year, page, limit, keywords, type } = ctx.query;
+	year = Number(year) || new Date().getFullYear();
+	type = type === 'budgets' ? 'budgets' : 'incomings';
+	page = Number(page) || 1;
+	limit = Number(limit) || 10;
+	let offset = (page - 1) * limit;
+
+	let options = {
+		type,
+		year,
+		corpId: config.corpId
+	};
+	if (keywords && keywords !== 'undefined') {
+		let regex = new RegExp(keywords, 'i');
+		options.origin = { $regex: regex };
+	}
+
+	let files = await Files.find(options).sort({ createTime: -1 }).skip(offset).limit(limit);
+	let count = await Files.find(options).countDocuments();
+
+	ctx.body = ServiceResult.getSuccess({ count, files });
+});
+
+router.get('/history/download', async (ctx, next) => {
+	const { name, type } = ctx.query;
+	if (!type || !name) {
+		ctx.body = ServiceResult.getFail('参数错误');
+		return;
+	}
+	const typeName = ctx.query.type === 'budgets' ? '预算费用' : '收入目标';
+	const path = `public/files/${typeName}/${name}`;
+	console.log(path);
+	ctx.attachment(path);
+	await send(ctx, path);
+	await next();
+});
+
 router.get('/template', async (ctx, next) => {
-	const path = 'public/files/模板.zip';
+	const name = ctx.query.type === 'budgets' ? '预算费用模板' : '收入目标模板';
+	const path = `public/files/模板/${name}.xlsx`;
 	ctx.attachment(path);
 	await send(ctx, path);
 	await next();

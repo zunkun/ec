@@ -14,6 +14,8 @@ class BudgetFileService {
 		this.fileData = [];
 		this.groupMap = new Map();
 		this.selfTypes = [];
+		this.genDataLists = [];
+		this.errorSet = new Set();
 	}
 
 	handleNum (str) {
@@ -32,6 +34,8 @@ class BudgetFileService {
 		console.log('开始解析预算文件');
 		this.year = options.year || new Date().getFullYear();
 		this.name = options.name;
+		this.genDataLists = [];
+		this.errorSet = new Set();
 		if (!options.name) return Promise.reject('参数错误');
 		try {
 			await this.initSelfTypes();
@@ -70,8 +74,10 @@ class BudgetFileService {
 		let promiseArray = [];
 		for (let item of this.fileData) {
 			let code = item['预算体编码'].trim();
+			let errorArray = [];
 			if (!this.groupMap.has(code)) {
-				continue;
+				errorArray.push('预算编码不正确');
+				this.errorSet.add('预算编码不正确');
 			}
 
 			let data = {
@@ -89,6 +95,17 @@ class BudgetFileService {
 					data.self[typeCode] = this.handleNum(item[typeCode]);
 				}
 			}
+
+			if (errorArray.length) {
+				item['是否错误'] = '错误';
+				item['错误原因'] = errorArray.join('、');
+				this.genDataLists.push(item);
+				continue;
+			}
+			item['是否错误'] = '正确';
+			item['错误原因'] = '';
+			this.genDataLists.push(item);
+
 			console.log(`保存 ${this.groupMap.get(code)} 费用`);
 			let promise = Budgets.updateOne({
 				corpId: config.corpId,
@@ -97,7 +114,22 @@ class BudgetFileService {
 			}, data, { upsert: true });
 			promiseArray.push(promise);
 		}
-		return Promise.all(promiseArray);
+		return Promise.all(promiseArray).then(async () => {
+			return this.generateErrorFile();
+		});
+	}
+
+	async generateErrorFile () {
+		console.log('保存文件处理结果');
+		var wb = XLSX.utils.book_new();
+		var ws = XLSX.utils.json_to_sheet(this.genDataLists);
+		XLSX.utils.book_append_sheet(wb, ws, '预算费用文件处理结果');
+		await XLSX.writeFile(wb, `public/files/预算费用/${this.name}`);
+		let data = { error: false, errorMsg: '' };
+		if (Array.from(this.errorSet).length) {
+			data = { error: true, errorMsg: Array.from(this.errorSet).join('、') };
+		}
+		await Files.updateOne({ name: this.name }, data);
 	}
 
 	/**
@@ -105,7 +137,7 @@ class BudgetFileService {
 	 */
 	async parseExcel () {
 		console.log('【开始】解析excel文件');
-		const filePath = path.join(__dirname, `../uploads/${this.name}`);
+		const filePath = path.join(__dirname, `../public/files/上传文件/${this.name}`);
 		let exists = fs.existsSync(filePath);
 		if (!exists) {
 			return Promise.reject('解析失败，文件不存在');

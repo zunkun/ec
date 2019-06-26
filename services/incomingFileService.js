@@ -17,6 +17,8 @@ class IncomingFileService {
 		this.staffMap = new Map();
 		this.typeMap = new Map();
 		this.manager = {};
+		this.genDataLists = [];
+		this.errorSet = new Set();
 	}
 
 	handleNum (str) {
@@ -35,6 +37,8 @@ class IncomingFileService {
 		console.log('开始解析输入目标文件');
 		this.year = options.year || new Date().getFullYear();
 		this.name = options.name;
+		this.genDataLists = [];
+		this.errorSet = new Set();
 		if (options.userId) {
 			let staff = await Staffs.findOne({ corpId: config.corpId, userId: options.userId });
 			this.manager = { userId: options.userId, userName: staff.userName };
@@ -89,10 +93,32 @@ class IncomingFileService {
 			let code = item['编码'] ? `${item['编码']}`.trim() : '';
 			let period = item['周期'] ? `${item['周期']}`.trim() : '';
 
-			if (!this.staffMap.has(jobnumber) || !this.typeMap.has(code) || !period) {
+			let type = this.typeMap.get(code);
+			let errorArray = [];
+
+			if (!this.staffMap.has(jobnumber)) {
+				errorArray.push('工号不正确');
+				this.errorSet.add('工号不正确');
+			}
+			if (!this.typeMap.has(code) || !type) {
+				errorArray.push('编码不正确');
+				this.errorSet.add('编码不正确');
+			}
+			if (!period) {
+				errorArray.push('周期不正确');
+				this.errorSet.add('周期不正确');
+			}
+
+			if (errorArray.length) {
+				item['是否错误'] = '错误';
+				item['错误原因'] = errorArray.join('、');
+				this.genDataLists.push(item);
 				continue;
 			}
-			let type = this.typeMap.get(code);
+			item['是否错误'] = '正确';
+			item['错误原因'] = '';
+			this.genDataLists.push(item);
+
 			let data = {
 				corpId: config.corpId,
 				year: this.year,
@@ -118,7 +144,7 @@ class IncomingFileService {
 
 			incomings.push(data);
 
-			console.log(`保存 ${this.staffMap.get(jobnumber).userName}  ${this.typeMap.get(code)} ${period} 目标`);
+			console.log(`保存 ${this.staffMap.get(jobnumber).userName}  ${this.typeMap.get(code).name} ${period} 目标`);
 			let options = {
 				corpId: config.corpId,
 				year: this.year,
@@ -216,7 +242,9 @@ class IncomingFileService {
 			promiseArray2.push(promise2);
 		}
 		Promise.all(promiseArray2).then();
-		return Promise.all(promiseArray).then(() => {
+
+		return Promise.all(promiseArray).then(async () => {
+			await this.generateErrorFile();
 			return syncIncomings.syncArray(incomings, 1, timestamp, this.year);
 		});
 	}
@@ -226,7 +254,7 @@ class IncomingFileService {
 	 */
 	async parseExcel () {
 		console.log('【开始】解析excel文件');
-		const filePath = path.join(__dirname, `../uploads/${this.name}`);
+		const filePath = path.join(__dirname, `../public/files/上传文件/${this.name}`);
 		let exists = fs.existsSync(filePath);
 		if (!exists) {
 			return Promise.reject('解析失败，文件不存在');
@@ -242,6 +270,19 @@ class IncomingFileService {
 			console.error(err);
 			return Promise.reject('考勤文件解析错误');
 		}
+	}
+
+	async generateErrorFile () {
+		console.log('保存文件处理结果');
+		var wb = XLSX.utils.book_new();
+		var ws = XLSX.utils.json_to_sheet(this.genDataLists);
+		XLSX.utils.book_append_sheet(wb, ws, '收入目标文件处理结果');
+		await XLSX.writeFile(wb, `public/files/收入目标/${this.name}`);
+		let data = { error: false, errorMsg: '' };
+		if (Array.from(this.errorSet).length) {
+			data = { error: true, errorMsg: Array.from(this.errorSet).join('、') };
+		}
+		await Files.updateOne({ name: this.name }, data);
 	}
 
 	async test () {

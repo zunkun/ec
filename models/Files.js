@@ -12,7 +12,9 @@ const fileSchema = new mongoose.Schema(
 		status: { // 0-上传成功 1-解析成功  2-解析失败
 			type: Number,
 			default: 0
-		}
+		},
+		error: Boolean,
+		errorMsg: String
 	}, {
 		collection: 'files',
 		autoIndex: true,
