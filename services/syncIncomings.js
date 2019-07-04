@@ -37,7 +37,7 @@ class SyncIncomings {
 					tenLocation: incoming.line10
 				});
 			}
-			console.log('同步   ', 'i=' + i, 'incomingArray.length = ' + incomingArray.length, 'info.length = ' + info.length);
+			console.log('同步   ', 'i=' + i, 'incomingArray.length = ' + incomingArray.length, 'info.length = ' + info.length, 'flag' + status ? 'insert' : 'delete');
 			if (!info.length) {
 				continue;
 			}
