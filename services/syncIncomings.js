@@ -14,7 +14,7 @@ class SyncIncomings {
 		let promiseArray = [];
 
 		for (let i = 0, length = incomings.length; i < length; i += 50) {
-			let incomingArray = incomings.slice(i, 50);
+			let incomingArray = incomings.slice(i, i + 50);
 
 			let info = [];
 			for (let incoming of incomingArray) {
