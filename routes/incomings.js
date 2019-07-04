@@ -181,12 +181,13 @@ router.delete('/', async (ctx, next) => {
 		jobnumber: data.jobnumber,
 		code: data.code,
 		period: data.period,
-		year: Number(data.year)
+		year: Number(data.year),
+		status: 1
 	}, {
 		status: 0
 	});
 
-	IncomingRecords.create({
+	await IncomingRecords.create({
 		corpId: config.corpId,
 		jobnumber: incoming.jobnumber,
 		userId: incoming.userId,

@@ -12,8 +12,8 @@ class SyncIncomings {
 		console.log('【同步】收入预算到系统');
 		this.year = year || new Date().getFullYear();
 		let promiseArray = [];
-
-		for (let i = 0, length = incomings.length; i < length; i += 50) {
+		console.log('incomings length: ', incomings.length);
+		for (let i = 0, length = incomings.length; i < length; i = i + 50) {
 			let incomingArray = incomings.slice(i, i + 50);
 
 			let info = [];
@@ -37,7 +37,10 @@ class SyncIncomings {
 					tenLocation: incoming.line10
 				});
 			}
-
+			console.log('同步   ', 'i=' + i, 'incomingArray.length = ' + incomingArray.length, 'info.length = ' + info.length);
+			if (!info.length) {
+				continue;
+			}
 			let promise = rp({
 				method: 'POST',
 				uri: config.incomingUri,
