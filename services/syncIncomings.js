@@ -8,7 +8,7 @@ class SyncIncomings {
 		this.year = new Date().getFullYear();
 	}
 
-	async syncArray (incomings, status = 1, timestamp = Date.now(), year) {
+	async syncArray (incomings, status, timestamp = Date.now(), year) {
 		console.log('【同步】收入预算到系统');
 		this.year = year || new Date().getFullYear();
 		let promiseArray = [];
@@ -91,7 +91,7 @@ class SyncIncomings {
 	}
 
 	async sync (incoming, status, timestamp, year) {
-		return this.syncArray([ incoming ], status || incoming.status, timestamp, incoming.year || year);
+		return this.syncArray([ incoming ], status, timestamp, incoming.year || year);
 	}
 }
 
