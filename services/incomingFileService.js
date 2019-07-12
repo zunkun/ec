@@ -87,6 +87,7 @@ class IncomingFileService {
 		let promiseArray = [];
 		let promiseArray2 = [];
 		let incomings = [];
+		let syncGateIncomings = [];
 		let timestamp = Date.now();
 		for (let item of this.fileData) {
 			let jobnumber = item['工号'] ? `${item['工号']}`.trim() : '';
@@ -144,6 +145,11 @@ class IncomingFileService {
 
 			incomings.push(data);
 
+			// 搜集需要同步的数据
+			if (type.syncGateway) {
+				syncGateIncomings.push(data);
+			}
+
 			console.log(`保存 ${this.staffMap.get(jobnumber).userName}  ${this.typeMap.get(code).name} ${period} 目标`);
 			let options = {
 				corpId: config.corpId,
@@ -173,6 +179,7 @@ class IncomingFileService {
 					qq: type.qq,
 					pm: type.pm,
 					unit: type.unit,
+					syncGateway: !!type.syncGateway,
 					changeType: 2,
 					timestamp,
 					before: {
@@ -213,6 +220,7 @@ class IncomingFileService {
 					qq: type.qq,
 					pm: type.pm,
 					unit: type.unit,
+					syncGateway: !!type.syncGateway,
 					changeType: 1,
 					timestamp,
 					before: {
@@ -245,7 +253,7 @@ class IncomingFileService {
 
 		return Promise.all(promiseArray).then(async () => {
 			await this.generateErrorFile();
-			return syncIncomings.syncArray(incomings, 1, timestamp, this.year);
+			return syncIncomings.syncArray(syncGateIncomings, 1, timestamp, this.year);
 		});
 	}
 

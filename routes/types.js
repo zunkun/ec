@@ -36,6 +36,9 @@ router.post('/', async (ctx, next) => {
 
 	data.catalog = 1;
 	data.corpId = config.corpId;
+	if (data.type === 'incomings') {
+		data.syncGateway = !!data.syncGateway;
+	}
 	let type = await Types.create(data);
 
 	ctx.body = ServiceResult.getSuccess(type);
@@ -53,6 +56,9 @@ router.put('/', async (ctx, next) => {
 	if (!exist) {
 		ctx.body = ServiceResult.getFail(`不存在编码 ${data.code}`);
 		return;
+	}
+	if (data.type === 'incomings') {
+		data.syncGateway = !!data.syncGateway;
 	}
 
 	data.catalog = 1;

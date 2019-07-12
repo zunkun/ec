@@ -12,6 +12,7 @@ const typeSchema = new mongoose.Schema(
 		qq: Number, // 1-定量 2-定性
 		pm: Number, // 1-正 2-负
 		unit: String, // 单位
+		syncGateway: { type: Boolean, default: true },
 		catalog: Number // 0-系统 1-自定义
 	}, {
 		collection: 'types',

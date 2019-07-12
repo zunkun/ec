@@ -50,7 +50,6 @@ class SyncIncomings {
 				},
 				json: true
 			}).then(async (res) => {
-				console.log({ res });
 				for (let incoming of incomingArray) {
 					await IncomingRecords.updateOne({
 						corpId: incoming.corpId,

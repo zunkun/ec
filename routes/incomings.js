@@ -130,6 +130,7 @@ router.post('/', async (ctx, next) => {
 		qq: type.qq,
 		pm: type.pm,
 		unit: type.unit,
+		syncGateway: !!type.syncGateway,
 		changeType: 1,
 		timestamp,
 		before: {
@@ -157,7 +158,10 @@ router.post('/', async (ctx, next) => {
 			userName: user.userName
 		}
 	}).then(() => {
-		return syncIncomings.sync(incoming, 1, timestamp, year);
+		if (type.syncGateway) {
+			return syncIncomings.sync(incoming, 1, timestamp, year);
+		}
+		return Promise.resolve();
 	});
 	ctx.body = ServiceResult.getSuccess(incoming);
 	await next();
@@ -187,6 +191,7 @@ router.delete('/', async (ctx, next) => {
 		status: 0
 	});
 
+	let type = await Types.findOne({ corpId: config.corpId, code: incoming.code });
 	await IncomingRecords.create({
 		corpId: config.corpId,
 		jobnumber: incoming.jobnumber,
@@ -200,6 +205,7 @@ router.delete('/', async (ctx, next) => {
 		qq: incoming.qq,
 		pm: incoming.pm,
 		unit: incoming.unit,
+		syncGateway: type ? !!type.syncGateway : false,
 		changeType: 3,
 		timestamp,
 		before: {
@@ -227,7 +233,10 @@ router.delete('/', async (ctx, next) => {
 			userName: user.userName
 		}
 	}).then(() => {
-		return syncIncomings.sync(incoming, 0, timestamp, data.year);
+		if (type && type.syncGateway) {
+			return syncIncomings.sync(incoming, 0, timestamp, data.year);
+		}
+		return Promise.resolve();
 	});
 
 	ctx.body = ServiceResult.getSuccess({});
@@ -266,6 +275,7 @@ router.put('/', async (ctx, next) => {
 		year: Number(data.year)
 	}, document);
 
+	let type = await Types.findOne({ corpId: config.corpId, code: incoming.code });
 	IncomingRecords.create({
 		corpId: config.corpId,
 		jobnumber: incoming.jobnumber,
@@ -279,6 +289,7 @@ router.put('/', async (ctx, next) => {
 		qq: incoming.qq,
 		pm: incoming.pm,
 		unit: incoming.unit,
+		syncGateway: type ? !!type.syncGateway : false,
 		changeType: 2,
 		timestamp,
 		before: {
@@ -297,7 +308,10 @@ router.put('/', async (ctx, next) => {
 			userName: user.userName
 		}
 	}).then(() => {
-		return syncIncomings.sync(incoming, 1, timestamp, data.year);
+		if (type && type.syncGateway) {
+			return syncIncomings.sync(incoming, 1, timestamp, data.year);
+		}
+		return Promise.resolve();
 	});
 	ctx.body = ServiceResult.getSuccess({});
 	await next();

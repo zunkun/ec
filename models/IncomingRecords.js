@@ -18,6 +18,7 @@ const incomingRecordsSchema = new mongoose.Schema(
 		unit: String, // 单位
 		changeType: Number, // 1-新增 2-修改 3-删除
 		timestamp: Number,
+		syncGateway: { type: Boolean, default: true },
 		before: {
 			weights: Number,
 			incomings: Number, // 目标
