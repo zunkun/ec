@@ -3,6 +3,7 @@ const ServiceResult = require('../core/ServiceResult');
 const feesService = require('../services/feesService');
 const DeptGroups = require('../models/DeptGroups');
 const config = require('../config');
+const { toFixedNum } = require('../core/util');
 
 const Router = require('koa-router');
 const router = new Router();
@@ -56,19 +57,19 @@ router.get('/', async (ctx, next) => {
 			code: query.code,
 			name: budget.name,
 			benefits: {
-				budget: budget.benefits,
-				expense: benefitsExpense,
-				balance: budget.benefits - benefitsExpense
+				budget: toFixedNum(budget.benefits),
+				expense: toFixedNum(benefitsExpense),
+				balance: toFixedNum(budget.benefits - benefitsExpense)
 			},
 			trip: {
-				budget: budget.trip,
-				expense: tripExpense,
-				balance: budget.trip - tripExpense
+				budget: toFixedNum(budget.trip),
+				expense: toFixedNum(tripExpense),
+				balance: toFixedNum(budget.trip - tripExpense)
 			},
 			others: {
-				budget: budget.others,
-				expense: othersExpense,
-				balance: budget.others - othersExpense
+				budget: toFixedNum(budget.others),
+				expense: toFixedNum(othersExpense),
+				balance: toFixedNum(budget.others - othersExpense)
 			}
 		});
 	} catch (error) {
@@ -110,19 +111,19 @@ router.get('/lists', async (ctx, next) => {
 				code: row.code,
 				name: row.name,
 				benefits: {
-					budget: Number(row.benefits),
-					expense: Number(benefitsExpense),
-					balance: Number(row.benefits) - Number(benefitsExpense)
+					budget: toFixedNum(row.benefits),
+					expense: toFixedNum(benefitsExpense),
+					balance: toFixedNum(row.benefits - benefitsExpense)
 				},
 				trip: {
-					budget: Number(row.trip),
-					expense: Number(tripExpense),
-					balance: Number(row.trip) - Number(tripExpense)
+					budget: toFixedNum(row.trip),
+					expense: toFixedNum(tripExpense),
+					balance: toFixedNum(row.trip - tripExpense)
 				},
 				others: {
-					budget: Number(row.others),
-					expense: Number(othersExpense),
-					balance: Number(row.others) - Number(othersExpense)
+					budget: toFixedNum(row.others),
+					expense: toFixedNum(othersExpense),
+					balance: toFixedNum(row.others - othersExpense)
 				}
 			};
 

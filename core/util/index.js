@@ -4,6 +4,14 @@ const Depts = require('../../models/Depts');
 const config = require('../../config');
 
 class Util {
+	isInteger (num) {
+		return Number(num || null) % 1 === 0;
+	}
+
+	toFixedNum (num) {
+		return this.isInteger(num) ? num : Number(num).toFixed(2);
+	}
+
 	timeFmt (num) {
 		return num >= 10 ? num : `0${num}`;
 	}
