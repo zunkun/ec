@@ -5,6 +5,7 @@ const HotelOrder = require('../models/HotelOrder');
 const Depts = require('../models/Depts');
 const BTripFee = require('../models/BTripFee');
 const config = require('../config');
+const util = require('../core/util');
 
 class ComputeService {
 	constructor () {
@@ -64,13 +65,13 @@ class ComputeService {
 				// 	throw new Error(`deptId: ${deptId} 部门没有对应的预算体`);
 				// }
 				console.log(`【开始】计算 ${fee._id.groupName} 的 ${feeType.type} 费用`);
-				let btripFee = await BTripFee.findOne({
+				await util.wait(100);
+				await BTripFee.updateOne({
 					year: fee._id.year,
 					month: fee._id.month,
-					'group.code': fee.groupCode
-				});
-				if (!btripFee) {
-					await BTripFee.create({
+					'group.code': fee._id.groupCode
+				}, {
+					$set: {
 						year: fee._id.year,
 						month: fee._id.month,
 						group: {
@@ -78,22 +79,33 @@ class ComputeService {
 							name: fee._id.groupName
 						},
 						[feeType.type]: fee.total
-					});
-				} else {
-					await BTripFee.updateOne({
-						_id: btripFee._id
-					}, {
-						$set: {
-							year: fee._id.year,
-							month: fee._id.month,
-							group: {
-								code: fee._id.groupCode,
-								name: fee._id.groupName
-							},
-							[feeType.type]: fee.total
-						}
-					});
-				}
+					}
+				}, { upsert: true });
+				// if (!btripFee) {
+				// 	await BTripFee.create({
+				// 		year: fee._id.year,
+				// 		month: fee._id.month,
+				// 		group: {
+				// 			code: fee._id.groupCode,
+				// 			name: fee._id.groupName
+				// 		},
+				// 		[feeType.type]: fee.total
+				// 	});
+				// } else {
+				// 	await BTripFee.updateOne({
+				// 		_id: btripFee._id
+				// 	}, {
+				// 		$set: {
+				// 			year: fee._id.year,
+				// 			month: fee._id.month,
+				// 			group: {
+				// 				code: fee._id.groupCode,
+				// 				name: fee._id.groupName
+				// 			},
+				// 			[feeType.type]: fee.total
+				// 		}
+				// 	});
+				// }
 			}
 		}
 		console.log('【开始】计算总费用');
