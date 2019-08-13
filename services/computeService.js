@@ -51,7 +51,7 @@ class ComputeService {
 				},
 				{
 					$group: {
-						_id: { year: '$year', month: '$month', groupCode: '$groupCode', groupName: '%groupName' },
+						_id: { year: '$year', month: '$month', groupCode: '$groupCode', groupName: '$groupName' },
 						total: { $sum: '$total_fee' }
 					}
 				}
