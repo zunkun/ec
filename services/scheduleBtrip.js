@@ -117,8 +117,8 @@ class ScheduleBtrip {
 				flight.month = month;
 				flight.day = day;
 				flight.total_fee = this.computeFee(flight.price_info_list);
-				flight.groupCode = this.deptGroupMap.get(flight.deptid).code;
-				flight.groupName = this.deptGroupMap.get(flight.deptid).name;
+				flight.groupCode = this.deptGroupMap.get(Number(flight.deptid)).code;
+				flight.groupName = this.deptGroupMap.get(Number(flight.deptid)).name;
 
 				await FlightOrder.updateOne({ id: flight.id, apply_id: flight.apply_id, corpid: flight.corpid }, flight, { upsert: true });
 			}
@@ -167,8 +167,8 @@ class ScheduleBtrip {
 				train.day = day;
 				train.total_fee = this.computeFee(train.price_info_list);
 
-				train.groupCode = this.deptGroupMap.get(train.deptid).code;
-				train.groupName = this.deptGroupMap.get(train.deptid).name;
+				train.groupCode = this.deptGroupMap.get(Number(train.deptid)).code;
+				train.groupName = this.deptGroupMap.get(Number(train.deptid)).name;
 				await TrainOrder.updateOne({ id: train.id, apply_id: train.apply_id, corpid: train.corpid }, train, { upsert: true });
 			}
 		}
@@ -216,8 +216,8 @@ class ScheduleBtrip {
 				vehicle.day = day;
 				vehicle.total_fee = this.computeFee(vehicle.price_info_list);
 
-				vehicle.groupCode = this.deptGroupMap.get(vehicle.deptid).code;
-				vehicle.groupName = this.deptGroupMap.get(vehicle.deptid).name;
+				vehicle.groupCode = this.deptGroupMap.get(Number(vehicle.deptid)).code;
+				vehicle.groupName = this.deptGroupMap.get(Number(vehicle.deptid)).name;
 				await VehicleOrder.updateOne({ id: vehicle.id, apply_id: vehicle.apply_id, corpid: vehicle.corpid }, vehicle, { upsert: true });
 			}
 		}
@@ -265,8 +265,8 @@ class ScheduleBtrip {
 				hotel.day = day;
 				hotel.total_fee = this.computeFee(hotel.price_info_list);
 
-				hotel.groupCode = this.deptGroupMap.get(hotel.deptid).code;
-				hotel.groupName = this.deptGroupMap.get(hotel.deptid).name;
+				hotel.groupCode = this.deptGroupMap.get(Number(hotel.deptid)).code;
+				hotel.groupName = this.deptGroupMap.get(Number(hotel.deptid)).name;
 				await HotelOrder.updateOne({ id: hotel.id, apply_id: hotel.apply_id, corpid: hotel.corpid }, hotel, { upsert: true });
 			}
 		}
