@@ -61,7 +61,7 @@ class FeeService {
 
 		try {
 			let tripFees = await this.getTripFees(dept.group.code);
-			return Number(budget.trip || 0) - tripFees;
+			return Number(budget.trip || 0) - Number(tripFees);
 		} catch (error) {
 			return Promise.reject(error);
 		}
@@ -81,7 +81,7 @@ class FeeService {
 		try {
 			// let ncFees = await this.ncExpense(code, '交通差旅费');
 			let ncFees = await this.ncExpenseLocal(code, 'trip');
-			return Number(btripFees + ncFees).toFixed(2);
+			return Number(Number(btripFees) + Number(ncFees)).toFixed(2);
 		} catch (error) {
 			return Promise.reject(error);
 		}
@@ -101,7 +101,7 @@ class FeeService {
 
 		try {
 			let tripFees = await this.getTripFees(code);
-			return Number(budget.trip) - tripFees;
+			return Number(budget.trip) - Number(tripFees);
 		} catch (error) {
 			return Promise.reject(error);
 		}
@@ -123,7 +123,7 @@ class FeeService {
 			let tripFees = await this.getTripFees(code);
 			return {
 				trip: Number(budget.trip),
-				tripFees
+				tripFees: Number(tripFees)
 			};
 		} catch (error) {
 			return Promise.reject(error);

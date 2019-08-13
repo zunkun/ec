@@ -59,7 +59,7 @@ class ComputeService {
 
 			for (let fee of fees) {
 				// let deptId = Number(fee._id.deptId);
-				let groupCode = fee._id.groupCode;
+				// let groupCode = fee._id.groupCode;
 				// if (!this.deptMap.has(deptId) || !this.deptMap.get(deptId).group || !this.deptMap.get(deptId).group.code) {
 				// 	throw new Error(`deptId: ${deptId} 部门没有对应的预算体`);
 				// }
