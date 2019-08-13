@@ -51,18 +51,19 @@ class ComputeService {
 				},
 				{
 					$group: {
-						_id: { year: '$year', month: '$month', groupCode: '$groupCode' },
+						_id: { year: '$year', month: '$month', groupCode: '$groupCode', groupName: '%groupName' },
 						total: { $sum: '$total_fee' }
 					}
 				}
 			]);
 
 			for (let fee of fees) {
-				let deptId = Number(fee._id.deptId);
+				// let deptId = Number(fee._id.deptId);
+				let groupCode = fee._id.groupCode;
 				// if (!this.deptMap.has(deptId) || !this.deptMap.get(deptId).group || !this.deptMap.get(deptId).group.code) {
 				// 	throw new Error(`deptId: ${deptId} 部门没有对应的预算体`);
 				// }
-				console.log(`【开始】计算 ${this.deptMap.get(deptId).group.name} 的 ${feeType.type} 费用`);
+				console.log(`【开始】计算 ${fee._id.groupName} 的 ${feeType.type} 费用`);
 				await BTripFee.updateOne({
 					year: fee._id.year,
 					month: fee._id.month,
@@ -71,7 +72,10 @@ class ComputeService {
 					$set: {
 						year: fee._id.year,
 						month: fee._id.month,
-						group: this.deptMap.get(deptId).group,
+						group: {
+							code: fee._id.groupCode,
+							name: fee._id.groupName
+						},
 						[feeType.type]: fee.total
 					}
 				}, { upsert: true });
