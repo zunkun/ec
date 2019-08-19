@@ -98,9 +98,9 @@ class BudgetWarning {
 						await message.sendFinanceWarningMsg(financeUserIds, line, group.name);
 						await message.sendManagerWarningMsg(managerIds, line, group.name);
 						await FeeWarning.updateOne({ _id: feeWarining._id }, { line, warning: true, percent, managerIds, financeUserIds });
+						// await FeeWarning.updateOne({ _id: feeWarining._id }, { line, warning: true });
 					}
 				}
-				await FeeWarning.updateOne({ _id: feeWarining._id }, { line, warning: true });
 			} catch (error) {
 				console.log(error);
 			}

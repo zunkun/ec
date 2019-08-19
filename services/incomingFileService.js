@@ -8,6 +8,7 @@ const Staffs = require('../models/Staffs');
 const Types = require('../models/Types');
 const IncomingRecords = require('../models/IncomingRecords');
 const syncIncomings = require('./syncIncomings');
+const { toFixedNum } = require('../core/util');
 
 class IncomingFileService {
 	constructor () {
@@ -133,13 +134,13 @@ class IncomingFileService {
 				qq: type.qq,
 				pm: type.pm,
 				unit: type.unit,
-				weights: Number(item['权重']) || 0,
-				incomings: Number(item['目标']) || 0,
-				line2: Number(item['2区位']) || 0,
-				line4: Number(item['4区位']) || 0,
-				line6: Number(item['6区位']) || 0,
-				line8: Number(item['8区位']) || 0,
-				line10: Number(item['10区位']) || 0,
+				weights: item['权重'] ? toFixedNum(Number(item['权重']) || 0) : null,
+				incomings: item['目标'] ? toFixedNum(Number(item['目标']) || 0) : null,
+				line2: item['2区位'] ? toFixedNum(Number(item['2区位']) || 0) : null,
+				line4: item['4区位'] ? toFixedNum(Number(item['4区位']) || 0) : null,
+				line6: item['6区位'] ? toFixedNum(Number(item['6区位']) || 0) : null,
+				line8: item['8区位'] ? toFixedNum(Number(item['8区位']) || 0) : null,
+				line10: item['10区位'] ? toFixedNum(Number(item['10区位']) || 0) : null,
 				status: 1
 			};
 
@@ -193,13 +194,13 @@ class IncomingFileService {
 						status: incoming.status
 					},
 					after: {
-						weights: Number(item['权重']) || 0,
-						incomings: Number(item['目标']) || 0,
-						line2: Number(item['2区位']) || 0,
-						line4: Number(item['4区位']) || 0,
-						line6: Number(item['6区位']) || 0,
-						line8: Number(item['8区位']) || 0,
-						line10: Number(item['10区位']) || 0,
+						weights: item['权重'] ? toFixedNum(Number(item['权重']) || 0) : null,
+						incomings: item['目标'] ? toFixedNum(Number(item['目标']) || 0) : null,
+						line2: item['2区位'] ? toFixedNum(Number(item['2区位']) || 0) : null,
+						line4: item['4区位'] ? toFixedNum(Number(item['4区位']) || 0) : null,
+						line6: item['6区位'] ? toFixedNum(Number(item['6区位']) || 0) : null,
+						line8: item['8区位'] ? toFixedNum(Number(item['8区位']) || 0) : null,
+						line10: item['10区位'] ? toFixedNum(Number(item['10区位']) || 0) : null,
 						status: 1
 					},
 					manager: this.manager
@@ -234,13 +235,13 @@ class IncomingFileService {
 						status: null
 					},
 					after: {
-						weights: Number(item['权重']) || 0,
-						incomings: Number(item['目标']) || 0,
-						line2: Number(item['2区位']) || 0,
-						line4: Number(item['4区位']) || 0,
-						line6: Number(item['6区位']) || 0,
-						line8: Number(item['8区位']) || 0,
-						line10: Number(item['10区位']) || 0,
+						weights: item['权重'] ? toFixedNum(Number(item['权重']) || 0) : null,
+						incomings: item['目标'] ? toFixedNum(Number(item['目标']) || 0) : null,
+						line2: item['2区位'] ? toFixedNum(Number(item['2区位']) || 0) : null,
+						line4: item['4区位'] ? toFixedNum(Number(item['4区位']) || 0) : null,
+						line6: item['6区位'] ? toFixedNum(Number(item['6区位']) || 0) : null,
+						line8: item['8区位'] ? toFixedNum(Number(item['8区位']) || 0) : null,
+						line10: item['10区位'] ? toFixedNum(Number(item['10区位']) || 0) : null,
 						status: 1
 					},
 					manager: this.manager

@@ -6,6 +6,7 @@ const Files = require('../models/Files');
 const DeptGroups = require('../models/DeptGroups');
 const Budgets = require('../models/Budgets');
 const Types = require('../models/Types');
+const { toFixedNum } = require('../core/util');
 
 class BudgetFileService {
 	constructor () {
@@ -23,7 +24,7 @@ class BudgetFileService {
 			return 0;
 		}
 		str = str.trim().replace(/,|-/g, '');
-		return Number(str);
+		return toFixedNum(Number(str));
 	}
 
 	/**
