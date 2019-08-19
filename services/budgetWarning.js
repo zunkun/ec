@@ -81,7 +81,7 @@ class BudgetWarning {
 				}
 				let feeWarining = await FeeWarning.findOne({ corpId: config.corpId, year: this.year, code: group.code });
 				if (!feeWarining) {
-					feeWarining = await FeeWarning.create({ corpId: config.corpId, year: this.year, code: group.code, name: group.name, warining: false, line: 0 });
+					feeWarining = await FeeWarning.create({ corpId: config.corpId, year: this.year, code: group.code, name: group.name, warining: false, line: 0, percent });
 				}
 
 				if (line > feeWarining.line || percent < feeWarining.line) {
@@ -93,10 +93,11 @@ class BudgetWarning {
 							managerIds.push(manager.userId);
 						}
 						console.log(`${group.name}部门预算使用超过${line * 100} %,给财务部门和部门主管发送提醒消息`);
-						console.log('财务主管', financeUserIds);
-						console.log('部门', dept, '部门主管', managerIds);
-						// await message.sendFinanceWarningMsg(financeUserIds, line, group.name);
-						// await message.sendManagerWarningMsg(managerIds, line, group.name);
+						// console.log('财务主管', financeUserIds);
+						// console.log('部门', dept, '部门主管', managerIds);
+						await message.sendFinanceWarningMsg(financeUserIds, line, group.name);
+						await message.sendManagerWarningMsg(managerIds, line, group.name);
+						await FeeWarning.updateOne({ _id: feeWarining._id }, { line, warning: true, percent, managerIds, financeUserIds });
 					}
 				}
 				await FeeWarning.updateOne({ _id: feeWarining._id }, { line, warning: true });

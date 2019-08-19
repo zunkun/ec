@@ -15,7 +15,9 @@ const feeWarningSchema = new mongoose.Schema(
 			type: Boolean,
 			default: false
 		},
-		line: Number // 最高预警级别
+		line: Number, // 最高预警级别
+		financeUserIds: [], // 财务主管表
+		managerIds: [] // 部门主管id表
 	}, {
 		collection: 'feewarnings',
 		autoIndex: true,
