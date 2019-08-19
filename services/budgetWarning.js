@@ -16,6 +16,9 @@ class BudgetWarning {
 	}
 
 	async start () {
+		setTimeout(async () => {
+			await this.check();
+		}, 3000);
 		const task = cron.schedule(config.warningCron, async () => {
 			await this.check();
 		});
@@ -90,8 +93,10 @@ class BudgetWarning {
 							managerIds.push(manager.userId);
 						}
 						console.log(`${group.name}部门预算使用超过${line * 100} %,给财务部门和部门主管发送提醒消息`);
-						await message.sendFinanceWarningMsg(financeUserIds, line, group.name);
-						await message.sendManagerWarningMsg(managerIds, line, group.name);
+						console.log('财务主管', financeUserIds);
+						console.log('部门', dept, '部门主管', managerIds);
+						// await message.sendFinanceWarningMsg(financeUserIds, line, group.name);
+						// await message.sendManagerWarningMsg(managerIds, line, group.name);
 					}
 				}
 				await FeeWarning.updateOne({ _id: feeWarining._id }, { line, warning: true });
@@ -102,5 +107,7 @@ class BudgetWarning {
 	}
 }
 const budgetWarning = new BudgetWarning();
+
+budgetWarning.start();
 
 module.exports = budgetWarning;
