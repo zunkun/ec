@@ -21,7 +21,7 @@ class FeeService {
 			let data = await oracle.execute(sql);
 			console.log(`用时: ${(Date.now() - startTime) / 1000}s`);
 			for (let row of data.rows) {
-				ncFees += Number(row[4]).toFixed(2);
+				ncFees += Number(Number(row[4]).toFixed(2));
 			}
 			return ncFees;
 		} catch (error) {
@@ -33,7 +33,7 @@ class FeeService {
 		type = type || 'trip';
 		let fee = await NcFee.findOne({ corpId: config.corpId, year: new Date().getFullYear(), 'group.code': code });
 		if (!fee) return 0;
-		return Number(fee[type] || 0).toFixed(2);
+		return Number(Number(fee[type] || 0).toFixed(2));
 	}
 
 	async tripBalanceByDeptId (deptId) {
@@ -81,7 +81,7 @@ class FeeService {
 		try {
 			// let ncFees = await this.ncExpense(code, '交通差旅费');
 			let ncFees = await this.ncExpenseLocal(code, 'trip');
-			return Number(Number(btripFees) + Number(ncFees)).toFixed(2);
+			return Number(Number(Number(btripFees) + Number(ncFees)).toFixed(2));
 		} catch (error) {
 			return Promise.reject(error);
 		}

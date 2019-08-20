@@ -32,7 +32,7 @@ router.get('/balance', async (ctx, next) => {
 		ctx.body = ServiceResult.getSuccess({
 			deptId,
 			approval: balance > 0,
-			balance: Number(balance).toFixed(2)
+			balance: Number(Number(balance).toFixed(2))
 		});
 	} catch (error) {
 		console.error(error);
@@ -55,7 +55,7 @@ router.get('/count', async (ctx, next) => {
 		console.log(`用时: ${(Date.now() - startTime) / 1000}s`);
 		ctx.body = ServiceResult.getSuccess({
 			deptId,
-			balance: Number(balance).toFixed(2)
+			balance: Number(Number(balance).toFixed(2))
 		});
 	} catch (error) {
 		ctx.body = ServiceResult.getSuccess({

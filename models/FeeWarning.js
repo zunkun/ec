@@ -16,8 +16,9 @@ const feeWarningSchema = new mongoose.Schema(
 			default: false
 		},
 		line: Number, // 最高预警级别
-		financeUserIds: [], // 财务主管表
-		managerIds: [] // 部门主管id表
+		financeUsers: [], // 财务主管表
+		managerUsers: [], // 部门主管表
+		status: Number // 数据状态，当创建一条心记录时 status = 1， 当某次查询预算百分比小于最低预警值时， 当前status = 0
 	}, {
 		collection: 'feewarnings',
 		autoIndex: true,

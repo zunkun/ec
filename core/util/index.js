@@ -6,7 +6,7 @@ const config = require('../../config');
 class Util {
 	toFixedNum (num) {
 		let isInteger = Number(num || null) % 1 === 0;
-		return isInteger ? num : Number(num).toFixed(2);
+		return isInteger ? Number(num) : Number(Number(num).toFixed(2));
 	}
 
 	timeFmt (num) {
