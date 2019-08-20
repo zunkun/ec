@@ -8,6 +8,7 @@ const Depts = require('../models/Depts');
 const FeeWarning = require('../models/FeeWarning');
 const cron = require('node-cron');
 const feesService = require('./feesService');
+const { toFixedNum } = require('../core/util');
 
 // 预算预警
 class BudgetWarning {
@@ -27,7 +28,7 @@ class BudgetWarning {
 
 	getLow () {
 		let warningLines = config.warningLines;
-		let low = 0;
+		let low = 1;
 		for (let item of warningLines) {
 			if (item < low) {
 				low = item;
@@ -40,65 +41,81 @@ class BudgetWarning {
 		let deptGroups = await DeptGroups.find({ corpId: config.corpId });
 		let role = await Roles.findOne({ name: '预算管理岗' });
 		let financeUserIds = [];
+		let financeUsers = [];
 		for (let item of role.users || []) {
 			financeUserIds.push(item.userId);
+			financeUsers.push({ userId: item.userId, userName: item.userName });
 		}
-		let warningLines = config.warningLines;
+		let warningLines = config.warningLines.sort();
 		let low = this.getLow();
 
 		for (let group of deptGroups) {
+			console.log('----------------------------------------------------');
 			console.log(`計算 ${group.name} 部門預算百分比`);
 			try {
 				let feeData = await feesService.getTripFeeData(group.code);
 				let trip = Number(feeData.trip) || 0;
 				let tripFees = Number(feeData.tripFees) || 0;
-				let percent = tripFees / trip;
+				let percent = toFixedNum(Number(tripFees / trip));
 				if (trip === 0) {
-					percent = 1;
-				}
-
-				console.log(`${group.name}部门预算已用 ${percent * 100} %`);
-				if (percent < low) {
-					await FeeWarning.updateOne({
-						corpId: config.corpId,
-						year: this.year,
-						code: group.code }, {
-						corpId: config.corpId,
-						year: this.year,
-						code: group.code,
-						name: group.name,
-						warning: false,
-						line: 0
-					}, { upsert: true });
+					console.log(`${group.name}部门差旅费预算为0, 不做预警`);
 					continue;
 				}
 
-				let line = low;
+				console.log(`${group.name}部门预算已用 ${tripFees}/${trip}= ${toFixedNum(percent * 100)} %`);
+				if (percent < low) {
+					console.log(`${group.name}部门差旅费使用 ${percent} < ${low}， 不做预警`);
+					// 更新旧的预警数据，重新开始预警
+					await FeeWarning.updateOne({ corpId: config.corpId, year: this.year, code: group.code, status: 1 }, { status: 0 });
+					continue;
+				}
+
+				let line = low; // 预警线
 				for (let item of warningLines) {
-					if (item < percent && item > line) {
+					if (percent > item) {
 						line = item;
 					}
 				}
-				let feeWarining = await FeeWarning.findOne({ corpId: config.corpId, year: this.year, code: group.code });
-				if (!feeWarining) {
-					feeWarining = await FeeWarning.create({ corpId: config.corpId, year: this.year, code: group.code, name: group.name, warining: false, line: 0, percent });
+				let feeWarining = await FeeWarning.findOne({ corpId: config.corpId, year: this.year, code: group.code, status: 1 });
+				if (feeWarining && line <= feeWarining.line) {
+					console.log(`${group.name} 在 ${line} 预警点已经预警过,本次不再预警`);
+					continue;
 				}
 
-				if (line > feeWarining.line || percent < feeWarining.line) {
+				if (!feeWarining || line > feeWarining.line) {
+					let managerIds = [];
+					let managerUsers = [];
+
 					let dept = await Depts.findOne({ corpId: config.corpId, deptName: group.name });
 					if (dept) {
-						let managerIds = [];
 						let managers = dept.managers || [];
 						for (let manager of managers) {
 							managerIds.push(manager.userId);
+							managerUsers.push({ userId: manager.userId, userName: manager.userName });
 						}
-						console.log(`${group.name}部门预算使用超过${line * 100} %,给财务部门和部门主管发送提醒消息`);
-						// console.log('财务主管', financeUserIds);
-						// console.log('部门', dept, '部门主管', managerIds);
-						await message.sendFinanceWarningMsg(financeUserIds, line, group.name);
+					}
+					console.log(`${group.name}部门预算使用超过${line * 100} %,给财务部门和部门主管发送提醒消息`);
+					await message.sendFinanceWarningMsg(financeUserIds, line, group.name);
+					if (managerIds.length) {
 						await message.sendManagerWarningMsg(managerIds, line, group.name);
-						await FeeWarning.updateOne({ _id: feeWarining._id }, { line, warning: true, percent, managerIds, financeUserIds });
-						// await FeeWarning.updateOne({ _id: feeWarining._id }, { line, warning: true });
+					}
+
+					// 写发送消息日志
+					if (!feeWarining) {
+						await FeeWarning.create({
+							corpId: config.corpId,
+							year: this.year,
+							code: group.code,
+							name: group.name,
+							warining: true,
+							financeUsers,
+							managerUsers,
+							line,
+							percent,
+							status: 1
+						});
+					} else {
+						await FeeWarning.updateOne({ _id: feeWarining._id }, { line, warning: true, percent, managerUsers, financeUsers });
 					}
 				}
 			} catch (error) {
