@@ -1,35 +1,28 @@
 const mongodb = require('../core/db/mongodb');
 const mongoose = require('mongoose');
 
+// 飞机火车站表
 const stationSchema = new mongoose.Schema(
 	{
-		province: {
-			code: String,
-			name: String
-		}, // 省份
-		city: {
-			code: String,
-			name: String
-		}, // 城市
-		code: String, // 城市代码
-		type: Number, // 1-火车站 2-飞机场
-		stations: [], // 火车站/飞机场
+		id: String,
+		type: Number, // 类型 1-飞机 2-火车
+		station: String, // 站名
+		abbr: String, // 站名简称字母 比如 阿克苏 AKU
+		letter: String, // 首字母，比如A,B
+		city: String, // 城市名称, 火车站有城市名称
 		pinyin: {
-			province: {
-				normal: String, // 正常拼音
-				initial: String, // 声母
-				firstletter: String // 首字母
+			station: {
+				full: String, // 全拼
+				simple: String // 拼音首字母表 比如上海  SH
 			},
 			city: {
-				normal: String,
-				initial: String,
-				firstletter: String
+				full: String, // 全拼
+				simple: String // 拼音首字母表 比如上海  SH
 			}
 		}
 	}, {
 		collection: 'stations',
-		autoIndex: true,
-		timestamps: { createdAt: 'createTime', updatedAt: 'updateTime' }
+		autoIndex: true
 	});
 
 const Stations = mongodb.model('stations', stationSchema);
