@@ -34,68 +34,13 @@ class ScheduleDepts {
 	}
 
 	async start () {
-		setTimeout(async () => {
-			await this.init();
-			await this.syncService(); // 系统启动时检查是否已经通不过了，如果没有同步，则同步
-		}, 3000);
-		const task = cron.schedule(config.deptCron, async () => {
-			await this.init();
-			await this.syncService();
-		});
-		task.start();
-	}
-
-	async init () {
-		await this.initDates();
-		await this.initGroupDepts();
-	}
-
-	async initGroupDepts () {
-		let deptGroups = await DeptGroups.find({ corpId: config.corpId });
-		for (let deptGroup of deptGroups) {
-			this.groupDeptMap.set(deptGroup.name, { code: deptGroup.code, name: deptGroup.name });
-		}
+		await this.syncService(); // 系统启动时检查是否已经通不过了，如果没有同步，则同步
 	}
 
 	async syncService () {
-		let sync = await Sync.findOne({ corpId: config.corpId, type: 1, year: this.year, month: this.month, day: this.day, ap: this.ap, status: 3 });
-		if (!sync) {
-			console.log(`【开始】${this.year}-${this.month}-${this.day}部门同步开始`);
-			try {
-				await this.syncDepts();
-				await this.setDeptPaths(1, [ 1 ]);
-				await this.syncStaffs();
-				await this.syncManagers();
-
-				await this.syncCostCenter();
-				await this.updateSyncStatus(1);
-				await roleService.start();
-			} catch (error) {
-				console.log(`【失败】${this.year}-${this.month}-${this.day}部门同步失败`);
-				console.log({ error });
-				await this.updateSyncStatus(0);
-			}
-		}
-	}
-
-	async updateSyncStatus (status) {
-		await Sync.updateOne({ corpId: config.corpId, year: this.year, month: this.month, day: this.day, ap: this.ap }, {
-			corpId: config.corpId,
-			type: 1,
-			year: this.year,
-			month: this.month,
-			day: this.day,
-			ap: this.ap,
-			status
-		}, { upsert: true });
-	}
-
-	async initDates () {
-		let date = new Date();
-		this.year = date.getFullYear();
-		this.month = date.getMonth() + 1;
-		this.day = date.getDate();
-		this.ap = date.getHours() > 12 ? 'P' : 'A';
+		console.log(`【开始】${this.year}-${this.month}-${this.day}部门同步开始`);
+		await this.syncDepts();
+		await this.syncStaffs();
 	}
 
 	async syncDepts () {
@@ -107,71 +52,12 @@ class ScheduleDepts {
 			console.log(error);
 			return Promise.reject(error);
 		}
-		this.deptMap.set(1, {
-			deptName: config.corpName,
-			parentId: 1
-		});
+		this.deptMap.set(1, '海尔2测试');
 		for (let department of this.departments) {
-			this.deptMap.set(department.id, {
-				deptName: department.name,
-				parentId: department.parentid
-			});
+			this.deptMap.set(department.id, department.name);
+			await Depts.updateOne({ deptId: department.id }, { deptId: department.id, deptName: department.name }, { upsert: true });
 		}
-
-		for (let department of this.departments) {
-			this.setEcDept(department.id, department.parentid);
-		}
-		console.log('【开始】保存部门列表');
-
-		for (let department of this.departments) {
-			let deptInfo = await dingding.getDeptInfo(department.id);
-			await Depts.updateOne({
-				corpId: config.corpId,
-				deptId: department.id,
-				year: this.year
-			}, {
-				corpId: config.corpId,
-				deptId: department.id,
-				year: this.year,
-				deptName: department.name,
-				parentId: department.parentid,
-				parentName: this.deptMap.get(department.parentid).deptName || '',
-				deptManagerUseridList: deptInfo.deptManagerUseridList
-			}, { upsert: true });
-		}
-		console.log('【成功】保存部门列表');
-
-		console.log('【开始】保存部门与预算体对应关系');
-		for (let department of this.departments) {
-			let dept = await Depts.findOne({ deptId: department.id, corpId: config.corpId, year: this.year });
-			if (dept.group.code) {
-				continue;
-			}
-			let topDept = this.ecDeptMap.get(department.id);
-			if (this.groupDeptMap.has(topDept.deptName)) {
-				let group = this.groupDeptMap.get(topDept.deptName);
-				await Depts.updateOne({ deptId: department.id, corpId: config.corpId, year: this.year }, { group });
-			}
-		}
-		console.log('【成功】保存部门与预算体对应关系');
-
 		return Promise.resolve();
-	}
-
-	async setDeptPaths (parentId, parentDeptPath = []) {
-		if (!(parentDeptPath instanceof Array)) {
-			console.log(1111, arguments);
-			process.exit(1);
-		}
-		let depts = await Depts.find({ parentId, corpId: config.corpId });
-		if (!depts || !depts.length) {
-			return Promise.resolve();
-		}
-		for (let dept of depts) {
-			let deptPath = [ dept.deptId ].concat(parentDeptPath);
-			await Depts.updateOne({ deptId: dept.deptId, year: this.year }, { deptPath });
-			await this.setDeptPaths(dept.deptId, deptPath);
-		}
 	}
 
 	async syncStaffs () {
@@ -185,11 +71,11 @@ class ScheduleDepts {
 	}
 
 	async syncDeptStaffs (deptId) {
-		console.log(`【开始】获取部门 ${deptId} ${this.deptMap.get(deptId).deptName} 人员列表`);
+		console.log(`【开始】获取部门 ${deptId} ${this.deptMap.get(deptId)} 人员列表`);
 		if (!deptId) return Promise.resolve();
 
 		let userLists = await dingding.getDeptUsers(deptId);
-		console.log(`【开始】保存部门 ${deptId} ${this.deptMap.get(deptId).deptName} 人员列表`);
+		console.log(`【开始】保存部门 ${deptId} ${this.deptMap.get(deptId)} 人员列表`);
 		let promiseArray = [];
 		for (let user of userLists) {
 			let departmentIds = user.department || [];
@@ -197,7 +83,7 @@ class ScheduleDepts {
 			for (let deptId of departmentIds) {
 				departments.push({
 					deptId,
-					deptName: this.deptMap.get(deptId).deptName || ''
+					deptName: this.deptMap.get(deptId) || ''
 				});
 			}
 			let userData = {
@@ -227,96 +113,6 @@ class ScheduleDepts {
 			promiseArray.push(promise);
 		}
 		return Promise.all(promiseArray);
-	}
-
-	setEcDept (deptId, parentId) {
-		if (parentId === 1) {
-			this.ecDeptMap.set(deptId, {
-				deptId,
-				deptName: this.deptMap.get(deptId).deptName
-			});
-			return;
-		}
-		if (this.deptMap.get(parentId).parentId === 1) {
-			this.ecDeptMap.set(deptId, {
-				deptId: parentId,
-				deptName: this.deptMap.get(parentId).deptName
-			});
-			return;
-		}
-
-		return this.setEcDept(deptId, this.deptMap.get(parentId).parentId);
-	}
-
-	async syncManagers () {
-		console.log('【开始】保存主管信息');
-		let depts = await Depts.find({ corpId: config.corpid, year: this.year });
-
-		for (let dept of depts) {
-			if (!dept.deptManagerUseridList) {
-				continue;
-			}
-			let userIds = dept.deptManagerUseridList.split('|');
-			let managers = [];
-			console.log(`保存 ${dept.deptName} 管理员信息`);
-			for (let userId of userIds) {
-				let staff = await Staffs.findOne({ userId });
-				managers.push({ userId, userName: staff.userName });
-			}
-			await Depts.updateOne({ _id: dept._id }, { $set: { managers } });
-		}
-	}
-
-	async syncCostCenter () {
-		let staffs = await Staffs.find({ corpId: config.corpId });
-
-		for (let staff of staffs) {
-			let costcenters = [];
-			let invoices = [];
-			let costRes = await dingding.btrip(btripPaths.costCenter, {
-				userid: staff.userId,
-				corpid: config.corpId
-			});
-
-			if (costRes.errcode !== 0) {
-				console.error('【失败】获取用户成本中心列表', costRes);
-			}
-			let constCenterLists = costRes.cost_center_list || [];
-
-			for (let item of constCenterLists) {
-				costcenters.push({
-					id: item.id,
-					number: item.number,
-					title: item.title
-				});
-			}
-
-			let invoiceRes = await dingding.btrip(btripPaths.invoice, {
-				userid: staff.userId,
-				corpid: config.corpId
-			});
-
-			if (invoiceRes.errcode !== 0) {
-				console.error('【失败】获取用户发票列表', invoiceRes);
-			}
-			let invoiceLists = invoiceRes.invoice || [];
-
-			for (let item of invoiceLists) {
-				invoices.push({
-					id: item.id,
-					title: item.title
-				});
-			}
-			console.log(`【开始】保存${staff.userName} ${staff.userId}的成本中心和发票信息`);
-			await Staffs.updateOne({
-				_id: staff._id
-			}, {
-				costcenters,
-				invoices
-			});
-
-			await util.wait(100);
-		}
 	}
 }
 

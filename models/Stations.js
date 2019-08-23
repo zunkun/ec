@@ -8,7 +8,8 @@ const stationSchema = new mongoose.Schema(
 		type: Number, // 类型 1-飞机 2-火车
 		station: String, // 站名
 		abbr: String, // 站名简称字母 比如 阿克苏 AKU
-		letter: String, // 首字母，比如A,B
+		stationLetter: String, // 车站飞机站首字母，比如A,B
+		cityLetter: String, // 城市首字母
 		city: String, // 城市名称, 火车站有城市名称
 		pinyin: {
 			station: {

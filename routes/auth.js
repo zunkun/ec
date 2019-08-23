@@ -21,6 +21,7 @@ router.prefix('/api/auth');
 */
 router.get('/login', async (ctx, next) => {
 	let code = ctx.query.code;
+	console.log(1234);
 	if (!code) {
 		ctx.body = ServiceResult.getFail('参数不正确', 404);
 		let userId = ctx.query.userId || '03020644054858';
@@ -69,20 +70,36 @@ router.get('/login', async (ctx, next) => {
 	await next();
 });
 
-router.get('/login2', async (ctx, next) => {
-	let user = await Staffs.findOne({ userId: '03020644054858' });
+/**
+* @api {get} /api/auth/signature?platform=&url= 签名
+* @apiName signature
+* @apiGroup 鉴权
+* @apiDescription 签名
+* @apiParam {String} platform 生成签名的平台, mobile-移动端 pc-PC端
+* @apiParam {String} url 当前网页的URL，不包含#及其后面部分
+* @apiSuccess {Number} errcode 成功为0
+* @apiSuccess {Object} data 项目列表
+* @apiSuccess {Object} data.corpId 企业corpId
+* @apiSuccess {String} data.agentId 当前应用agentId
+* @apiSuccess {Object} data.url 当前页面url
+* @apiSuccess {Object} data.timeStamp 时间戳
+* @apiSuccess {Object} data.signature 签名
+* @apiSuccess {Object} data.nonceStr 	随机串
+* @apiError {Number} errcode 失败不为0
+* @apiError {Number} errmsg 错误消息
+*/
 
-	let token = jwt.sign({ userId: user.userId, userName: user.userName, jobnumber: user.jobnumber }, config.secret);
-
-	ctx.body = ServiceResult.getSuccess({ user, token: 'Bearer ' + token });
-
+router.get('/signature', async (ctx, next) => {
+	let { platform, url } = ctx.query;
+	console.log(1234);
+	if (!url || !platform) {
+		ctx.body = ServiceResult.getFail('参数不正确');
+		return;
+	}
+	const signature = await dingding.getJsApiSign({ platform, url });
+	console.log({ signature });
+	ctx.body = ServiceResult.getSuccess(signature);
 	await next();
 });
 
-router.get('/login-test', async (ctx, next) => {
-	let user = await Staffs.findOne({ });
-	let token = jwt.sign({ userId: user.userId, userName: user.userName }, config.secret);
-	ctx.body = ServiceResult.getSuccess({ user, token: 'Bearer ' + token });
-	await next();
-});
 module.exports = router;

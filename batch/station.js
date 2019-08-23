@@ -15264,22 +15264,22 @@ async function setFlights() {
   for (let flight of flights) {
 
     let flightPinyin = {
-      station: {
+      city: {
         full: parsePinyin(flight.city, 'STYLE_NORMAL'),
         simple: parsePinyin(flight.city, 'STYLE_FIRST_LETTER')
       }
     }
     console.log(flightPinyin)
-    console.log(`保存 ${flight.city}`, flightPinyin.station.full[0].toUpperCase())
+    console.log(`保存 ${flight.city}`, flightPinyin.city.full[0].toUpperCase())
     await Stations.updateOne({
       type: 1,
-      station: flight.city,
+      city: flight.city,
       abbr: flight.abbr
     }, {
       type: 1,
-      station: flight.city,
+      city: flight.city,
       abbr: flight.abbr,
-      letter: flightPinyin.station.full[0].toUpperCase(),
+      cityLetter: flightPinyin.city.full[0].toUpperCase(),
       pinyin: flightPinyin
     }, {upsert: true})
   }
@@ -15294,8 +15294,8 @@ async function setTrains() {
         simple: parsePinyin(train.station, 'STYLE_FIRST_LETTER')
       },
       city: {
-        full: parsePinyin(train.station, 'STYLE_NORMAL'),
-        simple: parsePinyin(train.station, 'STYLE_FIRST_LETTER')
+        full: parsePinyin(train.city, 'STYLE_NORMAL'),
+        simple: parsePinyin(train.city, 'STYLE_FIRST_LETTER')
       }
     }
     console.log(trainPinyin)
@@ -15305,11 +15305,12 @@ async function setTrains() {
       station: train.station,
       city: train.city,
     }, {
-      type: 1,
+      type: 2,
       station: train.station,
       city: train.city,
       abbr: train.abbr,
-      letter: trainPinyin.station.full[0].toUpperCase(),
+      stationLetter: trainPinyin.station.full[0].toUpperCase(),
+      cityLetter: trainPinyin.city.full[0].toUpperCase(),
       pinyin: trainPinyin
     }, {upsert: true})
   }
