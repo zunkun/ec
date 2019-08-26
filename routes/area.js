@@ -1,6 +1,6 @@
 const ServiceResult = require('../core/ServiceResult');
 const Stations = require('../models/Stations');
-const letterLists = require('../config/letterLists')
+const letterLists = require('../config/letterLists');
 
 const Router = require('koa-router');
 const router = new Router();

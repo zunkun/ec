@@ -26,5 +26,6 @@ module.exports = {
 	mobileBase: 'https://portal.haierfinancial.com:18612/ec/ecmobile/#/',
 	warningLines: [ 0.8, 0.9, 0.95 ],
 	warningCron: '0 0 9,18 * * *',
-	incomingUri: 'http://10.164.12.34:8080/jx/api/mvc/insert'
+	incomingUri: 'http://10.164.12.34:8080/jx/api/mvc/insert',
+	processCode: 'PROC-8AC305F0-9B7A-44D5-89E2-F0FC17898ED7'
 };

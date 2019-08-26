@@ -4,6 +4,24 @@ const Depts = require('../../models/Depts');
 const config = require('../../config');
 
 class Util {
+	isSameDay (timeStampA, timeStampB) {
+		// 判断两个日期是否是同一天
+		let dateA = new Date(timeStampA);
+		let dateB = new Date(timeStampB);
+		return (dateA.setHours(0, 0, 0, 0) === dateB.setHours(0, 0, 0, 0));
+	}
+	parseDate2Str (timestamp) {
+		let date = new Date(timestamp);
+		let year = date.getFullYear();
+		let month = date.getMonth() + 1;
+		let day = date.getDate();
+
+		let monthStr = month <= 9 ? `0${month}` : month;
+		let dayStr = day <= 9 ? `0${day}` : day;
+
+		return `${year}-${monthStr}-${dayStr}`;
+	}
+
 	toFixedNum (num) {
 		let isInteger = Number(num || null) % 1 === 0;
 		return isInteger ? Number(num) : Number(Number(num).toFixed(2));
