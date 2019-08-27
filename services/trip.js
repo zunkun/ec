@@ -39,8 +39,8 @@ class TripService {
 		for (let it of trip.itineraries) {
 			let detail = [];
 
-			detail.push({ name: '交通工具', value: it.tripwayName });
-			detail.push({ name: '单程往返', value: it.oneRound });
+			detail.push({ name: '交通工具', value: it.trafficTypeName });
+			detail.push({ name: '单程往返', value: it.tripwayName });
 			detail.push({ name: '出发城市', value: it.depCity });
 			detail.push({ name: '目的城市', value: '信阳' });
 			detail.push({ name: '开始时间', value: it.depDateStr });
@@ -66,7 +66,7 @@ class TripService {
 			});
 			if (res.errcode !== 0) {
 				await Trips.updateOne({ _id: trip.id, status: 10 }, { $set: { status: 21 } });
-				return Promise.reject('生成审批单失败');
+				return Promise.reject('生成审批单失败', res);
 			}
 			await Trips.updateOne({ _id: trip._id, status: 10 }, { $set: { processInstanceId: res.process_instance_id, status: 20 } });
 			return Promise.resolve();

@@ -26,7 +26,7 @@ router.post('/', async (ctx, next) => {
 	let depDate = null;
 	let arrDate = null;
 	for (let it of tripData.itineraries) {
-		if (!it.tripwayType || !it.tripwayName || !it.depCity || !it.arrCity || !it.depDate || !it.arrDate) {
+		if ((it.trafficTypeId !== 0 && !it.trafficTypeId) || (it.tripwayId !== 0 && !it.tripwayId) || !it.depCity || !it.arrCity || !it.depDate || !it.arrDate) {
 			valid = false;
 			break;
 		}
@@ -71,7 +71,6 @@ router.post('/', async (ctx, next) => {
 
 	try {
 		const trip = await Trips.create(tripData);
-
 		await TripService.createProcess(trip);
 		ctx.body = ServiceResult.getSuccess(trip);
 		await next();

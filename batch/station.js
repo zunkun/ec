@@ -15272,11 +15272,11 @@ async function setFlights() {
     console.log(flightPinyin)
     console.log(`保存 ${flight.city}`, flightPinyin.city.full[0].toUpperCase())
     await Stations.updateOne({
-      type: 1,
+      type: 0,
       city: flight.city,
       abbr: flight.abbr
     }, {
-      type: 1,
+      type: 0,
       city: flight.city,
       abbr: flight.abbr,
       cityLetter: flightPinyin.city.full[0].toUpperCase(),
@@ -15301,11 +15301,11 @@ async function setTrains() {
     console.log(trainPinyin)
     console.log(`保存 ${train.city}`, trainPinyin.station.full[0].toUpperCase())
     await Stations.updateOne({
-      type: 2,
+      type: 1,
       station: train.station,
       city: train.city,
     }, {
-      type: 2,
+      type: 1,
       station: train.station,
       city: train.city,
       abbr: train.abbr,

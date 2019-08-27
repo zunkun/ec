@@ -39,13 +39,9 @@ const letters = getLetters();
 
 // 城市列表
 router.get('/cities', async (ctx, next) => {
-	let type = ctx.query.type;
-	if (!type) {
-		ctx.body = ServiceResult.getFail('参数不正确');
-		return;
-	}
+	let type = Number(ctx.query.type) || 0;
 	// 飞机城市列表
-	let letterMap = { 1: 'flight', 2: 'train' };
+	let letterMap = { 0: 'flight', 1: 'train' };
 	let res = letterLists[letterMap[type]] || {};
 	ctx.body = ServiceResult.getSuccess(res);
 	next();
@@ -54,7 +50,7 @@ router.get('/cities', async (ctx, next) => {
 router.get('/search', async (ctx, next) => {
 	let { type, keywords } = ctx.query;
 	type = Number(type);
-	if (!type || (type !== 1 && type !== 2) || !keywords) {
+	if (!type || (type !== 0 && type !== 1) || !keywords) {
 		ctx.body = ServiceResult.getFail('参数不正确');
 		return;
 	}
@@ -67,7 +63,7 @@ router.get('/search', async (ctx, next) => {
 		{ 'approvals.users.userName': { $regex: regex } }
 	];
 	// 飞机城市列表
-	if (type === 1) {
+	if (type === 0) {
 		if (!options.$or) options.$or = [];
 		options.$or.push({ city: regex });
 		options.$or.push({ abbr: regex });

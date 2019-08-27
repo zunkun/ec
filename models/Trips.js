@@ -26,9 +26,10 @@ const tripSchema = new mongoose.Schema(
 			}
 		], // 同行人信息
 		itineraries: [ {
-			tripwayType: Number,
-			tripwayName: String,
-			oneRound: String,
+			trafficTypeId: Number,
+			trafficTypeName: String, // 交通工具
+			tripwayId: Number,
+			tripwayName: String, // 单程往返
 			depCity: String,
 			arrCity: String,
 			depDate: String,
