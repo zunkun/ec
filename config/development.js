@@ -1,6 +1,7 @@
 module.exports = {
 	PORT: 5600,
 	secret: 'haier-ec',
+	nonceStr: 'safasfsad',
 	mongodb: {
 		uri: 'mongodb://127.0.0.1:27017/haier2',
 		user: 'haieradmin',
@@ -14,7 +15,6 @@ module.exports = {
 	baseDeptId: 1,
 	dingBaseUri: 'https://oapi.dingtalk.com',
 	topBaseUri: 'https://oapi.dingtalk.com/topapi',
-	nonceStr: 'aadasdijoi',
 	corpId: 'dingb4c8d704ba27d52f35c2f4657eb6378f',
 	corpName: '测试2海尔',
 	agentId: '282603839',

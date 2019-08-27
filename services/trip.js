@@ -17,6 +17,10 @@ class TripService {
 				value: trip.reason
 			},
 			{
+				name: '部门预算',
+				value: trip.balance
+			},
+			{
 				name: 'SYS-ATC',
 				value: JSON.stringify({
 					startTime: trip.startTime,
@@ -49,7 +53,6 @@ class TripService {
 
 		data.form_component_values = components;
 
-		console.log(data);
 		console.log('开始发起审批');
 		let accessToken = await dingding.getAccessToken();
 		let uri = `https://oapi.dingtalk.com/topapi/processinstance/create?access_token=${accessToken}`;
@@ -61,12 +64,12 @@ class TripService {
 				header: { 'Content-Type': 'application/json' },
 				json: true
 			});
-
-			if (res.errcode === 0) {
-				await Trips.updateOne({ _id: trip._id }, { $set: { processInstanceId: res.process_instance_id, status: 20 } });
-				return Promise.resolve();
+			if (res.errcode !== 0) {
+				await Trips.updateOne({ _id: trip.id, status: 10 }, { $set: { status: 21 } });
+				return Promise.reject('生成审批单失败');
 			}
-			return Promise.reject('生成审批单失败');
+			await Trips.updateOne({ _id: trip._id, status: 10 }, { $set: { processInstanceId: res.process_instance_id, status: 20 } });
+			return Promise.resolve();
 		} catch (error) {
 			return Promise.reject(error);
 		}

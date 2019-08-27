@@ -38,7 +38,7 @@ const tripSchema = new mongoose.Schema(
 			tripDay: Number
 		} ], // 行程列表
 		processInstanceId: String, // 钉钉审批单ID
-		status: Number // 10-创建 20-提交钉钉 30-钉钉通过 4-写入商旅 50-钉钉拒绝 60-用户取消
+		status: Number // 10-创建 20-提交钉钉 21-提交钉钉失败 30-钉钉通过 31-钉钉拒绝 40-写入商旅 41-写入商旅失败 50-用户取消
 	}, {
 		collection: 'trips',
 		autoIndex: true,
