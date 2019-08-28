@@ -74,12 +74,6 @@ class TripService {
 			return Promise.reject(error);
 		}
 	}
-
-	static async setA () {
-		let trip = await Trips.findOne({ _id: '5d63a2668358673cd8902467' });
-		await this.createProcess(trip);
-	}
 }
 
-// TripService.setA();
 module.exports = TripService;

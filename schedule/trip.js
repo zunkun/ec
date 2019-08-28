@@ -3,8 +3,9 @@ const rp = require('request-promise');
 const config = require('../config');
 const dingding = require('../core/dingding');
 const util = require('../core/util');
-const fs = require('fs');
-const path = require('path');
+const constants = require('../config/constants');
+const btripPaths = constants.btrip;
+const cron = require('node-cron');
 
 class ScheduleTrip {
 	/**
@@ -30,7 +31,7 @@ class ScheduleTrip {
    */
 	static async getTripLists () {
 		// 正在审批中的申请单
-		let trips = await Trips.find({ status: 20 });
+		let trips = await Trips.find({ status: { $in: [ 20, 41 ] }, finishTime: { $gt: Date.now() } });
 		// 待写入商旅的申请单
 		let tripLists = [];
 		for (let trip of trips) {
@@ -51,7 +52,7 @@ class ScheduleTrip {
 					tripLists.push(trip);
 				}
 			}
-			await util.wait(500);
+			await util.wait(50);
 		}
 		return tripLists;
 	}
@@ -61,8 +62,8 @@ class ScheduleTrip {
    * @param {Object} trip 待写入商旅的审批单信息
    */
 	static async sync2Btrip (trip) {
-		const btrpData = {
-			thirdpart_apply_id: trip.id,
+		const btripData = {
+			thirdpart_apply_id: trip.processInstanceId,
 			userid: trip.userId,
 			user_name: trip.userName,
 			corpid: config.corpId,
@@ -83,12 +84,53 @@ class ScheduleTrip {
 		let itLists = [];
 		for (let it of trip.itineraries) {
 			itLists.push({
-				// trip_way:
+				trip_way: it.tripwayId,
+				itinerary_id: it._id,
+				traffic_type: it.trafficTypeId,
+				dep_city: it.depCity,
+				arr_city: it.arrCity,
+				cost_center_id: config.costcenter,
+				invoice_id: config.invoice,
+				dep_date: `${it.depDateStr} 00:00:00`,
+				arr_date: `${it.arrDateStr} 23:59:59`
 			});
 		}
+
+		btripData.itinerary_list = itLists;
+
+		// 写入商旅
+		let btripRes = await dingding.btrip(btripPaths.approvalNew, btripData);
+		if (btripRes.errcode !== 0) {
+			let error = `【失败】${trip.userName}的出差写入商旅审批单失败`;
+			await Trips.updateOne({ _id: trip._id }, { $set: { status: 41 } });
+			console.error(btripRes);
+			return Promise.reject(error);
+		}
+		console.log(`【成功】${trip.userName} 的出差 写入商旅审批单成功`);
+		await Trips.updateOne({ _id: trip._id }, { $set: { status: 40 } });
+	}
+
+	static async syncTrip () {
+		const tripLists = await this.getTripLists();
+
+		for (let trip of tripLists) {
+			try {
+				await this.sync2Btrip(trip);
+			} catch (error) {
+				console.log(error);
+			}
+			util.wait(50);
+		}
+		return Promise.resolve();
+	}
+
+	static async start () {
+		await this.syncTrip();
+		const task = cron.schedule(config.tripCorn, async () => {
+			await this.syncTrip();
+		});
+		task.start();
 	}
 }
 
-ScheduleTrip.getTripLists();
-
-module.exports = ScheduleTrip;
+module.exports = ScheduleTrip.start();

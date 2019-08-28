@@ -28,6 +28,7 @@ module.exports = {
 	warningCron: '0 0 9,18 * * *',
 	incomingUri: 'http://10.164.12.34:8080/jx/api/mvc/insert',
 	processCode: 'PROC-8AC305F0-9B7A-44D5-89E2-F0FC17898ED7',
-	costCenter: '',
-	invoice: ''
+	costcenter: 82653,
+	invoice: 122331,
+	tripCorn: '0 */10 * * * *'
 };
