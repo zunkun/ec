@@ -7,7 +7,8 @@ module.exports = {
 		approvalNew: '/alitrip/btrip/approval/new',
 		approvalUpdate: '/alitrip/btrip/approval/update',
 		costCenter: '/alitrip/btrip/cost/center/query',
-		invoice: '/alitrip/btrip/invoice/search'
+		invoice: '/alitrip/btrip/invoice/search',
+		modifyApproval: 'dingtalk.oapi.alitrip.btrip.approval.modify'
 	},
 	catalogTypes: {
 

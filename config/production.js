@@ -30,5 +30,7 @@ module.exports = {
 	processCode: 'PROC-8AC305F0-9B7A-44D5-89E2-F0FC17898ED7',
 	costcenter: 82653,
 	invoice: 122331,
-	tripCorn: '0 */10 * * * *'
+	tripCorn: '0 */10 * * * *',
+	dingToken: 'abcd1234',
+	ENCODING_AES_KEY: 'c6qlODY4SkxuN8MAzpozggkHVXY1Hgt2TQ91aEHvq4x'
 };
