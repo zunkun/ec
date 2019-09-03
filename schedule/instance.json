@@ -1,0 +1,260 @@
+[{
+  "approver_userids": ["4508346521365159"],
+  "attached_process_instance_ids": [],
+  "biz_action": "NONE",
+  "business_id": "201908271421000299277",
+  "create_time": "2019-08-27 14:21:30",
+  "finish_time": "2019-08-27 14:25:06",
+  "form_component_values": [{
+    "component_type": "DDBusinessField",
+    "ext_value": "{\"compressedValue\":\"1f8b0800000000000000ad90bd4ec3301485dfe5ce164adac64db25554884a9401ca8050072b71a9451a47fe015555664656562446e88a04cf537ede82eb12b5a52a20a1dad3bdc73ef7dc6f0209cb129b31c3bb32e510d709a4dc30911d086d203e9b406a153342e69dbccdc610fb3b9e47569afbd22a88a37977c099b18a6b8827c08a221bef2939ea8911fafa01a5216d52cf1df2a5f6e4528bbcea104832a6f521730a7cbcdcbe4fefdf6e1e5f1feea0928e79e246eb793a9ea7ad44498d157ec56aa3a5364c999577f37a43b0b24f40e823ee561fb04c7302975c699c8659707328090c99de75312036cae2832263792785b8e97bf5006f83e2802ba92eda08b5f2af07b52a8913dce0aec8ad71a4828657926d528ed0f147ca216d6c9bf2d2f20fca8b60ffa1fc1d6854f3e96f40fb641d686d23503f5c6b2f5c7c2f5c114e728159a1dd3a453c85d5c31e3bc77a76fd3c7b9a42f9093f027e9946030000\",\"detailList\":[{\"approveInfo\":{\"durationInDay\":1.00,\"durationInHour\":9.00,\"fromAcross\":0,\"fromTime\":1566867600000,\"toAcross\":0,\"toTime\":1566900000000},\"classInfo\":{\"hasClass\":true,\"name\":\"默认班次\",\"sections\":[{\"endAcross\":0,\"endTime\":1566900000000,\"startAcross\":0,\"startTime\":1566867600000}]},\"isRest\":false,\"workDate\":1566835200000,\"workTimeMinutes\":540},{\"approveInfo\":{\"durationInDay\":1.00,\"durationInHour\":9.00,\"fromAcross\":0,\"fromTime\":1566954000000,\"toAcross\":0,\"toTime\":1566986400000},\"classInfo\":{\"hasClass\":true,\"name\":\"默认班次\",\"sections\":[{\"endAcross\":0,\"endTime\":1566986400000,\"startAcross\":0,\"startTime\":1566954000000}]},\"isRest\":false,\"workDate\":1566921600000,\"workTimeMinutes\":540}],\"durationInDay\":2.00,\"durationInHour\":18.00,\"isModifiable\":false,\"pushTag\":\"出差\",\"unit\":\"DAY\"}",
+    "id": "DDBusinessField-J7638F8R",
+    "name": "[\"开始时间\",\"结束时间\"]",
+    "value": "[\"2019-08-27\",\"2019-08-28\",2.00,\"day\",null,\"出差类型\"]"
+  }, {
+    "component_type": "NumberField",
+    "id": "NumberField-JZS8YDXF",
+    "name": "部门预算",
+    "value": "1300"
+  }, {
+    "component_type": "TextField",
+    "id": "TextField-JZKXRQLF",
+    "name": "出差事由",
+    "value": "杭州出差"
+  }, {
+    "component_type": "TableField",
+    "ext_value": "{\"statValue\":[],\"componentName\":\"TableField\"}",
+    "id": "TableField-JZKYDTDF",
+    "name": "行程",
+    "value": "[{\"rowValue\":[{\"componentType\":\"DDSelectField\",\"label\":\"交通工具\",\"value\":\"火车\",\"key\":\"DDSelectField-JZKYE7SP\",\"extValue\":\"{\\\"value\\\":\\\"火车\\\",\\\"key\\\":\\\"option_1\\\"}\"},{\"componentType\":\"DDSelectField\",\"label\":\"单程往返\",\"value\":\"单程\",\"key\":\"DDSelectField-JZKYE7SQ\",\"extValue\":\"{\\\"value\\\":\\\"单程\\\",\\\"key\\\":\\\"option_0\\\"}\"},{\"componentType\":\"TextField\",\"label\":\"出发城市\",\"value\":\"上海\",\"key\":\"TextField-JZKYE7SR\"},{\"componentType\":\"TextField\",\"label\":\"目的城市\",\"value\":\"信阳\",\"key\":\"TextField-JZKYE7SS\"},{\"componentType\":\"TextField\",\"label\":\"开始时间\",\"value\":\"2019年08月27日\",\"key\":\"TextField-JZKYE7SV\"},{\"componentType\":\"TextField\",\"label\":\"结束时间\",\"value\":\"2019年08月28日\",\"key\":\"TextField-JZKYE7SW\"},{\"componentType\":\"NumberField\",\"label\":\"时长\",\"value\":\"2\",\"key\":\"NumberField-JZKYE7SX\"}]}]"
+  }, {
+    "component_type": "TextareaField",
+    "id": "TextareaField-JZKYE7T0",
+    "name": "出差备注",
+    "value": "null"
+  }, {
+    "component_type": "InnerContactField",
+    "id": "InnerContactField-JZKYE7T1",
+    "name": "同行人",
+    "value": "null"
+  }],
+  "operation_records": [{
+    "date": "2019-08-27 14:21:29",
+    "operation_result": "NONE",
+    "operation_type": "START_PROCESS_INSTANCE",
+    "userid": "4508346521365159"
+  }, {
+    "date": "2019-08-27 14:25:06",
+    "operation_result": "REFUSE",
+    "operation_type": "EXECUTE_TASK_NORMAL",
+    "remark": "",
+    "userid": "4508346521365159"
+  }],
+  "originator_dept_id": "-1",
+  "originator_dept_name": "测试2海尔",
+  "originator_userid": "4508346521365159",
+  "result": "refuse",
+  "status": "COMPLETED",
+  "tasks": [{
+    "create_time": "2019-08-27 14:21:30",
+    "finish_time": "2019-08-27 14:25:06",
+    "task_result": "REFUSE",
+    "task_status": "COMPLETED",
+    "taskid": "62050646045",
+    "url": "?procInsId=8a8edbcd-fd1d-41ba-8d55-1d68a8578cd4&taskId=62050646045&businessId=201908271421000299277",
+    "userid": "4508346521365159"
+  }],
+  "title": "刘遵坤提交的出差审批"
+}, {
+  "approver_userids": ["4508346521365159"],
+  "attached_process_instance_ids": [],
+  "biz_action": "NONE",
+  "business_id": "201908271422000215085",
+  "create_time": "2019-08-27 14:22:21",
+  "finish_time": "2019-08-27 14:23:22",
+  "form_component_values": [{
+    "component_type": "DDBusinessField",
+    "ext_value": "{\"compressedValue\":\"1f8b080000000000000095503d4fc33014fc2f6fb6500a2d856c151102893240181062784a5c6ae1c6919f0daaaacc8cacac488cd015097e4ff9f8173c27919aa10bf6f4eeecbb7bb7800c75e6353a3936b9847847402e1d2a7da2c8417cb580dc5b74ca14c7458273887b5b51243ae091f116e2fd1a9d4874de4a82780158967a7e68cd2c5533d6ed0d7687519f6f38a26153d3e186db7b2d9769243ac5c0c0efe7d3cff2e5fbf1edebf5195aea5c66c19aea74b2c8479935c4137fe569a32439b4aef3ae9e3704abae05283a9361f5096a9202eea42576e32cbc395402a648072106c4ce7a7e706fec6dc2fdb55251e3193544f018abc2bb50caa05f1bfca3d035da1559e31785e2a4908c2eb99cd2d334c51b9e570f1fabf725547fa2092faede010000\",\"detailList\":[{\"approveInfo\":{\"durationInDay\":1.00,\"durationInHour\":9.00,\"fromAcross\":0,\"fromTime\":1567040400000,\"toAcross\":0,\"toTime\":1567072800000},\"classInfo\":{\"hasClass\":true,\"name\":\"默认班次\",\"sections\":[{\"endAcross\":0,\"endTime\":1567072800000,\"startAcross\":0,\"startTime\":1567040400000}]},\"isRest\":false,\"workDate\":1567008000000,\"workTimeMinutes\":540}],\"durationInDay\":1.00,\"durationInHour\":9.00,\"isModifiable\":false,\"pushTag\":\"出差\",\"unit\":\"DAY\"}",
+    "id": "DDBusinessField-J7638F8R",
+    "name": "[\"开始时间\",\"结束时间\"]",
+    "value": "[\"2019-08-29\",\"2019-08-29\",1.00,\"day\",null,\"出差类型\"]"
+  }, {
+    "component_type": "NumberField",
+    "id": "NumberField-JZS8YDXF",
+    "name": "部门预算",
+    "value": "1300"
+  }, {
+    "component_type": "TextField",
+    "id": "TextField-JZKXRQLF",
+    "name": "出差事由",
+    "value": "郑州出差"
+  }, {
+    "component_type": "TableField",
+    "ext_value": "{\"statValue\":[],\"componentName\":\"TableField\"}",
+    "id": "TableField-JZKYDTDF",
+    "name": "行程",
+    "value": "[{\"rowValue\":[{\"componentType\":\"DDSelectField\",\"label\":\"交通工具\",\"value\":\"火车\",\"key\":\"DDSelectField-JZKYE7SP\",\"extValue\":\"{\\\"value\\\":\\\"火车\\\",\\\"key\\\":\\\"option_1\\\"}\"},{\"componentType\":\"DDSelectField\",\"label\":\"单程往返\",\"value\":\"单程\",\"key\":\"DDSelectField-JZKYE7SQ\",\"extValue\":\"{\\\"value\\\":\\\"单程\\\",\\\"key\\\":\\\"option_0\\\"}\"},{\"componentType\":\"TextField\",\"label\":\"出发城市\",\"value\":\"上海\",\"key\":\"TextField-JZKYE7SR\"},{\"componentType\":\"TextField\",\"label\":\"目的城市\",\"value\":\"信阳\",\"key\":\"TextField-JZKYE7SS\"},{\"componentType\":\"TextField\",\"label\":\"开始时间\",\"value\":\"2019年08月29日\",\"key\":\"TextField-JZKYE7SV\"},{\"componentType\":\"TextField\",\"label\":\"结束时间\",\"value\":\"2019年08月29日\",\"key\":\"TextField-JZKYE7SW\"},{\"componentType\":\"NumberField\",\"label\":\"时长\",\"value\":\"1\",\"key\":\"NumberField-JZKYE7SX\"}]}]"
+  }, {
+    "component_type": "TextareaField",
+    "id": "TextareaField-JZKYE7T0",
+    "name": "出差备注",
+    "value": "null"
+  }, {
+    "component_type": "InnerContactField",
+    "id": "InnerContactField-JZKYE7T1",
+    "name": "同行人",
+    "value": "null"
+  }],
+  "operation_records": [{
+    "date": "2019-08-27 14:22:21",
+    "operation_result": "NONE",
+    "operation_type": "START_PROCESS_INSTANCE",
+    "userid": "4508346521365159"
+  }, {
+    "date": "2019-08-27 14:23:22",
+    "operation_result": "AGREE",
+    "operation_type": "EXECUTE_TASK_NORMAL",
+    "remark": "",
+    "userid": "4508346521365159"
+  }],
+  "originator_dept_id": "-1",
+  "originator_dept_name": "测试2海尔",
+  "originator_userid": "4508346521365159",
+  "result": "agree",
+  "status": "COMPLETED",
+  "tasks": [{
+    "create_time": "2019-08-27 14:22:21",
+    "finish_time": "2019-08-27 14:23:22",
+    "task_result": "AGREE",
+    "task_status": "COMPLETED",
+    "taskid": "62050650119",
+    "url": "?procInsId=4cd5a7e8-e692-41b2-8cde-26211de0d079&taskId=62050650119&businessId=201908271422000215085",
+    "userid": "4508346521365159"
+  }],
+  "title": "刘遵坤提交的出差审批"
+}, {
+  "approver_userids": ["4508346521365159"],
+  "attached_process_instance_ids": [],
+  "biz_action": "NONE",
+  "business_id": "201908271432000576588",
+  "create_time": "2019-08-27 14:32:58",
+  "form_component_values": [{
+    "component_type": "DDBusinessField",
+    "ext_value": "{\"compressedValue\":\"1f8b0800000000000000ad90bd4ec3301485dfe5ce164adac64db25554884a9401ca8050072b71a9451a47fe015555664656562446e88a04cf537ede82eb12b5a52a20a1dad3bdc73ef7dc6f0209cb129b31c3bb32e510d709a4dc30911d086d203e9b406a153342e69dbccdc610fb3b9e47569afbd22a88a37977c099b18a6b8827c08a221bef2939ea8911fafa01a5216d52cf1df2a5f6e4528bbcea104832a6f521730a7cbcdcbe4fefdf6e1e5f1feea0928e79e246eb793a9ea7ad44498d157ec56aa3a5364c999577f37a43b0b24f40e823ee561fb04c7302975c699c8659707328090c99de75312036cae2832263792785b8e97bf5006f83e2802ba92eda08b5f2af07b52a8913dce0aec8ad71a4828657926d528ed0f147ca216d6c9bf2d2f20fca8b60ffa1fc1d6854f3e96f40fb641d686d23503f5c6b2f5c7c2f5c114e728159a1dd3a453c85d5c31e3bc77a76fd3c7b9a42f9093f027e9946030000\",\"detailList\":[{\"approveInfo\":{\"durationInDay\":1.00,\"durationInHour\":9.00,\"fromAcross\":0,\"fromTime\":1566867600000,\"toAcross\":0,\"toTime\":1566900000000},\"classInfo\":{\"hasClass\":true,\"name\":\"默认班次\",\"sections\":[{\"endAcross\":0,\"endTime\":1566900000000,\"startAcross\":0,\"startTime\":1566867600000}]},\"isRest\":false,\"workDate\":1566835200000,\"workTimeMinutes\":540},{\"approveInfo\":{\"durationInDay\":1.00,\"durationInHour\":9.00,\"fromAcross\":0,\"fromTime\":1566954000000,\"toAcross\":0,\"toTime\":1566986400000},\"classInfo\":{\"hasClass\":true,\"name\":\"默认班次\",\"sections\":[{\"endAcross\":0,\"endTime\":1566986400000,\"startAcross\":0,\"startTime\":1566954000000}]},\"isRest\":false,\"workDate\":1566921600000,\"workTimeMinutes\":540}],\"durationInDay\":2.00,\"durationInHour\":18.00,\"isModifiable\":false,\"pushTag\":\"出差\",\"unit\":\"DAY\"}",
+    "id": "DDBusinessField-J7638F8R",
+    "name": "[\"开始时间\",\"结束时间\"]",
+    "value": "[\"2019-08-27\",\"2019-08-28\",2.00,\"day\",null,\"出差类型\"]"
+  }, {
+    "component_type": "NumberField",
+    "id": "NumberField-JZS8YDXF",
+    "name": "部门预算",
+    "value": "1300"
+  }, {
+    "component_type": "TextField",
+    "id": "TextField-JZKXRQLF",
+    "name": "出差事由",
+    "value": "测"
+  }, {
+    "component_type": "TableField",
+    "ext_value": "{\"statValue\":[],\"componentName\":\"TableField\"}",
+    "id": "TableField-JZKYDTDF",
+    "name": "行程",
+    "value": "[{\"rowValue\":[{\"componentType\":\"DDSelectField\",\"label\":\"交通工具\",\"value\":\"飞机\",\"key\":\"DDSelectField-JZKYE7SP\",\"extValue\":\"{\\\"value\\\":\\\"飞机\\\",\\\"key\\\":\\\"option_0\\\"}\"},{\"componentType\":\"DDSelectField\",\"label\":\"单程往返\",\"value\":\"单程\",\"key\":\"DDSelectField-JZKYE7SQ\",\"extValue\":\"{\\\"value\\\":\\\"单程\\\",\\\"key\\\":\\\"option_0\\\"}\"},{\"componentType\":\"TextField\",\"label\":\"出发城市\",\"value\":\"杭州\",\"key\":\"TextField-JZKYE7SR\"},{\"componentType\":\"TextField\",\"label\":\"目的城市\",\"value\":\"信阳\",\"key\":\"TextField-JZKYE7SS\"},{\"componentType\":\"TextField\",\"label\":\"开始时间\",\"value\":\"2019年08月27日\",\"key\":\"TextField-JZKYE7SV\"},{\"componentType\":\"TextField\",\"label\":\"结束时间\",\"value\":\"2019年08月28日\",\"key\":\"TextField-JZKYE7SW\"},{\"componentType\":\"NumberField\",\"label\":\"时长\",\"value\":\"2\",\"key\":\"NumberField-JZKYE7SX\"}]}]"
+  }, {
+    "component_type": "TextareaField",
+    "id": "TextareaField-JZKYE7T0",
+    "name": "出差备注",
+    "value": "null"
+  }, {
+    "component_type": "InnerContactField",
+    "id": "InnerContactField-JZKYE7T1",
+    "name": "同行人",
+    "value": "null"
+  }],
+  "operation_records": [{
+    "date": "2019-08-27 14:32:57",
+    "operation_result": "NONE",
+    "operation_type": "START_PROCESS_INSTANCE",
+    "userid": "4508346521365159"
+  }],
+  "originator_dept_id": "-1",
+  "originator_dept_name": "测试2海尔",
+  "originator_userid": "4508346521365159",
+  "result": "",
+  "status": "RUNNING",
+  "tasks": [{
+    "create_time": "2019-08-27 14:32:58",
+    "task_result": "NONE",
+    "task_status": "RUNNING",
+    "taskid": "62052069773",
+    "url": "?procInsId=b348e731-b788-48d9-b57c-34058745d83d&taskId=62052069773&businessId=201908271432000576588",
+    "userid": "4508346521365159"
+  }],
+  "title": "刘遵坤提交的出差审批"
+}, {
+  "approver_userids": ["4508346521365159"],
+  "attached_process_instance_ids": [],
+  "biz_action": "NONE",
+  "business_id": "201908271433000253344",
+  "create_time": "2019-08-27 14:33:25",
+  "finish_time": "2019-08-27 14:35:55",
+  "form_component_values": [{
+    "component_type": "DDBusinessField",
+    "ext_value": "{\"compressedValue\":\"1f8b0800000000000000bdd64f6fd3301400f0eff2ce01f97f9cdc262ac424c601ca01a11dac3463115952c50968aa7ae0c41171e38ac411b62312f071d8806f81d3aea9d5d6cb5a596d4fce4b9e9f7f72f23c8144e54993ab3a3d2a4729c42480515aab2c7f9ce91ae29713183595aab3b2382c06ea1c627c1fa1c0baf8a86c2a88e5ecea49aaeaa64a35c41350e3717efeb02acf86d999c98bb9e011e60cb5bf601e1d96568c85f22696e44aeb6769d2e6d7b312d262749054a536231337a38dcfe95a55b575df6cbc61f6e97100997e9ab6eb3b51b94e03789356dacc063198e5c1348053a51fb46574778c73551c8e20be8703785b56af07466c9e574ab6a8a00db4131e654553b70c26320d3c120a84b074100a4419d981d07eee76c2e5ec9e09a31093fd114a495c84a60cb10ba1f55c1fe16276bf8402f150f8208cee428843e17a9105312bb4099fa83602ff7e7efa7bf1e5cf876fd75f3fc396ba56ca1eddaeb0ed74ebaab170438c28377f42c5aa3266f3f49b94cdd7c5af3211c4f9ae938813dfcacb943dca5d615e94855c552614b1bd295316393f075462e159d94ad9a3dc15e643992e3097ca140b67dff2aecc28172e6576538747652b658f72579817654a569519a2ced6e65d9913825cca9c33e659d94ad9a3dc15e64559b035651939bbdf36ca773a4008249c7b59d068d35efefdebe3f5bbcb6d7dad643dbe5d499e4f158b43c55e0e6622a2cedd1b12be69f7eee66a25eb735d94e4d9d5f4386787f37e5a0b2576763889a9ef0e67a5ecd1ed0af3f1556064ed1c1132796b873b0ed6941dcc6ce5f2328df9c02f03cf8bccac0006072f0cdab8d1a743f5ca8cafdeffb8fa7e01d3ffcfc6e5826d0f0000\",\"detailList\":[{\"approveInfo\":{\"durationInDay\":1.00,\"durationInHour\":8.00,\"fromAcross\":0,\"fromTime\":1565915400000,\"toAcross\":0,\"toTime\":1565947800000},\"classInfo\":{\"hasClass\":false,\"sections\":[{\"endAcross\":0,\"endTime\":1565947800000,\"startAcross\":0,\"startTime\":1565915400000}]},\"isRest\":false,\"workDate\":1565884800000,\"workTimeMinutes\":480},{\"approveInfo\":{\"durationInDay\":1.00,\"durationInHour\":8.00,\"fromAcross\":0,\"fromTime\":1566001800000,\"toAcross\":0,\"toTime\":1566034200000},\"classInfo\":{\"hasClass\":false,\"sections\":[{\"endAcross\":0,\"endTime\":1566034200000,\"startAcross\":0,\"startTime\":1566001800000}]},\"isRest\":false,\"workDate\":1565971200000,\"workTimeMinutes\":480},{\"approveInfo\":{\"durationInDay\":1.00,\"durationInHour\":8.00,\"fromAcross\":0,\"fromTime\":1566088200000,\"toAcross\":0,\"toTime\":1566120600000},\"classInfo\":{\"hasClass\":false,\"sections\":[{\"endAcross\":0,\"endTime\":1566120600000,\"startAcross\":0,\"startTime\":1566088200000}]},\"isRest\":false,\"workDate\":1566057600000,\"workTimeMinutes\":480},{\"approveInfo\":{\"durationInDay\":1.00,\"durationInHour\":9.00,\"fromAcross\":0,\"fromTime\":1566176400000,\"toAcross\":0,\"toTime\":1566208800000},\"classInfo\":{\"hasClass\":true,\"name\":\"默认班次\",\"sections\":[{\"endAcross\":0,\"endTime\":1566208800000,\"startAcross\":0,\"startTime\":1566176400000}]},\"isRest\":false,\"workDate\":1566144000000,\"workTimeMinutes\":540},{\"approveInfo\":{\"durationInDay\":1.00,\"durationInHour\":9.00,\"fromAcross\":0,\"fromTime\":1566262800000,\"toAcross\":0,\"toTime\":1566295200000},\"classInfo\":{\"hasClass\":true,\"name\":\"默认班次\",\"sections\":[{\"endAcross\":0,\"endTime\":1566295200000,\"startAcross\":0,\"startTime\":1566262800000}]},\"isRest\":false,\"workDate\":1566230400000,\"workTimeMinutes\":540},{\"approveInfo\":{\"durationInDay\":1.00,\"durationInHour\":9.00,\"fromAcross\":0,\"fromTime\":1566349200000,\"toAcross\":0,\"toTime\":1566381600000},\"classInfo\":{\"hasClass\":true,\"name\":\"默认班次\",\"sections\":[{\"endAcross\":0,\"endTime\":1566381600000,\"startAcross\":0,\"startTime\":1566349200000}]},\"isRest\":false,\"workDate\":1566316800000,\"workTimeMinutes\":540},{\"approveInfo\":{\"durationInDay\":1.00,\"durationInHour\":9.00,\"fromAcross\":0,\"fromTime\":1566435600000,\"toAcross\":0,\"toTime\":1566468000000},\"classInfo\":{\"hasClass\":true,\"name\":\"默认班次\",\"sections\":[{\"endAcross\":0,\"endTime\":1566468000000,\"startAcross\":0,\"startTime\":1566435600000}]},\"isRest\":false,\"workDate\":1566403200000,\"workTimeMinutes\":540},{\"approveInfo\":{\"durationInDay\":1.00,\"durationInHour\":9.00,\"fromAcross\":0,\"fromTime\":1566522000000,\"toAcross\":0,\"toTime\":1566554400000},\"classInfo\":{\"hasClass\":true,\"name\":\"默认班次\",\"sections\":[{\"endAcross\":0,\"endTime\":1566554400000,\"startAcross\":0,\"startTime\":1566522000000}]},\"isRest\":false,\"workDate\":1566489600000,\"workTimeMinutes\":540},{\"approveInfo\":{\"durationInDay\":1.00,\"durationInHour\":8.00,\"fromAcross\":0,\"fromTime\":1566606600000,\"toAcross\":0,\"toTime\":1566639000000},\"classInfo\":{\"hasClass\":false,\"name\":\"休息\",\"sections\":[{\"endAcross\":0,\"endTime\":1566639000000,\"startAcross\":0,\"startTime\":1566606600000}]},\"isRest\":false,\"workDate\":1566576000000,\"workTimeMinutes\":480},{\"approveInfo\":{\"durationInDay\":1.00,\"durationInHour\":8.00,\"fromAcross\":0,\"fromTime\":1566693000000,\"toAcross\":0,\"toTime\":1566725400000},\"classInfo\":{\"hasClass\":false,\"name\":\"休息\",\"sections\":[{\"endAcross\":0,\"endTime\":1566725400000,\"startAcross\":0,\"startTime\":1566693000000}]},\"isRest\":false,\"workDate\":1566662400000,\"workTimeMinutes\":480},{\"approveInfo\":{\"durationInDay\":1.00,\"durationInHour\":9.00,\"fromAcross\":0,\"fromTime\":1566781200000,\"toAcross\":0,\"toTime\":1566813600000},\"classInfo\":{\"hasClass\":true,\"name\":\"默认班次\",\"sections\":[{\"endAcross\":0,\"endTime\":1566813600000,\"startAcross\":0,\"startTime\":1566781200000}]},\"isRest\":false,\"workDate\":1566748800000,\"workTimeMinutes\":540}],\"durationInDay\":11.00,\"durationInHour\":94.00,\"isModifiable\":true,\"pushTag\":\"出差\",\"unit\":\"DAY\"}",
+    "id": "DDBusinessField-J7638F8R",
+    "name": "[\"开始时间\",\"结束时间\"]",
+    "value": "[\"2019-08-16\",\"2019-08-26\",11.00,\"day\",null,\"出差类型\"]"
+  }, {
+    "component_type": "NumberField",
+    "id": "NumberField-JZS8YDXF",
+    "name": "部门预算",
+    "value": "1300"
+  }, {
+    "component_type": "TextField",
+    "id": "TextField-JZKXRQLF",
+    "name": "出差事由",
+    "value": "测试啊"
+  }, {
+    "component_type": "TableField",
+    "ext_value": "{\"statValue\":[],\"componentName\":\"TableField\"}",
+    "id": "TableField-JZKYDTDF",
+    "name": "行程",
+    "value": "[{\"rowValue\":[{\"componentType\":\"DDSelectField\",\"label\":\"交通工具\",\"value\":\"飞机\",\"key\":\"DDSelectField-JZKYE7SP\",\"extValue\":\"{\\\"value\\\":\\\"飞机\\\",\\\"key\\\":\\\"option_0\\\"}\"},{\"componentType\":\"DDSelectField\",\"label\":\"单程往返\",\"value\":\"单程\",\"key\":\"DDSelectField-JZKYE7SQ\",\"extValue\":\"{\\\"value\\\":\\\"单程\\\",\\\"key\\\":\\\"option_0\\\"}\"},{\"componentType\":\"TextField\",\"label\":\"出发城市\",\"value\":\"天津\",\"key\":\"TextField-JZKYE7SR\"},{\"componentType\":\"TextField\",\"label\":\"目的城市\",\"value\":\"信阳\",\"key\":\"TextField-JZKYE7SS\"},{\"componentType\":\"TextField\",\"label\":\"开始时间\",\"value\":\"2019年08月16日\",\"key\":\"TextField-JZKYE7SV\"},{\"componentType\":\"TextField\",\"label\":\"结束时间\",\"value\":\"2019年08月26日\",\"key\":\"TextField-JZKYE7SW\"},{\"componentType\":\"NumberField\",\"label\":\"时长\",\"value\":\"11\",\"key\":\"NumberField-JZKYE7SX\"}]}]"
+  }, {
+    "component_type": "TextareaField",
+    "id": "TextareaField-JZKYE7T0",
+    "name": "出差备注",
+    "value": "null"
+  }, {
+    "component_type": "InnerContactField",
+    "id": "InnerContactField-JZKYE7T1",
+    "name": "同行人",
+    "value": "null"
+  }],
+  "operation_records": [{
+    "date": "2019-08-27 14:33:25",
+    "operation_result": "NONE",
+    "operation_type": "START_PROCESS_INSTANCE",
+    "userid": "4508346521365159"
+  }, {
+    "date": "2019-08-27 14:35:54",
+    "operation_result": "NONE",
+    "operation_type": "TERMINATE_PROCESS_INSTANCE",
+    "remark": "",
+    "userid": "4508346521365159"
+  }],
+  "originator_dept_id": "-1",
+  "originator_dept_name": "测试2海尔",
+  "originator_userid": "4508346521365159",
+  "result": "",
+  "status": "TERMINATED",
+  "tasks": [{
+    "create_time": "2019-08-27 14:33:25",
+    "task_result": "NONE",
+    "task_status": "TERMINATED",
+    "taskid": "62050698525",
+    "url": "?procInsId=d5a7d02e-d957-4a13-873c-8b5dec4ae10a&taskId=62050698525&businessId=201908271433000253344",
+    "userid": "4508346521365159"
+  }],
+  "title": "刘遵坤提交的出差审批"
+}]

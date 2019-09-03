@@ -103,7 +103,7 @@ router.post('/callback', async (ctx, next) => {
 
 			let oldTrip = await Trips.findOne({ businessId, bizAction: 'NONE' });
 			// 更新商旅审批单
-			// await TripService.update2Btrip(processInstanceId, trip);
+			await TripService.update2Btrip(oldTrip.processInstanceId, trip);
 			return;
 		}
 		break;
