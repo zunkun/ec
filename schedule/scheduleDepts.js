@@ -6,7 +6,7 @@ const Sync = require('../models/Sync');
 const config = require('../config');
 const cron = require('node-cron');
 const util = require('../core/util');
-const roleService = require('./roleService');
+const roleService = require('../services/roleService');
 
 class ScheduleDepts {
 	constructor () {

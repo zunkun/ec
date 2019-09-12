@@ -4,7 +4,7 @@ const TrainOrder = require('../models/TrainOrder');
 const VehicleOrder = require('../models/VehicleOrder');
 const HotelOrder = require('../models/HotelOrder');
 const Depts = require('../models/Depts');
-const computeService = require('./computeService');
+const computeService = require('../services/computeService');
 
 const Sync = require('../models/Sync');
 const config = require('../config');
