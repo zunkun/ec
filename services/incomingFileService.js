@@ -87,7 +87,7 @@ class IncomingFileService {
 		}
 		let promiseArray = [];
 		let promiseArray2 = [];
-		let incomings = [];
+		// let incomings = [];
 		let syncGateIncomings = [];
 		let timestamp = Date.now();
 		for (let item of this.fileData) {
@@ -120,7 +120,6 @@ class IncomingFileService {
 			item['是否错误'] = '正确';
 			item['错误原因'] = '';
 			this.genDataLists.push(item);
-
 			let data = {
 				corpId: config.corpId,
 				year: this.year,
@@ -134,18 +133,15 @@ class IncomingFileService {
 				qq: type.qq,
 				pm: type.pm,
 				unit: type.unit,
-				weights: item['权重'] ? toFixedNum(Number(item['权重']) || 0) : null,
-				incomings: item['目标'] ? toFixedNum(Number(item['目标']) || 0) : null,
-				line2: item['2区位'] ? toFixedNum(Number(item['2区位']) || 0) : null,
-				line4: item['4区位'] ? toFixedNum(Number(item['4区位']) || 0) : null,
-				line6: item['6区位'] ? toFixedNum(Number(item['6区位']) || 0) : null,
-				line8: item['8区位'] ? toFixedNum(Number(item['8区位']) || 0) : null,
-				line10: item['10区位'] ? toFixedNum(Number(item['10区位']) || 0) : null,
+				weights: toFixedNum(item['权重']),
+				incomings: toFixedNum(item['目标']),
+				line2: toFixedNum(item['2区位']),
+				line4: toFixedNum(item['4区位']),
+				line6: toFixedNum(item['6区位']),
+				line8: toFixedNum(item['8区位']),
+				line10: toFixedNum(item['10区位']),
 				status: 1
 			};
-
-			incomings.push(data);
-
 			// 搜集需要同步的数据
 			if (type.syncGateway) {
 				syncGateIncomings.push(data);
@@ -194,13 +190,13 @@ class IncomingFileService {
 						status: incoming.status
 					},
 					after: {
-						weights: item['权重'] ? toFixedNum(Number(item['权重']) || 0) : null,
-						incomings: item['目标'] ? toFixedNum(Number(item['目标']) || 0) : null,
-						line2: item['2区位'] ? toFixedNum(Number(item['2区位']) || 0) : null,
-						line4: item['4区位'] ? toFixedNum(Number(item['4区位']) || 0) : null,
-						line6: item['6区位'] ? toFixedNum(Number(item['6区位']) || 0) : null,
-						line8: item['8区位'] ? toFixedNum(Number(item['8区位']) || 0) : null,
-						line10: item['10区位'] ? toFixedNum(Number(item['10区位']) || 0) : null,
+						weights: toFixedNum(item['权重']),
+						incomings: toFixedNum(item['目标']),
+						line2: toFixedNum(item['2区位']),
+						line4: toFixedNum(item['4区位']),
+						line6: toFixedNum(item['6区位']),
+						line8: toFixedNum(item['8区位']),
+						line10: toFixedNum(item['10区位']),
 						status: 1
 					},
 					manager: this.manager
@@ -235,13 +231,13 @@ class IncomingFileService {
 						status: null
 					},
 					after: {
-						weights: item['权重'] ? toFixedNum(Number(item['权重']) || 0) : null,
-						incomings: item['目标'] ? toFixedNum(Number(item['目标']) || 0) : null,
-						line2: item['2区位'] ? toFixedNum(Number(item['2区位']) || 0) : null,
-						line4: item['4区位'] ? toFixedNum(Number(item['4区位']) || 0) : null,
-						line6: item['6区位'] ? toFixedNum(Number(item['6区位']) || 0) : null,
-						line8: item['8区位'] ? toFixedNum(Number(item['8区位']) || 0) : null,
-						line10: item['10区位'] ? toFixedNum(Number(item['10区位']) || 0) : null,
+						weights: toFixedNum(item['权重']),
+						incomings: toFixedNum(item['目标']),
+						line2: toFixedNum(item['2区位']),
+						line4: toFixedNum(item['4区位']),
+						line6: toFixedNum(item['6区位']),
+						line8: toFixedNum(item['8区位']),
+						line10: toFixedNum(item['10区位']),
 						status: 1
 					},
 					manager: this.manager

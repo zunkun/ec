@@ -38,6 +38,7 @@ class Util {
 	}
 
 	toFixedNum (num) {
+		if ((num !== 0 && !num) || (typeof (num) === 'string' && num.trim() === '')) return null;
 		let isInteger = Number(num || null) % 1 === 0;
 		return isInteger ? Number(num) : Number(Number(num).toFixed(2));
 	}

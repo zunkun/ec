@@ -3,6 +3,8 @@ logs/*
 bin/daemon
 *.sqlite
 public/images/*.jpg
+public/files/上传文件/*.xlsx
+public/files/收入目标/*.xlsx
 ECAPI/*
 uploads/*.xlsx
 package-lock.json
