@@ -91,7 +91,6 @@ router.get('/login', async (ctx, next) => {
 
 router.get('/signature', async (ctx, next) => {
 	let { platform, url } = ctx.query;
-	console.log(1234);
 	if (!url || !platform) {
 		ctx.body = ServiceResult.getFail('参数不正确');
 		return;

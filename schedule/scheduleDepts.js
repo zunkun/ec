@@ -7,6 +7,7 @@ const config = require('../config');
 const cron = require('node-cron');
 const util = require('../core/util');
 const roleService = require('../services/roleService');
+const RuleService = require('../services/RuleServices');
 
 class ScheduleDepts {
 	constructor () {
@@ -64,6 +65,7 @@ class ScheduleDepts {
 				await this.setDeptPaths(1, [ 1 ]);
 				await this.syncStaffs();
 				await this.syncManagers();
+				await RuleService.setProcessRules();
 				await this.updateSyncStatus(1);
 				await roleService.start();
 			} catch (error) {
@@ -208,13 +210,9 @@ class ScheduleDepts {
 				position: user.position,
 				email: user.email,
 				avatar: user.avatar,
-				jobnumber: user.jobnumber
+				jobnumber: user.jobnumber,
+				isLeader: !!user.isLeader
 			};
-
-			// TODO: 部门领导获取规则，需要改进，建议直接从部门信息中获取，如果从员工信息中获取，某天员工不再是领导，则部门中该员工的领导属性不能删除
-			if (user.isLeader) {
-				userData.isLeader = true;
-			}
 
 			let promise = Staffs.updateMany({
 				corpId: config.corpId,
@@ -246,7 +244,7 @@ class ScheduleDepts {
 
 	async syncManagers () {
 		console.log('【开始】保存主管信息');
-		let depts = await Depts.find({ corpId: config.corpid, year: this.year });
+		let depts = await Depts.find({ corpId: config.corpId, year: this.year });
 
 		for (let dept of depts) {
 			if (!dept.deptManagerUseridList) {

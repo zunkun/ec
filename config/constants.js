@@ -8,7 +8,8 @@ module.exports = {
 		approvalUpdate: '/alitrip/btrip/approval/update',
 		costCenter: '/alitrip/btrip/cost/center/query',
 		invoice: '/alitrip/btrip/invoice/search',
-		modifyApproval: 'dingtalk.oapi.alitrip.btrip.approval.modify'
+		modifyApproval: 'dingtalk.oapi.alitrip.btrip.approval.modify',
+		calculate: '/attendance/approve/duration/calculate'
 	},
 	catalogTypes: {
 
